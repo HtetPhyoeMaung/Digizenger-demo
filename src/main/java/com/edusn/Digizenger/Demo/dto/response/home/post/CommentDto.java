@@ -1,4 +1,6 @@
-package com.edusn.Digizenger.Demo.dto.response.home;
+package com.edusn.Digizenger.Demo.dto.response.home.post;
+
+
 
 import com.edusn.Digizenger.Demo.entity.auth.User;
 import lombok.AllArgsConstructor;
@@ -7,15 +9,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReplyDto {
+public class CommentDto {
     private Long id;
-    private String text;
+    private String comment;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private User user;
+    private List<ReplyDto> replies;
 }

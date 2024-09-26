@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
-@Entity
+//@Entity
 @Data
 @Table(name = "media")
 @Builder

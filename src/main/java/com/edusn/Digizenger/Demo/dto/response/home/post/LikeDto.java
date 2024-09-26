@@ -1,26 +1,24 @@
-package com.edusn.Digizenger.Demo.dto.response.home;
-
-
+package com.edusn.Digizenger.Demo.dto.response.home.post;
 
 import com.edusn.Digizenger.Demo.entity.auth.User;
-import com.edusn.Digizenger.Demo.entity.post.Reply;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CommentDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class LikeDto {
+
     private Long id;
-    private String comment;
+    private boolean liked;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private User user;
-    private List<ReplyDto> replies;
 }

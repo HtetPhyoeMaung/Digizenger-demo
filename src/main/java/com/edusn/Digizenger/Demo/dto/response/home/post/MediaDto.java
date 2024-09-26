@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dto.response.home;
+package com.edusn.Digizenger.Demo.dto.response.home.post;
 
 import com.edusn.Digizenger.Demo.entity.post.Media;
 import lombok.AllArgsConstructor;

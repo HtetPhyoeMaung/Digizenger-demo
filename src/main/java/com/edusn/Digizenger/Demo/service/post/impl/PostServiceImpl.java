@@ -1,8 +1,8 @@
 package com.edusn.Digizenger.Demo.service.post.impl;
 
 import com.edusn.Digizenger.Demo.dto.response.Response;
-import com.edusn.Digizenger.Demo.dto.response.home.MediaDto;
-import com.edusn.Digizenger.Demo.dto.response.home.PostDto;
+import com.edusn.Digizenger.Demo.dto.response.home.post.MediaDto;
+import com.edusn.Digizenger.Demo.dto.response.home.post.PostDto;
 import com.edusn.Digizenger.Demo.dto.response.home.UserDto;
 import com.edusn.Digizenger.Demo.entity.auth.User;
 import com.edusn.Digizenger.Demo.entity.post.Media;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -105,13 +106,15 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
         return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    /*, Sort.by("createdDate").descending()*/
 
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
-        Pageable pageable = PageRequest.of(_page - 1, _limit);
+        Pageable pageable = PageRequest.of(_page - 1, _limit, Sort.by("createdDate").descending());
 
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
+
         List<PostDto> postDto= postPage.getContent().stream()
                 .map(PostServiceImpl::convertToPostDto)
                 .toList();

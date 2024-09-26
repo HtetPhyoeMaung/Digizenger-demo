@@ -1,6 +1,6 @@
-package com.edusn.Digizenger.Demo.dto.response.home;
+package com.edusn.Digizenger.Demo.dto.response.home.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.edusn.Digizenger.Demo.dto.response.home.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

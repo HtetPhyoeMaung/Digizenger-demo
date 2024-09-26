@@ -1,6 +1,5 @@
 package com.edusn.Digizenger.Demo.entity.auth;
 
-import com.edusn.Digizenger.Demo.entity.post.Comment;
 import com.edusn.Digizenger.Demo.entity.post.Like;
 import com.edusn.Digizenger.Demo.entity.post.Post;
 import com.edusn.Digizenger.Demo.entity.post.Reply;
@@ -8,12 +7,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
+//@Entity
 @Data
 @Builder
 @AllArgsConstructor
@@ -65,8 +63,7 @@ public class User {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
-    private List<Comment> comments;
+
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
     private List<Like> likes;

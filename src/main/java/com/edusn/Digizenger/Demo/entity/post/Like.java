@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
+//@Entity
 @Data
 @Table(name = "likes")
 @Builder

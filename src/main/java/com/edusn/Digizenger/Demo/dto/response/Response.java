@@ -1,6 +1,6 @@
 package com.edusn.Digizenger.Demo.dto.response;
 
-import com.edusn.Digizenger.Demo.dto.response.home.PostDto;
+import com.edusn.Digizenger.Demo.dto.response.home.post.PostDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;

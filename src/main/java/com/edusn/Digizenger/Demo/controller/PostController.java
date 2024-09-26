@@ -1,25 +1,16 @@
 package com.edusn.Digizenger.Demo.controller;
 
 import com.edusn.Digizenger.Demo.dto.response.Response;
-import com.edusn.Digizenger.Demo.dto.response.home.PostDto;
+import com.edusn.Digizenger.Demo.dto.response.home.post.PostDto;
 import com.edusn.Digizenger.Demo.entity.auth.User;
 import com.edusn.Digizenger.Demo.entity.post.Post;
-import com.edusn.Digizenger.Demo.repository.post.PostRepository;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.service.post.PostService;
-import com.edusn.Digizenger.Demo.service.post.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/digizenger/api/v1/posts")

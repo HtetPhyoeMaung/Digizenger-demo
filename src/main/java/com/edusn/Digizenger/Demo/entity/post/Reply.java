@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
+//@Entity
 @Data
 @Table(name = "replies")
 @Builder
@@ -31,8 +31,6 @@ public class Reply implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "comment_id")
 
-    private Comment comment;
+
 }
