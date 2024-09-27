@@ -22,8 +22,7 @@ public class PostDto {
     private LocalDateTime modifiedDate;
     private Boolean isPublic;
     private UserDto userDto;
-    private List<CommentDto> comments;
-    private List<ReplyDto> replies;
-    private List<LikeDto> likes;
+    private Long likeCount;
+    private Long viewCount;
     private List<MediaDto> mediaDtos;
 }

@@ -29,6 +29,9 @@ public class Post implements Serializable {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Boolean isPublic;
+    private Long viewsCount;
+
+
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")

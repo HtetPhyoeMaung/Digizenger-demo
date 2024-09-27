@@ -23,7 +23,7 @@ public class Like implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean liked;
+
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 

@@ -5,10 +5,12 @@ import com.edusn.Digizenger.Demo.dto.response.home.MediaDto;
 import com.edusn.Digizenger.Demo.dto.response.home.PostDto;
 import com.edusn.Digizenger.Demo.dto.response.home.UserDto;
 import com.edusn.Digizenger.Demo.entity.auth.User;
+import com.edusn.Digizenger.Demo.entity.post.Like;
 import com.edusn.Digizenger.Demo.entity.post.Media;
 import com.edusn.Digizenger.Demo.entity.post.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
+import com.edusn.Digizenger.Demo.repository.post.LikeRepository;
 import com.edusn.Digizenger.Demo.repository.post.PostRepository;
 import com.edusn.Digizenger.Demo.service.post.MediaService;
 import com.edusn.Digizenger.Demo.service.post.PostService;
@@ -24,12 +26,15 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PostServiceImpl implements PostService {
+public  class PostServiceImpl implements PostService {
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private LikeRepository likeRepository;
     @Autowired
     private PostRepository postRepository;
     @Autowired
@@ -64,6 +69,8 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
         postDto.setMediaDtos(mediaDtos);
         postDto.setUserDto(modelMapper.map(user, UserDto.class));
+        Long likeCount = likeRepository.findByPost(post).stream().count();
+        postDto.setLikeCount(likeCount);
         return new ResponseEntity<>(postDto, HttpStatus.CREATED);
     }
 
@@ -112,7 +119,13 @@ public class PostServiceImpl implements PostService {
 
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
+
+        for(Post post:postPage){
+            post.setViewsCount(post.getViewsCount()+1);
+
+        }
         List<PostDto> postDto= postPage.getContent().stream()
+                .filter(post -> post.getIsPublic().equals(true))
                 .map(PostServiceImpl::convertToPostDto)
                 .toList();
         Response response=Response.builder()
@@ -129,6 +142,7 @@ public class PostServiceImpl implements PostService {
         postDto.setCreatedDate(post.getCreatedDate());
         postDto.setModifiedDate(post.getModifiedDate());
         postDto.setIsPublic(post.getIsPublic());
+        postDto.setViewCount(post.getViewsCount());
 
         List<MediaDto> mediaDTOs = post.getMedia().stream()
                 .map(PostServiceImpl::convertToMediaDto)
