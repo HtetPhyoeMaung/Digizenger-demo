@@ -6,34 +6,21 @@ import com.edusn.Digizenger.Demo.dto.response.Response;
 import com.edusn.Digizenger.Demo.service.auth.*;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/digizenger/api/test/auth")
+@RequestMapping("/digizenger/api/test")
 public class TestController {
-    @Autowired
-    private UserService userService;
-
-    @PostMapping("/register")
-    public ResponseEntity<Response> register(@RequestBody RegisterRequest request) throws MessagingException {
-        return userService.register(request);
-    }
-
-    @PutMapping("/verify-account")
-    public ResponseEntity<Response> verifyAccount(@RequestParam String emailOrPhone, @RequestParam String otp) {
-        return userService.verifyAccount(emailOrPhone, otp);
-    }
-
-    @PutMapping("/resend-code")
-    public ResponseEntity<Response> resendCode(@RequestParam String emailOrPhone) throws MessagingException {
-        return userService.resendCode(emailOrPhone);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Response> login(@RequestBody LoginRequest request) {
-        return userService.login(request);
-    }
+   @GetMapping("/serverTest")
+    public ResponseEntity<Response> getServerTest()  {
+       Response response = Response.builder()
+               .statusCode(HttpStatus.OK.value())
+               .message("Test Success")
+               .build();
+       return new ResponseEntity<>(response, HttpStatus.OK);
+   }
 
 }

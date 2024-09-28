@@ -43,7 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/test/auth/**")
+                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/test/**")
                         .permitAll()
                         .requestMatchers("/digizenger/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/digizenger/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
