@@ -45,9 +45,23 @@ public class SecurityConfig {
        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/v1/test/**")
+                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/v1/test/**",
+
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/wabjars/**",
+                                        "/swagger-ui.html")
                         .permitAll()
-                        .requestMatchers("/digizenger/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
+
+
+
+                                .requestMatchers("/digizenger/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/digizenger/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
                                 .requestMatchers("/digizenger/api/v1/super/**").hasAnyAuthority(Role.SUPER.name(),Role.ADMIN.name())
                         .anyRequest().authenticated()
