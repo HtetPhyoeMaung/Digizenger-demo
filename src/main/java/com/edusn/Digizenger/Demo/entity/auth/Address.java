@@ -18,8 +18,7 @@ public class Address implements Serializable {
     private static final long serialVersionUID = 1l;
 
     @Id
-    @GeneratedValue(generator = "addressSeq")
-    @SequenceGenerator(name = "addressSeq",initialValue = 101,allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String country;
