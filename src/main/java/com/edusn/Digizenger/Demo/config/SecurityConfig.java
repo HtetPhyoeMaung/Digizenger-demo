@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,7 +44,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/test/**")
+               .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/v1/test/**")
                         .permitAll()
                         .requestMatchers("/digizenger/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/digizenger/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())

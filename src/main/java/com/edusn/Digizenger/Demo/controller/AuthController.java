@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,7 @@ import com.edusn.Digizenger.Demo.dto.response.Response;
 import com.edusn.Digizenger.Demo.service.auth.UserService;
 
 import jakarta.mail.MessagingException;
-
+@Slf4j
 @RestController
 @RequestMapping("/digizenger/api/v1/auth")
 public class AuthController {
@@ -25,6 +26,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Response> register(@RequestBody RegisterRequest request) throws MessagingException {
+        log.info("Reach Register");
         return userService.register(request);
     }
 

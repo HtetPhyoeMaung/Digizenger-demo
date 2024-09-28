@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/digizenger/api/test")
+@RequestMapping("/digizenger/api/v1/test")
 public class TestController {
    @GetMapping("/serverTest")
     public ResponseEntity<Response> getServerTest()  {
