@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/digizenger/api/v1/posts")
@@ -23,20 +26,19 @@ public class PostController {
     private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
 
     @PostMapping("/upload")
-    public ResponseEntity<PostDto> upload(@RequestBody Post post, HttpServletRequest request)
-    {
+    public ResponseEntity<Response> upload(@RequestParam("description") String discription, @RequestParam("postType") Post.PostType postType, @RequestParam("file") MultipartFile multipartFile, HttpServletRequest request) throws IOException {
         String token = jwtService.getJWTFromRequest(request);
         String emailOrPhone = jwtService.extractUsername(token);
        User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
 
-        return postService.upload(post,user);
+        return postService.upload(discription,postType,user,multipartFile);
     }
-    @PutMapping("/update-post")
-    public ResponseEntity<PostDto> updatePost(@RequestBody Post post,HttpServletRequest request){
+    @PutMapping("/update-post/{id}")
+    public ResponseEntity<Response> updatePost(@PathVariable("id") Long id,@RequestParam("description") String discription, @RequestParam("postType") Post.PostType postType, @RequestParam("file") MultipartFile multipartFile,HttpServletRequest request) throws IOException {
         String token = jwtService.getJWTFromRequest(request);
         String emailOrPhone = jwtService.extractUsername(token);
         User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
-        return  postService.updatePost(post,user);
+        return  postService.updatePost(id,discription,postType,user,multipartFile);
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteContent(@PathVariable("id") long id) {
@@ -48,5 +50,9 @@ public class PostController {
             @RequestParam(defaultValue = "1") int _page,
             @RequestParam(defaultValue = "10") int _limit) {
         return postService.getPostByPage(_page,_limit);
+    }
+    @GetMapping("/image/{imageName}")
+    public ResponseEntity<Response> getImage(@PathVariable("imageName") String imageName) throws IOException {
+        return postService.getImage(imageName);
     }
 }
