@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.ProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,8 @@ public class Response {
 
 
     private String expirationDate;
+
+    private ProfileDto profileDto;
 
 
 }

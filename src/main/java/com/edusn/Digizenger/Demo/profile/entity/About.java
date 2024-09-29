@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,15 +21,15 @@ public class About {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Set<String> servicesProvides;
+    private Set<String> servicesProvide;
 
     @OneToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
     @OneToMany(mappedBy = "about", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private CareerHistory careerHistory;
+    private List<CareerHistory> careerHistory = new ArrayList<>();
 
     @OneToMany(mappedBy = "about", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Education education;
+    private List<Education> education = new ArrayList<>();
 }

@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -26,8 +26,14 @@ public class CareerHistory {
     @Column(nullable = false)
     private String companyName;
 
-    private LocalDateTime joinDate;
-    private LocalDateTime endDate;
+    @Column(nullable = false)
+    private LocalDate joinDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @Column(name = "company_logo_url")
+    private String companyLogoUrl;
 
     @ManyToOne
     @JoinColumn(name = "about_id")

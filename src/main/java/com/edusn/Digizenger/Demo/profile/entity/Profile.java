@@ -28,13 +28,8 @@ public class Profile {
     @Column(length = 255)
     private String bio;
 
-    @Column(name = "profile_img_data")
-    private byte[] profileImageData;
-
-    @Column(name = "cover_img_data")
-    private byte[] coverImageData;
-
-    @OneToOne(mappedBy = "profile", fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "userId")
     private User user;
 
     @OneToOne(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

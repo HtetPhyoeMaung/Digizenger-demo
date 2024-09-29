@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,13 +24,16 @@ public class Education {
     private String universityName;
 
     @Column(nullable = false)
-    private String degree_name;
+    private String degreeName;
 
     @Column(name = "university_logo_url")
     private String universityLogoUrl;
 
-    @Column(name = "university_logo_data")
-    private byte[] universityLogoData;
+    @Column(nullable = false)
+    private LocalDate joinDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @ManyToOne
     @JoinColumn(name = "about_id")

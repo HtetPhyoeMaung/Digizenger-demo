@@ -4,6 +4,7 @@ import com.edusn.Digizenger.Demo.post.entity.Comment;
 import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.post.entity.Reply;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,6 +70,9 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
     private List<Reply> replies;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    private Profile profile;
 
     public enum Gender{
         MALE,
