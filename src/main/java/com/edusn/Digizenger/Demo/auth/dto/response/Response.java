@@ -1,7 +1,8 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +30,6 @@ public class Response {
 
     private ProfileDto profileDto;
 
+    private OtherProfileDto otherProfileDto;
 
 }

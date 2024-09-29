@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.profile.dto.response;
+package com.edusn.Digizenger.Demo.profile.dto.response.myProfile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

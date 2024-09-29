@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.profile.dto.response;
+package com.edusn.Digizenger.Demo.profile.dto.response.myProfile;
 
 import com.edusn.Digizenger.Demo.auth.entity.Address;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;

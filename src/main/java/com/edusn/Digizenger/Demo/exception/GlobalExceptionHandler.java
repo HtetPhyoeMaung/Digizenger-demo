@@ -65,6 +65,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> profileNotFoundHandler(ProfileNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> badRequestHandler(Exception ex){
         CustomErrorResponse response = CustomErrorResponse.builder()

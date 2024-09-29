@@ -19,11 +19,18 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String profileCareer;
+
     @Column(name = "profile_img_url")
     private String profileImgUrl;
 
     @Column(name = "cover_img_url")
     private String coverImgUrl;
+
+    private String username;
+
+    @Column(name = "profile_link_url")
+    private String profileLinkUrl;
 
     @Column(length = 255)
     private String bio;

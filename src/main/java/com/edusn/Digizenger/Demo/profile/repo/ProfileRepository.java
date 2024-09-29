@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
     Profile findByUser(User user);
+
+    Profile findByProfileLinkUrl(String profileUrl);
 }

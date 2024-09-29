@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.profile.dto.response;
+package com.edusn.Digizenger.Demo.profile.dto.response.myProfile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -13,11 +13,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EducationDto {
+public class CareerHistoryDto {
     private Long id;
-    private String universityName;
-    private String degreeName;
-    private String universityLogoUrl;
+    private String careerName;
+    private String companyName;
     private LocalDate joinDate;
     private LocalDate endDate;
+    private String companyImgUrl;
 }

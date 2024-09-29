@@ -4,13 +4,13 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
-import com.edusn.Digizenger.Demo.profile.dto.response.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,13 +30,16 @@ public class ProfileController {
 
     @GetMapping("/")
     public ResponseEntity<Response> getProfile(HttpServletRequest request){
-        String token = jwtService.getJWTFromRequest(request);
-        String email = jwtService.extractUsername(token);
-
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException("user cannot found by email : " + email));
-
-        return profileService.showUserProfile(user);
-
+        return profileService.showUserProfile(request);
     }
+
+
+    @GetMapping("/{username}")
+    public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
+                                                    HttpServletRequest request){
+        return profileService.getProfileByProfileUrlLink(username,request);
+    }
+
+
+
 }
