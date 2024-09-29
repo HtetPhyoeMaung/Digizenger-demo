@@ -27,8 +27,9 @@ public class Post implements Serializable {
     private String content;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Boolean isPublic;
+    private PostType postType;
     private Long viewsCount;
+
 
 
 
@@ -45,6 +46,11 @@ public class Post implements Serializable {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "post")
     private List<Media> media;
 
+   public enum PostType{
+       EVERYONE,
+       NEIGHORS,
+       FOLLOWERS,
 
+   }
 
 }

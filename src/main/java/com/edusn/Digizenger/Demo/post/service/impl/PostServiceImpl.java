@@ -41,7 +41,7 @@ public  class PostServiceImpl implements PostService {
     public ResponseEntity<PostDto> upload(Post requestPost, User user) {
         Post post=Post.builder()
                 .content(requestPost.getContent())
-                .isPublic(requestPost.getIsPublic())
+                .postType(requestPost.getPostType())
                 .createdDate(LocalDateTime.now())
                 .user(user)
                 .build();
@@ -79,7 +79,7 @@ public  class PostServiceImpl implements PostService {
                 .map(existPost -> {
                     existPost.setContent(requestPost.getContent());
                     existPost.setModifiedDate(LocalDateTime.now());
-                    existPost.setIsPublic(requestPost.getIsPublic());
+                    existPost.setPostType(requestPost.getPostType());
                     return existPost;
                 })
                 .orElseThrow(() -> new PostNotFoundException("Post not found by " + requestPost.getId()));
@@ -123,7 +123,6 @@ public  class PostServiceImpl implements PostService {
 
         }
         List<PostDto> postDto= postPage.getContent().stream()
-                .filter(post -> post.getIsPublic().equals(true))
                 .map(PostServiceImpl::convertToPostDto)
                 .toList();
         Response response=Response.builder()
@@ -139,7 +138,7 @@ public  class PostServiceImpl implements PostService {
         postDto.setContent(post.getContent());
         postDto.setCreatedDate(post.getCreatedDate());
         postDto.setModifiedDate(post.getModifiedDate());
-        postDto.setIsPublic(post.getIsPublic());
+        postDto.set(post.getPostType());
         postDto.setViewCount(post.getViewsCount());
 
         List<MediaDto> mediaDTOs = post.getMedia().stream()
