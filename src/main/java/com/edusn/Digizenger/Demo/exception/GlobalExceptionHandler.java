@@ -1,6 +1,6 @@
 package com.edusn.Digizenger.Demo.exception;
 
-import com.edusn.Digizenger.Demo.dto.response.CustomErrorResponse;
+import com.edusn.Digizenger.Demo.auth.dto.response.CustomErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

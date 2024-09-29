@@ -1,8 +1,8 @@
 package com.edusn.Digizenger.Demo.utilis;
 
-import com.edusn.Digizenger.Demo.entity.auth.User;
+import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
-import com.edusn.Digizenger.Demo.repository.UserRepository;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

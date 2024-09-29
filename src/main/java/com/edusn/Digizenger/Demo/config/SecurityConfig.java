@@ -2,7 +2,7 @@
 
 package com.edusn.Digizenger.Demo.config;
 
-import com.edusn.Digizenger.Demo.entity.auth.Role;
+import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.security.JwtAuthEntryPoint;
 import com.edusn.Digizenger.Demo.security.JwtAuthenticationFilter;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;

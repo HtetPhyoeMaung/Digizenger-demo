@@ -1,8 +1,8 @@
 package com.edusn.Digizenger.Demo.security;
 
 
-import com.edusn.Digizenger.Demo.entity.auth.Role;
-import com.edusn.Digizenger.Demo.repository.UserRepository;
+import com.edusn.Digizenger.Demo.auth.entity.Role;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -45,7 +45,7 @@ public class UserDetailServiceForUser implements UserDetailsService {
                     .orElseThrow(()-> new UsernameNotFoundException(username));
         }
     }
-    private boolean isCredentialExpired(com.edusn.Digizenger.Demo.entity.auth.User customer){
+    private boolean isCredentialExpired(com.edusn.Digizenger.Demo.auth.entity.User customer){
         if (null !=customer.getValidPassDate()){
             LocalDateTime validPassDate = customer.getValidPassDate();
             if (validPassDate.isBefore(LocalDateTime.now())){
@@ -55,7 +55,7 @@ public class UserDetailServiceForUser implements UserDetailsService {
         return false;
     }
 
-    private boolean  isExpired(com.edusn.Digizenger.Demo.entity.auth.User customer){
+    private boolean  isExpired(com.edusn.Digizenger.Demo.auth.entity.User customer){
         if (null != customer.getRetiredDate()){
             LocalDateTime retiredDate = customer.getRetiredDate();
             if (retiredDate.isBefore(LocalDateTime.now())){

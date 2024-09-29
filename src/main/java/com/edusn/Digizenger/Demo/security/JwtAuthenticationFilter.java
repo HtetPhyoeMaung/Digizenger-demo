@@ -1,7 +1,7 @@
 package com.edusn.Digizenger.Demo.security;
 
 
-import com.edusn.Digizenger.Demo.repository.UserRepository;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
