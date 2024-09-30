@@ -68,7 +68,8 @@ public class UserServiceImpl implements UserService {
                 throw new LoginNameExistException("Email's already exist!");
             }
              otp = otpUtil.generateOtp();
-            mailUtil.sendOtpEmail(request.getEmail(),otp);
+            String fullName = request.getFirstName()+request.getLastName();
+            mailUtil.sendOtpEmail(fullName,request.getEmail(),otp);
 
         }else{
             Optional<User> checkUserPhone = userRepository.findByPhone(request.getPhone());
@@ -131,10 +132,11 @@ public class UserServiceImpl implements UserService {
         String otp;
 
         User user=   checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
+        String fullName = user.getFirstName()+user.getLastName();
         otp = otpUtil.generateOtp();
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
-        mailUtil.sendOtpEmail(emailOrPhone,otp);
+        mailUtil.sendOtpEmail(fullName,emailOrPhone,otp);
         userRepository.save(user);
         // response
 

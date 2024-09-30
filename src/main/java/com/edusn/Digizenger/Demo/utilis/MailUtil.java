@@ -20,13 +20,12 @@ public class MailUtil {
     @Autowired
     private UserRepository userRepository;
 
-    public void sendOtpEmail(String email, String otp) throws MessagingException {
+    public void sendOtpEmail(String fullName,String email, String otp) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         LocalDate today = LocalDate.now();
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new CustomNotFoundException("User Not Found By " + email));
 
-        String userName = user.getFirstName() + " " + user.getLastName();
+
+
 
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setTo(email);
@@ -100,7 +99,7 @@ public class MailUtil {
                 .append("\"")
                 .append(">")
                 .append("Hey ")
-                .append(userName)
+                .append(fullName)
                 .append("</p>")
                 .append("<p")
                 .append(" style=\"")
