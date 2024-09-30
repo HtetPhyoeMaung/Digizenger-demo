@@ -12,8 +12,9 @@ import java.io.IOException;
 
 public interface PostService  {
     ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException;
+    //ResponseEntity<Response> upload(String description, User user, MultipartFile multipartFile) throws IOException;
 
-    ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException;
+    ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType, User user, MultipartFile multipartFile, String imageName) throws IOException;
 
     ResponseEntity<?> deletePost(long id);
 

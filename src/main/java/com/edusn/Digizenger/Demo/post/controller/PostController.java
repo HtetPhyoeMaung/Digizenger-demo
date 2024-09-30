@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/digizenger/api/v1/posts")
+@RequestMapping("/api/v1/posts")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -26,22 +26,44 @@ public class PostController {
     private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
 
     @PostMapping("/upload")
-    public ResponseEntity<Response> upload(@RequestParam("description") String discription, @RequestParam("postType") Post.PostType postType, @RequestParam("file") MultipartFile multipartFile, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> upload(@RequestParam("description") String description
+            , @RequestParam("postType") Post.PostType postType
+            , @RequestParam("file") MultipartFile multipartFile
+            , HttpServletRequest request) throws IOException {
+
         String token = jwtService.getJWTFromRequest(request);
         String emailOrPhone = jwtService.extractUsername(token);
        User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
 
-        return postService.upload(discription,postType,user,multipartFile);
+        return postService.upload(description,postType,user,multipartFile);
     }
+//@PostMapping("/upload")
+//public ResponseEntity<Response> upload(@RequestParam("description") String description
+//
+//        , @RequestParam("file") MultipartFile multipartFile
+//        , HttpServletRequest request) throws IOException {
+//
+//    String token = jwtService.getJWTFromRequest(request);
+//    String emailOrPhone = jwtService.extractUsername(token);
+//    User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
+//
+//    return postService.upload(description,user,multipartFile);
+//}
+
     @PutMapping("/update-post/{id}")
-    public ResponseEntity<Response> updatePost(@PathVariable("id") Long id,@RequestParam("description") String discription, @RequestParam("postType") Post.PostType postType, @RequestParam("file") MultipartFile multipartFile,HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
+            ,@RequestParam("description") String discription
+            , @RequestParam("postType") Post.PostType postType
+            , @RequestParam("file") MultipartFile multipartFile
+            ,HttpServletRequest request, String imageName) throws IOException {
+
         String token = jwtService.getJWTFromRequest(request);
         String emailOrPhone = jwtService.extractUsername(token);
         User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
-        return  postService.updatePost(id,discription,postType,user,multipartFile);
+        return  postService.updatePost(id,discription,postType,user,multipartFile,imageName);
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteContent(@PathVariable("id") long id) {
+    public ResponseEntity<?> deletePost(@PathVariable("id") long id) {
 
         return postService.deletePost(id);
     }
@@ -51,8 +73,8 @@ public class PostController {
             @RequestParam(defaultValue = "10") int _limit) {
         return postService.getPostByPage(_page,_limit);
     }
-    @GetMapping("/image/{imageName}")
-    public ResponseEntity<Response> getImage(@PathVariable("imageName") String imageName) throws IOException {
+    @GetMapping("/image")
+    public ResponseEntity<Response> getImage(@RequestParam("imageName") String imageName) throws IOException {
         return postService.getImage(imageName);
     }
 }

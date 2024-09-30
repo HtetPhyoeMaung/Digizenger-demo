@@ -18,7 +18,7 @@ import com.edusn.Digizenger.Demo.auth.service.UserService;
 import jakarta.mail.MessagingException;
 @Slf4j
 @RestController
-@RequestMapping("/digizenger/api/v1/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired

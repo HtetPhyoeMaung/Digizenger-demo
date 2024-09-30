@@ -10,6 +10,7 @@ import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,13 @@ public  class PostServiceImpl implements PostService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
+    private StorageService storageService;
+    @Autowired
     private LikeRepository likeRepository;
     @Autowired
     private PostRepository postRepository;
 
-    private final String UPLOAD_DIR = "C:/Users/htetp/Desktop/upload-image/";
+
 
     @Override
     public ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException {
@@ -52,10 +55,8 @@ public  class PostServiceImpl implements PostService {
                     .user(user)
                     .build();
         }else {
-            String filename = multipartFile.getOriginalFilename()+ UUIDUtil.generateUUID();
-            Path filePath= Paths.get(UPLOAD_DIR,filename);
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath,multipartFile.getBytes());
+
+            String filename =storageService.uploadImage(multipartFile);
 
              post = Post.builder()
                     .description(description)
@@ -81,9 +82,46 @@ public  class PostServiceImpl implements PostService {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+//@Override
+//public ResponseEntity<Response> upload(String description, User user, MultipartFile multipartFile) throws IOException {
+//    Post post;
+//    if (multipartFile.isEmpty()) {
+//        post = Post.builder()
+//                .description(description)
+//                .viewsCount(0L)
+//                .createdDate(LocalDateTime.now())
+//                .user(user)
+//                .build();
+//    }else {
+//
+//        String filename =storageService.uploadImage(multipartFile);
+//
+//        post = Post.builder()
+//                .description(description)
+//                .createdDate(LocalDateTime.now())
+//                .imageName(filename)
+//                .viewsCount(0L)
+//                .user(user)
+//                .build();
+//    }
+//
+//
+//    postRepository.save(post);
+//    PostDto postDto=convertToPostDto(post);
+//
+//    postDto.setUserDto(modelMapper.map(user, UserDto.class));
+//    Long likeCount = likeRepository.findByPost(post).stream().count();
+//    postDto.setLikeCount(likeCount);
+//    Response response = Response.builder()
+//            .statusCode(HttpStatus.CREATED.value())
+//            .message("Post created successfully")
+//            .postDto(postDto)
+//            .build();
+//    return new ResponseEntity<>(response, HttpStatus.CREATED);
+//}
 
     @Override
-    public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
         Post  post = postRepository.findById(id)
                 .map(existPost -> {
                     existPost.setDescription(description);
@@ -94,11 +132,9 @@ public  class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new PostNotFoundException("Post not found by " + id));
         if (!multipartFile.isEmpty()) {
 
-            String filename = multipartFile.getOriginalFilename()+ UUIDUtil.generateUUID();
-            Path filePath= Paths.get(UPLOAD_DIR,filename);
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath,multipartFile.getBytes());
-            post.setImageName(filename);
+           String newImageName = storageService.updateImage(multipartFile,imageName);
+
+            post.setImageName(newImageName);
 
         }
 
@@ -149,8 +185,7 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> getImage(String imageName) throws IOException {
-       Path imagePath = Paths.get(UPLOAD_DIR,imageName);
-       byte[] imageBytes = Files.readAllBytes(imagePath);
+      byte[] imageBytes = storageService.getImageByName(imageName);
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
                .imageByte(imageBytes)

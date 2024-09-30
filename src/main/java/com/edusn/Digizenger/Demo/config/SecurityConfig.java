@@ -43,7 +43,7 @@ public class SecurityConfig {
        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> request.requestMatchers("/digizenger/api/v1/auth/**","/digizenger/api/v1/test/**",
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/auth/**","/api/v1/test/**",
 
                                         "/v2/api-docs",
                                         "/v3/api-docs",
@@ -59,9 +59,10 @@ public class SecurityConfig {
 
 
 
-                                .requestMatchers("/digizenger/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/digizenger/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
-                                .requestMatchers("/digizenger/api/v1/super/**").hasAnyAuthority(Role.SUPER.name(),Role.ADMIN.name())
+                                .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
+                                .requestMatchers("/api/v1/posts/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
+                        .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
+                                .requestMatchers("/api/v1/super/**").hasAnyAuthority(Role.SUPER.name(),Role.ADMIN.name())
                         .anyRequest().authenticated()
                         )
                .exceptionHandling(handler->handler.authenticationEntryPoint(jwtAuthEntryPoint))
