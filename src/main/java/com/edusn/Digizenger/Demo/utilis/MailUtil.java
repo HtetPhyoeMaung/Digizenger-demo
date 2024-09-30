@@ -1,5 +1,8 @@
 package com.edusn.Digizenger.Demo.utilis;
 
+import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,17 @@ import java.time.LocalDate;
 public class MailUtil {
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private UserRepository userRepository;
 
     public void sendOtpEmail(String email, String otp) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         LocalDate today = LocalDate.now();
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new CustomNotFoundException("User Not Found By " + email));
+
+        String userName = user.getFirstName() + " " + user.getLastName();
+
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("Verify OTP");
@@ -43,9 +53,9 @@ public class MailUtil {
                 .append("<tr style=\"height: 0;\">")
                 .append("<td>")
                 .append("<img")
+                .append(" style=\"max-width: 20%; height: auto;\"") // Make the image responsive
                 .append(" alt=\"\"")
                 .append(" src=\"cid:logoImage\"") // Use cid to reference the embedded image
-                .append(" height=\"30px\"")
                 .append(" />")
                 .append("</td>")
                 .append("<td style=\"text-align: right;\">")
@@ -89,7 +99,8 @@ public class MailUtil {
                 .append("font-weight: 500;")
                 .append("\"")
                 .append(">")
-                .append("Hey Tomy,")
+                .append("Hey ")
+                .append(userName)
                 .append("</p>")
                 .append("<p")
                 .append(" style=\"")
@@ -219,4 +230,5 @@ public class MailUtil {
 
         javaMailSender.send(mimeMessage);
     }
+
 }
