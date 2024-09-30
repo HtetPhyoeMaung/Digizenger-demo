@@ -46,7 +46,8 @@ public class User {
     private LocalDateTime retiredDate;
 
     private LocalDateTime otpGeneratedTime;
-
+    @Transient
+    private int followers=11;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
 

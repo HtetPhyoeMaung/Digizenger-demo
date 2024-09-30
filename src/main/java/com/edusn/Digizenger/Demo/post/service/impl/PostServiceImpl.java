@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -165,19 +166,26 @@ public  class PostServiceImpl implements PostService {
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
-
+        List<User>userList = new LinkedList<>();
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
 
         for(Post post:postPage){
             post.setViewsCount(post.getViewsCount()+1);
-
+            userList.add(post.getUser());
         }
+        List<UserDto>userDtoList=userList.stream()
+                .map(user -> new UserDto
+                        (user.getFirstName(),
+                                user.getLastName(),
+                                user.getFollowers()))
+                .toList();
         List<PostDto> postDtoList= postPage.getContent().stream()
                 .map(PostServiceImpl::convertToPostDto)
                 .toList();
         Response response=Response.builder()
                 .postDtoList(postDtoList)
+                .userDtoList(userDtoList)
                 .statusCode(HttpStatus.OK.value())
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
