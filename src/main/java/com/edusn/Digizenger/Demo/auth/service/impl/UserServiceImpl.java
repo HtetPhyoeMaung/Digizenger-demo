@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
                 user.setDateOfBirth(request.getDateOfBirth());
                 user.setOtp(otp);
                 user.setPhone(request.getPhone());
-                user.setRole(Role.USER);
+                user.setRole(Role.USER.name());
                 user.setOtpGeneratedTime(LocalDateTime.now());
                 user.setAddress(address);
                 user.setGender(User.Gender.valueOf(request.getGender()));
@@ -134,6 +134,7 @@ public class UserServiceImpl implements UserService {
         otp = otpUtil.generateOtp();
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
+        mailUtil.sendOtpEmail(emailOrPhone,otp);
         userRepository.save(user);
         // response
 

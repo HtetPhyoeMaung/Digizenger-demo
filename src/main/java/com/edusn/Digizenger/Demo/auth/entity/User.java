@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private Role role;
+    private String role;
 
     private String otp;
 

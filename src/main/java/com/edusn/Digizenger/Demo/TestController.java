@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/digizenger/api/v1/test")
+@RequestMapping("/api/v1/test")
 public class TestController {
    @GetMapping("/serverTest")
     public ResponseEntity<Response> getServerTest()  {
