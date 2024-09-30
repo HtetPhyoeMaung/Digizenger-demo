@@ -1,15 +1,13 @@
-package com.edusn.Digizenger.Demo.profile.service.impl;
+package com.edusn.Digizenger.Demo.profile.service.impl.cover_image;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.CoverImageNotFoundException;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.CoverImageService;
-import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Service
@@ -25,24 +22,15 @@ import java.io.IOException;
 public class CoverImageServiceImpl implements CoverImageService {
 
     private final ProfileRepository profileRepository;
-    private final JWTService jwtService;
-    private final UserRepository userRepository;
     private final StorageService storageService;
+    private final GetUserByRequest getUserByRequest;
 
     @Override
     public ResponseEntity<Response> uploadCoverImage(MultipartFile file, HttpServletRequest request) throws IOException {
 
         String fileName = storageService.uploadImage(file);
 
-        /* Get Token form Header */
-        String token = jwtService.getJWTFromRequest(request);
-
-        /* Get Email from token */
-        String email = jwtService.extractUsername(token);
-
-        /* Get user find by email */
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException("user cannot found by email : " + email));
+        User user = getUserByRequest.getUser(request);
 
         Profile profile = profileRepository.findByUser(user);
 
@@ -61,13 +49,8 @@ public class CoverImageServiceImpl implements CoverImageService {
     @Override
     public ResponseEntity<Response> deleteCoverImage(HttpServletRequest request){
 
-        /* Get Token form Header */
-        String token = jwtService.getJWTFromRequest(request);
-        /* Get Email from token */
-        String email = jwtService.extractUsername(token);
-        /* Get user find by email */
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException("user cannot found by email : " + email));
+        User user = getUserByRequest.getUser(request);
+
         Profile profile = profileRepository.findByUser(user);
 
         if(profile.getCoverImageName() == null) throw new CoverImageNotFoundException("Image cannot found by name : "+ profile.getCoverImageName());
@@ -86,13 +69,9 @@ public class CoverImageServiceImpl implements CoverImageService {
 
     @Override
     public ResponseEntity<Response> updateCoverImage(MultipartFile file, HttpServletRequest request) throws IOException {
-        /* Get Token form Header */
-        String token = jwtService.getJWTFromRequest(request);
-        /* Get Email from token */
-        String email = jwtService.extractUsername(token);
-        /* Get user find by email */
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException("user cannot found by email : " + email));
+
+        User user = getUserByRequest.getUser(request);
+
         Profile profile = profileRepository.findByUser(user);
 
         if(profile.getCoverImageName() == null) throw new CoverImageNotFoundException("can't found cover image ");

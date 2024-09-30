@@ -4,9 +4,9 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
-public interface BioProfileService {
+public interface ProfileCareerService {
 
-    ResponseEntity<Response> uploadBio(String bio, HttpServletRequest request);
+    ResponseEntity<Response> uploadCareer(String careerName, HttpServletRequest request);
 
-    ResponseEntity<Response> removeBio(HttpServletRequest request);
+    ResponseEntity<Response> removeCareer(HttpServletRequest request);
 }

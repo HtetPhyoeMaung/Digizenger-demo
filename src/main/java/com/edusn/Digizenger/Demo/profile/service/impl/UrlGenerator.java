@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class UrlGenerator {
 
-    private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int LENGTH = 9;
     private static final Random RANDOM = new SecureRandom();
 

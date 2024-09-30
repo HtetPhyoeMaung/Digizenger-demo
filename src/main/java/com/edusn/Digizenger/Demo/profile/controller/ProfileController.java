@@ -42,7 +42,7 @@ public class ProfileController {
     /** Profile Image **/
 
     @PostMapping("/p-image/upload")
-    public ResponseEntity<Response> uploadProfileImage(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> uploadProfileImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         return profileImageService.uploadProfileImage(file, request);
     }
 
@@ -52,14 +52,14 @@ public class ProfileController {
     }
 
     @PutMapping("/p-image/update")
-    public ResponseEntity<Response> updateProfileImage(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> updateProfileImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         return  profileImageService.updateProfileImage(file, request);
     }
 
     /** Cover Image **/
 
     @PostMapping("/c-image/upload")
-    public ResponseEntity<Response> uploadCoverImage(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> uploadCoverImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         return coverImageService.uploadCoverImage(file, request);
     }
 
@@ -69,7 +69,7 @@ public class ProfileController {
     }
 
     @PutMapping("/c-image/update")
-    public ResponseEntity<Response> updateCoverImage(@RequestPart("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> updateCoverImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         return coverImageService.updateCoverImage(file, request);
     }
 
