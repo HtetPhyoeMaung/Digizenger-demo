@@ -16,6 +16,7 @@ import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final OtherProfileService otherProfileService;
     private final StorageService storageService;
     private final GetUserByRequest getUserByRequest;
-
+    @Value("${app.profileUrl}")
+    private String profileUrl;
     /** Create profile **/
     @Override
     public void createUserProfile(User user) {
@@ -41,11 +43,10 @@ public class ProfileServiceImpl implements ProfileService {
         /* Create profile object */
         Profile profile = new Profile();
         String randomString = UrlGenerator.generateRandomString();
-        profile.setProfileLinkUrl("http://localhost:8080/api/v1/profile/"+randomString);
+        profile.setProfileLinkUrl(profileUrl+randomString);
         profile.setUser(user);
         profileRepository.save(profile);
     }
-
 
     /** Get Logged-in user's Profile **/
     @Override
@@ -55,7 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findByUser(user);
 
         if(profile.getUsername() != null){
-            profile.setProfileLinkUrl("http://localhost:8080/api/v1/profile/"+profile.getUsername());
+            profile.setProfileLinkUrl(profileUrl+profile.getUsername());
             profileRepository.save(profile);
         }
 
@@ -93,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl() == "http://localhost:8080/api/v1/profile/"+profileUrl){
+        if(profile.getProfileLinkUrl() == profileUrl+profileUrl){
             return showUserProfile(request);
         }
         else {

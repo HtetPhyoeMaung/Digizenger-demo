@@ -5,8 +5,8 @@ spring:
       port:8080
   datasource:
     url: jdbc:mysql://localhost:3306/digizenger
-    username: root
-    password: ggwpnoob321
+    username: zues
+    password: hello
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -32,3 +32,6 @@ spring:
           auth: true
           starttls:
             enable: true
+
+app:
+  profileUrl: http://localhost:8080/api/v1/profile/

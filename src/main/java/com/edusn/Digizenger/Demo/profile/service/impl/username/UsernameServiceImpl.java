@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.profile.service.impl.UrlGenerator;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +21,8 @@ public class UsernameServiceImpl implements UsernameService {
 
     private final GetUserByRequest getUserByRequest;
     private final ProfileRepository profileRepository;
+    @Value("${app.profileUrl}")
+    private String profileUrl;
 
     @Override
     public ResponseEntity<Response> uploadUsername(String username, HttpServletRequest request) {
@@ -45,7 +48,7 @@ public class UsernameServiceImpl implements UsernameService {
             throw new UsernameNotFoundException("username not found by : "+ profile.getUsername());
         profile.setUsername(null);
         String randomString = UrlGenerator.generateRandomString();
-        profile.setProfileLinkUrl("http://localhost");
+        profile.setProfileLinkUrl(profileUrl+randomString);
         profileRepository.save(profile);
 
         Response response = Response.builder()
