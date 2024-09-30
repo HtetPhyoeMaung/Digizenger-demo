@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 public class ProfileDto {
     private Long id;
     private String profileCareer;
-    private String profileImgUrl;
-    private String coverImageUrl;
+    private String profileImageName;
+    private String coverImageName;
     private String username;
     private String profileLinkUrl;
     private String bio;
-    private UserProfileDto userProfileDto;
+    private UserForProfileDto userForProfileDto;
     private AboutDto aboutDto;
 }

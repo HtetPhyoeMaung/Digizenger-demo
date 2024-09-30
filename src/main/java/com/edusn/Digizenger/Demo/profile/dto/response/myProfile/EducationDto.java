@@ -17,7 +17,7 @@ public class EducationDto {
     private Long id;
     private String universityName;
     private String degreeName;
-    private String universityLogoUrl;
+    private String universityLogoName;
     private LocalDate joinDate;
     private LocalDate endDate;
 }

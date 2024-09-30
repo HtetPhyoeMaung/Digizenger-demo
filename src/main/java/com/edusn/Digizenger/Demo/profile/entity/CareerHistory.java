@@ -33,7 +33,7 @@ public class CareerHistory {
     private LocalDate endDate;
 
     @Column(name = "company_logo_url")
-    private String companyLogoUrl;
+    private String companyLogoName;
 
     @ManyToOne
     @JoinColumn(name = "about_id")

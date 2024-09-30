@@ -19,5 +19,5 @@ public class CareerHistoryDto {
     private String companyName;
     private LocalDate joinDate;
     private LocalDate endDate;
-    private String companyImgUrl;
+    private String companyLogoName;
 }

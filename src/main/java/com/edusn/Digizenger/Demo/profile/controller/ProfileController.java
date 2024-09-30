@@ -1,27 +1,23 @@
 package com.edusn.Digizenger.Demo.profile.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
-import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.profile.service.CoverImageService;
+import com.edusn.Digizenger.Demo.profile.service.ProfileImageService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
-import com.edusn.Digizenger.Demo.security.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/digizenger/api/v1/profile/")
+@RequestMapping("/api/v1/profile/")
 public class ProfileController {
 
-    private final JWTService jwtService;
-    private final UserRepository userRepository;
     private final ProfileService profileService;
+    private final ProfileImageService profileImageService;
+    private final CoverImageService coverImageService;
 
     @GetMapping("/test")
     public String test(){
@@ -40,6 +36,15 @@ public class ProfileController {
         return profileService.getProfileByProfileUrlLink(username,request);
     }
 
+    @PostMapping("/p-image/upload")
+    public ResponseEntity<Response> uploadProfileImage(@RequestPart("file") MultipartFile file, HttpServletRequest request){
+        return profileImageService.uploadProfileImage(file, request);
+    }
+
+    @PostMapping("/c-image/upload")
+    public ResponseEntity<Response> uploadCoverImage(@RequestPart("file") MultipartFile file, HttpServletRequest request){
+        return coverImageService.uploadCoverImage(file, request);
+    }
 
 
 }

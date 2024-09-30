@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class OtherProfileDto {
     private Long id;
     private String profileCareer;
-    private String profileImgUrl;
-    private String coverImageUrl;
+    private String profileImageName;
+    private String coverImageName;
     private String username;
     private String profileLinkUrl;
     private String bio;
-    private OtherUserProfileDto otherUserProfileDto;
+    private OtherUserForProfileDto otherUserForProfileDto;
     private AboutDto aboutDto;
 }

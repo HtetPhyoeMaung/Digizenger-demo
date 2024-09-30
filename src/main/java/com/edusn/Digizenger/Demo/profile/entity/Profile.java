@@ -21,18 +21,17 @@ public class Profile {
 
     private String profileCareer;
 
-    @Column(name = "profile_img_url")
-    private String profileImgUrl;
+    @Column(name = "profile_image_name")
+    private String profileImageName;
 
-    @Column(name = "cover_img_url")
-    private String coverImgUrl;
+    @Column(name = "cover_image_name")
+    private String coverImageName;
 
     private String username;
 
     @Column(name = "profile_link_url")
     private String profileLinkUrl;
 
-    @Column(length = 255)
     private String bio;
 
     @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)

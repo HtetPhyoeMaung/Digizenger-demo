@@ -27,7 +27,7 @@ public class Education {
     private String degreeName;
 
     @Column(name = "university_logo_url")
-    private String universityLogoUrl;
+    private String universityLogoName;
 
     @Column(nullable = false)
     private LocalDate joinDate;
