@@ -29,10 +29,7 @@ public class SecurityConfig {
     //hello
     @Autowired
     private UserDetailServiceForUser userDetailsService;
-//    @Autowired
-//    private UserDetailServiceForAdmin userDetailServiceForAdmin;
-//    @Autowired
-//    private UserDetailServiceForSuper userDetailServiceForSuper;
+
 
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;

@@ -24,11 +24,13 @@ public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String content;
+    private String description;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Boolean isPublic;
+    private PostType postType;
     private Long viewsCount;
+
+    private String imageName;
 
 
 
@@ -42,9 +44,13 @@ public class Post implements Serializable {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<Like> likes;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "post")
-    private List<Media> media;
 
 
+   public enum PostType{
+       EVERYONE,
+       NEIGHORS,
+       FOLLOWERS,
+
+   }
 
 }

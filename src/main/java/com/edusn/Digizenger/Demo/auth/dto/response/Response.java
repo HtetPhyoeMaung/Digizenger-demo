@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,7 +24,11 @@ public class Response {
     private String  role;
 
     private String otp;
-    private List<PostDto> postDto;
+    private List<PostDto> postDtoList;
+
+    private byte[] imageByte;
+
+    private PostDto postDto;
 
 
     private String expirationDate;

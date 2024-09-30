@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.post.dto;
 
+import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,12 +17,13 @@ import java.util.List;
 public class PostDto {
 
     private Long id;
-    private String content;
+    private String description;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Boolean isPublic;
+    private Post.PostType postType;
+    private String imageName;
     private UserDto userDto;
     private Long likeCount;
     private Long viewCount;
-    private List<MediaDto> mediaDtos;
+
 }
