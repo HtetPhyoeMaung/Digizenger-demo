@@ -6,14 +6,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+
 public interface ProfileService {
 
     /* create user profiles */
-    void createUserProfile(HttpServletRequest request);
+    void createUserProfile(User user);
 
     /* To see the user's profile data */
-    ResponseEntity<Response> showUserProfile(HttpServletRequest request);
+    ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException;
 
     /* To get the profile by profile url link */
-    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request);
+    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException;
 }

@@ -7,12 +7,14 @@ import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileD
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +23,11 @@ import java.util.stream.Collectors;
 public class OtherProfileServiceImpl implements OtherProfileService {
 
     private final ModelMapper modelMapper;
+    private final StorageService storageService;
 
     @Override
-    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile) {
+    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile) throws IOException {
+
         /* to get other user */
         User otherUser = otherProfile.getUser();
 
@@ -43,6 +47,18 @@ public class OtherProfileServiceImpl implements OtherProfileService {
 
         /* Now save otherUserProfileDto to otherProfileDto */
         otherProfileDto.setOtherUserForProfileDto(otherUserForProfileDto);
+
+    if(otherProfileDto.getProfileImageName() != null){
+        otherProfileDto.setProfileImageByte(
+                storageService.getImageByName(otherProfileDto.getProfileImageName())
+        );
+    }
+
+    if(otherProfileDto.getCoverImageName() != null){
+        otherProfileDto.setCoverImageByte(
+                storageService.getImageByName(otherProfileDto.getCoverImageName())
+        );
+    }
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

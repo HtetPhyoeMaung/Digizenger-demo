@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
 import com.edusn.Digizenger.Demo.auth.service.UserService;
@@ -54,6 +55,8 @@ public class UserServiceImpl implements UserService {
     private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ProfileService profileService;
     private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
 
 
@@ -110,7 +113,12 @@ public class UserServiceImpl implements UserService {
         User user=checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
         if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(1*60)){
             user.setActivated(true);
+
             userRepository.save(user);
+
+            /* Create user's profile */
+            profileService.createUserProfile(user);
+
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
                     .message("Successfully Registered!")

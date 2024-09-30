@@ -15,7 +15,9 @@ public class ProfileDto {
     private Long id;
     private String profileCareer;
     private String profileImageName;
+    private byte[] profileImageByte;
     private String coverImageName;
+    private byte[] coverImageByte;
     private String username;
     private String profileLinkUrl;
     private String bio;

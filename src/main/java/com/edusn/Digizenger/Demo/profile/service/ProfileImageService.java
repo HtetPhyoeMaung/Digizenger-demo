@@ -5,9 +5,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface ProfileImageService {
-    ResponseEntity<Response> uploadProfileImage(MultipartFile file, HttpServletRequest request);
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-    interface AboutProfileService {
-    }
+public interface ProfileImageService {
+
+    ResponseEntity<Response> uploadProfileImage(MultipartFile file, HttpServletRequest request) throws IOException;
+
+    ResponseEntity<Response> deleteProfileImage(HttpServletRequest request);
+
+    ResponseEntity<Response> updateProfileImage(MultipartFile file, HttpServletRequest request) throws IOException;
+
 }
