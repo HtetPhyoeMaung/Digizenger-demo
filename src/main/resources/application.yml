@@ -1,11 +1,12 @@
 spring:
   application:
     name: Digizenger-Demo
-
+    server:
+      port:8080
   datasource:
     url: jdbc:mysql://localhost:3306/digizenger
-    username: zues
-    password: hello
+    username: root
+    password: ggwpnoob321
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

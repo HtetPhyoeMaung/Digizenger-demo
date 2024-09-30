@@ -42,7 +42,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-               .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/auth/**","/api/v1/test/**",
 
                                         "/v2/api-docs",
