@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +33,7 @@ public class Profile {
 
     private String username;
 
-    @Column(name = "profile_link_url")
+    @Column(name = "profile_link_url", unique = true)
     private String profileLinkUrl;
 
     private String bio;
@@ -38,6 +42,27 @@ public class Profile {
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToOne(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private About about;
+    @ManyToMany
+    @JoinTable(
+            name = "profile_careerHistory",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "career_history_id")
+    )
+    private List<CareerHistory> careerHistoryList = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_education",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "education_id")
+    )
+    private List<Education> educationList = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_serviceProvided",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_provided_id")
+    )
+    private List<ServiceProvided> serviceProvidedList = new ArrayList<>();
 }

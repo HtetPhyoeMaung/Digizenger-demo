@@ -5,14 +5,17 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
+import com.edusn.Digizenger.Demo.profile.entity.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
+import com.edusn.Digizenger.Demo.utilis.UrlConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +85,21 @@ public class ProfileServiceImpl implements ProfileService {
             );
         }
 
+        /** For CareerHistory **/
+        if(!profile.getCareerHistoryList().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
+                    careerHistory -> {
+                    CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
+                    try {
+                        careerHistoryDto.setCompanyLogoUrl(UrlConverter.convertToUrl(careerHistory.getCompanyLogoUrl()));
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return careerHistoryDto;
+            }).collect(Collectors.toList());
+            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+        }
+
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully showed existed profile data..")
@@ -94,7 +113,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
+        if(profile.getProfileLinkUrl() == baseProfileUrl+profileUrl){
             return showUserProfile(request);
         }
         else {

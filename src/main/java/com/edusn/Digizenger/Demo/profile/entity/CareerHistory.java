@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -26,16 +28,20 @@ public class CareerHistory {
     @Column(nullable = false)
     private String companyName;
 
+    private String companyLogoName;
+
+    @Column(length = 512)
+    private String companyLogoUrl;
+
     @Column(nullable = false)
     private LocalDate joinDate;
 
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "company_logo_url")
-    private String companyLogoName;
+    @Enumerated(EnumType.STRING)
+    private Present present;
 
-    @ManyToOne
-    @JoinColumn(name = "about_id")
-    private About about;
+    @ManyToMany(mappedBy = "careerHistoryList")
+    private List<Profile> profileList = new ArrayList<>();
 }

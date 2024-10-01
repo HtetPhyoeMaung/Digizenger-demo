@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.profile.service.*;
+import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class ProfileController {
     private final BioProfileService bioProfileService;
     private final UsernameService usernameService;
     private final ProfileCareerService profileCareerService;
+    private final AboutCareerHistoryService careerHistoryService;
 
     @GetMapping("/test")
     public String test(){
@@ -110,6 +113,33 @@ public class ProfileController {
         return profileCareerService.removeCareer(request);
     }
 
+    /** Career History **/
+    @PostMapping("/career-history")
+    public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
+                                                        @RequestParam("careerName") String careerName,
+                                                        @RequestParam("companyName") String companyName,
+                                                        @RequestParam("companyLogo") MultipartFile companyLogo,
+                                                        @RequestParam("joinDate") LocalDate joinDate,
+                                                        @RequestParam("endDate") LocalDate endDate,
+                                                        @RequestParam("present") String present) throws IOException {
+        return careerHistoryService.uploadCareerHistory(request, careerName, companyName, companyLogo, joinDate, endDate, present);
+    }
 
+    @PutMapping("/career-history")
+    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
+                                                        @RequestParam("id") Long id,
+                                                        @RequestParam("careerName") String careerName,
+                                                        @RequestParam("companyName") String companyName,
+                                                        @RequestParam("companyLogo") MultipartFile companyLogo,
+                                                        @RequestParam("joinDate") LocalDate joinDate,
+                                                        @RequestParam("endDate") LocalDate endDate,
+                                                        @RequestParam("present") String present) throws IOException {
+        return careerHistoryService.updateCareerHistory(request, id, careerName, companyName, companyLogo, joinDate, endDate, present);
+    }
 
+    @DeleteMapping("/career-history/{id}")
+    public ResponseEntity<Response> removeCareerHistory(HttpServletRequest request,
+                                                        @PathVariable("id") Long id){
+        return careerHistoryService.removeCareerHistoryById(request, id);
+    }
 }

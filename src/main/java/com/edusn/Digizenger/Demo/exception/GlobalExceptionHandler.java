@@ -115,6 +115,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CareerHistoryNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> CareerHistoryNotFoundHandler(CareerHistoryNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> badRequestHandler(Exception ex){
         CustomErrorResponse response = CustomErrorResponse.builder()

@@ -5,8 +5,8 @@ spring:
       port:8080
   datasource:
     url: jdbc:mysql://localhost:3306/digizenger
-    username: venzee
-    password: 2472004
+    username: zues
+    password: hello
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
