@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto {
     private String firstName;
+
     private String lastName;
-    private Integer followers;
+    private int followers;
 
 }

@@ -7,6 +7,7 @@ import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
+import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,20 +25,32 @@ public class PostController {
     private JWTService jwtService;
     @Autowired
     private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
+    @Autowired
+    private GetUserByRequest getUserByRequest;
 
     @PostMapping("/upload")
     public ResponseEntity<Response> upload(@RequestParam("description") String description
             , @RequestParam("postType") Post.PostType postType
-            , @RequestParam("file") MultipartFile multipartFile
+            , @RequestParam(value = "file",required = false) MultipartFile multipartFile
             , HttpServletRequest request) throws IOException {
 
-        String token = jwtService.getJWTFromRequest(request);
-        String emailOrPhone = jwtService.extractUsername(token);
-       User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
+        User user= getUserByRequest.getUser(request);
+        if(multipartFile==null || multipartFile.isEmpty()){
+            return postService.upload(description,postType,user,null);
 
+        }
         return postService.upload(description,postType,user,multipartFile);
     }
 
+//    @PostMapping("upload-with-image")
+//    public ResponseEntity<Response> upload(@RequestParam("description") String description
+//            , @RequestParam("postType") Post.PostType postType
+//             ,HttpServletRequest request) throws IOException {
+//
+//        User user= getUserByRequest.getUser(request);
+//
+//        return postService.upload(description,postType,user,multipartFile);
+//    }
 
     @PutMapping("/update-post/{id}")
     public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
@@ -46,9 +59,8 @@ public class PostController {
             , @RequestParam("file") MultipartFile multipartFile
             ,HttpServletRequest request, String imageName) throws IOException {
 
-        String token = jwtService.getJWTFromRequest(request);
-        String emailOrPhone = jwtService.extractUsername(token);
-        User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
+
+        User user= getUserByRequest.getUser(request);
         return  postService.updatePost(id,discription,postType,user,multipartFile,imageName);
     }
     @DeleteMapping("/delete/{id}")
