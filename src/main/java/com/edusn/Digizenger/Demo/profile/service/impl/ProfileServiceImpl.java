@@ -35,7 +35,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final StorageService storageService;
     private final GetUserByRequest getUserByRequest;
     @Value("${app.profileUrl}")
-    private String profileUrl;
+    private String baseProfileUrl;
     /** Create profile **/
     @Override
     public void createUserProfile(User user) {
@@ -43,7 +43,7 @@ public class ProfileServiceImpl implements ProfileService {
         /* Create profile object */
         Profile profile = new Profile();
         String randomString = UrlGenerator.generateRandomString();
-        profile.setProfileLinkUrl(profileUrl+randomString);
+        profile.setProfileLinkUrl(baseProfileUrl+randomString);
         profile.setUser(user);
         profileRepository.save(profile);
     }
@@ -56,7 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findByUser(user);
 
         if(profile.getUsername() != null){
-            profile.setProfileLinkUrl(profileUrl+profile.getUsername());
+            profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
             profileRepository.save(profile);
         }
 
@@ -64,19 +64,19 @@ public class ProfileServiceImpl implements ProfileService {
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
         if(profile.getUser().getPosts() != null){
             List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(
-                    post -> PostServiceImpl.convertToPostDto(post)
+                    PostServiceImpl::convertToPostDto
             ).collect(Collectors.toList());
             userForProfileDto.setPostDtoList(postDtoList);
         }
 
         existProfileDto.setUserForProfileDto(userForProfileDto);
         if(existProfileDto.getProfileImageName() != null){
-            existProfileDto.setProfileImageByte(
+            existProfileDto.setProfileImageUrl(
                     storageService.getImageByName(existProfileDto.getProfileImageName())
             );
         }
         if(existProfileDto.getCoverImageName() != null){
-            existProfileDto.setCoverImageByte(
+            existProfileDto.setCoverImageUrl(
                     storageService.getImageByName(existProfileDto.getCoverImageName())
             );
         }
@@ -94,11 +94,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl() == profileUrl+profileUrl){
+        if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
             return showUserProfile(request);
         }
         else {
-            Profile otherProfile = profileRepository.findByProfileLinkUrl("http://localhost:8080/api/v1/profile/"+profileUrl);
+            Profile otherProfile = profileRepository.findByProfileLinkUrl(baseProfileUrl+profileUrl);
             if(otherProfile == null){throw new ProfileNotFoundException("profile cannot found by url : "+profile.getProfileLinkUrl());}
             return otherProfileService.showOtherUserProfile(otherProfile);
         }

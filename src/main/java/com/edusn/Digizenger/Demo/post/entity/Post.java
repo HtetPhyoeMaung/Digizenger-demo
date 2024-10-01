@@ -30,6 +30,7 @@ public class Post implements Serializable {
     private PostType postType;
     private Long viewsCount;
 
+
     private String imageName;
 
 
@@ -43,6 +44,9 @@ public class Post implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<Like> likes;
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    private List<View> viewList;
 
 
 

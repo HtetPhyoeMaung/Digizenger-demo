@@ -23,9 +23,8 @@ public class GetUserByRequest {
         String email = jwtService.extractUsername(token);
 
         /* Get user find by email */
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("user cannot found by email : " + email));
 
-        return user;
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("user cannot found by email : " + email));
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post,Long> {
+public interface ViewRepository extends JpaRepository<View,Long> {
+    Optional<View> findByPostAndUser(Post post, User user);
+    Long countByPost(Post post);
 
 }

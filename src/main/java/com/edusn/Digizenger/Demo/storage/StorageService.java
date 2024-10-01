@@ -6,19 +6,19 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.amazonaws.util.IOUtils;
+
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.stereotype.Service;
 import com.amazonaws.services.s3.AmazonS3;
 
 import java.io.IOException;
-import java.util.List;
+import java.net.URL;
 
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+
+
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.stream.Collectors;
+
 
 @Service
 public class StorageService {
@@ -42,14 +42,7 @@ public class StorageService {
                 .build();
     }
 
-    public List<String> getImageFileName() {
-        ListObjectsV2Result result = space.listObjectsV2(BUCKET_NAME);
-        List<S3ObjectSummary> objects = result.getObjectSummaries();
 
-        return objects.stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
-    }
 
     public String  uploadImage(MultipartFile file) throws IOException {
         String filename = UUIDUtil.generateUUID()+file.getOriginalFilename();
@@ -60,10 +53,11 @@ public class StorageService {
     return filename;
     }
 
-    public byte[] getImageByName(String imageName) throws IOException {
-        S3Object s3Object = space.getObject(BUCKET_NAME, imageName);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        return IOUtils.toByteArray(inputStream);
+    public URL getImageByName(String imageName) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(BUCKET_NAME, imageName);
+
+        return space.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
     public String  updateImage(MultipartFile file, String filename) throws IOException {
