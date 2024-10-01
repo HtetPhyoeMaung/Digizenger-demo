@@ -36,7 +36,7 @@ public class PostController {
 
         User user= getUserByRequest.getUser(request);
         if(multipartFile==null || multipartFile.isEmpty()){
-            return postService.upload(description,postType,user,null);
+              return postService.upload(description,postType,user,null);
 
         }
         return postService.upload(description,postType,user,multipartFile);

@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ public class OtherProfileServiceImpl implements OtherProfileService {
     private final StorageService storageService;
 
     @Override
-    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile) throws IOException {
+    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile)  {
 
         User otherUser = otherProfile.getUser();
         OtherUserForProfileDto otherUserForProfileDto = modelMapper.map(otherUser, OtherUserForProfileDto.class);
@@ -40,12 +40,12 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         otherProfileDto.setOtherUserForProfileDto(otherUserForProfileDto);
 
         if(otherProfileDto.getProfileImageName() != null){
-            otherProfileDto.setProfileImageByte(
+            otherProfileDto.setProfileImageUrl(
                     storageService.getImageByName(otherProfileDto.getProfileImageName())
             );
         }
         if(otherProfileDto.getCoverImageName() != null){
-            otherProfileDto.setCoverImageByte(
+            otherProfileDto.setCoverImageUrl(
                     storageService.getImageByName(otherProfileDto.getCoverImageName())
             );
         }

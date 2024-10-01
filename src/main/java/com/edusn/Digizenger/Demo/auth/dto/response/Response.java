@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
+import java.net.URL;
 import java.util.List;
 
 @Data
@@ -28,7 +29,7 @@ public class Response {
     private String otp;
     private List<PostDto> postDtoList;
     private List<UserDto> userDtoList;
-    private byte[] imageByte;
+    private URL imageUrl;
 
     private PostDto postDto;
 

@@ -30,6 +30,7 @@ public class Post implements Serializable {
     private PostType postType;
     private Long viewsCount;
 
+
     private String imageName;
 
 
