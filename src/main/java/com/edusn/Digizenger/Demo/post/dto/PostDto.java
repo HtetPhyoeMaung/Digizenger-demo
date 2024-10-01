@@ -26,7 +26,7 @@ public class PostDto {
     private String imageName;
     private URL imageUrl;
     private URL vedioUrl;
-    private UserDto useDto;
+    private UserDto userDto;
     private Long likeCount;
     private Long viewCount;
 

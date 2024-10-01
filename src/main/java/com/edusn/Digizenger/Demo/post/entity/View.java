@@ -7,33 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 @Entity
 @Data
-@Table(name = "likes")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Like implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+@Table(name = "view")
+public class View {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Boolean isLike;
-
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
+    private  Long id;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
-
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "post_id")
+    private  Post post;
 }

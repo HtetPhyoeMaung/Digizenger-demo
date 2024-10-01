@@ -7,15 +7,14 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
+import com.edusn.Digizenger.Demo.post.entity.View;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
+import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
-import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
-import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,16 +25,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public  class PostServiceImpl implements PostService {
@@ -48,7 +42,7 @@ public  class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private ProfileRepository profileRepository;
+    private ViewRepository viewRepository;
 
 
 
@@ -81,7 +75,7 @@ public  class PostServiceImpl implements PostService {
 
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-        postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+
         postDto.setUserDto(modelMapper.map(user, UserDto.class));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
@@ -118,14 +112,9 @@ public  class PostServiceImpl implements PostService {
         post.setUser(user);
         postRepository.save(post);  // Save the updated post
 
-
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
-
-
-        // set profile dto
-
-        postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        postDto.setUserDto(modelMapper.map(user, UserDto.class));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Post updated successfully")
@@ -148,14 +137,16 @@ public  class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findAll(pageable);
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
             // Convert user to UserDto
-            UserDto userDto = MapperUtil.convertToUserDto(post.getUser());
+            UserDto userDto = convertToUserDto(post.getUser());
+
 
             // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPost(post);
 
             // Convert post to PostDto and set additional fields
-            PostDto postDto = MapperUtil.convertToPostDto(post);
+            PostDto postDto = PostServiceImpl.convertToPostDto(post);
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
@@ -170,17 +161,38 @@ public  class PostServiceImpl implements PostService {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+
+
+
     @Override
-    public ResponseEntity<Response> getImage(String imageName) throws IOException {
-      URL imageUrl = storageService.getImageByName(imageName);
-       Response response = Response.builder()
-               .statusCode(HttpStatus.OK.value())
-               .imageUrl(imageUrl)
-               .build();
-       return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\""+imageName+"\"").body(response);
+    public ResponseEntity<Response> increaseView(Long id,User user) {
+     Post  post = postRepository.findById(id).orElseThrow(()->new CustomNotFoundException("Post not found by"+id));
+     Optional<View> alreadyView=viewRepository.findByPostAndUser(post,user);
+        Response response;
+     if(alreadyView.isPresent()){
+          response=Response.builder()
+                 .statusCode(HttpStatus.OK.value())
+                 .message("User Already View Post"+post.getId())
+                 .build();
+     }else{
+         viewRepository.save(View.builder()
+                 .post(post)
+                 .user(user)
+                 .build());
+         response=Response.builder()
+                 .statusCode(HttpStatus.OK.value())
+                 .message("Increase View Count  Post"+post.getId())
+                 .build();
+     }
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-
+    public static PostDto convertToPostDto(Post post) {
+        return MapperUtil.convertToPostDto(post);
+    }
+    public static UserDto convertToUserDto(User user) {
+        return MapperUtil.convertToUserDto(user);
+    }
 
 
 

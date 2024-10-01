@@ -29,6 +29,7 @@ public class Response {
     private String otp;
     private List<PostDto> postDtoList;
     private List<UserDto> userDtoList;
+    private Long viewCount;
     private URL imageUrl;
 
     private PostDto postDto;
