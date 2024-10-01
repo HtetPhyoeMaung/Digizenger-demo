@@ -22,7 +22,7 @@ public class Like implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Boolean isLike;
 
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

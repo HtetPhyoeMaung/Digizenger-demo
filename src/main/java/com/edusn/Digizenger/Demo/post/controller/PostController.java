@@ -77,4 +77,5 @@ public class PostController {
     public ResponseEntity<Response> getImage(@RequestParam("imageName") String imageName) throws IOException {
         return postService.getImage(imageName);
     }
+
 }

@@ -171,7 +171,6 @@ public  class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findAll(pageable);
 
         for(Post post:postPage){
-            post.setViewsCount(post.getViewsCount()+1);
             userList.add(post.getUser());
         }
         List<UserDto>userDtoList=userList.stream()
