@@ -20,8 +20,8 @@ public class PostDto {
     private String description;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private Post.PostType postType;
     private String imageName;
+    private Post.PostType postType;
     private UserDto userDto;
     private Long likeCount;
     private Long viewCount;
