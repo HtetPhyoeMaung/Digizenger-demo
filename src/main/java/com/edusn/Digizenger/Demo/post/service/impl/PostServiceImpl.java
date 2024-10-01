@@ -4,6 +4,7 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
@@ -55,10 +56,7 @@ public  class PostServiceImpl implements PostService {
                     .viewsCount(0L)
                     .user(user)
                     .build();
-
         }else {
-
-
             post = Post.builder()
                     .description(description)
                     .postType(postType)
@@ -67,11 +65,8 @@ public  class PostServiceImpl implements PostService {
                     .user(user)
                     .build();
         }
-
-
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-
         postDto.setUserDto(modelMapper.map(user, UserDto.class));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
@@ -95,11 +90,8 @@ public  class PostServiceImpl implements PostService {
                 })
                 .orElseThrow(() -> new PostNotFoundException("Post not found by " + id));
         if (!multipartFile.isEmpty()) {
-
            String newImageName = storageService.updateImage(multipartFile,imageName);
-
             post.setImageName(newImageName);
-
         }
 
         // Update media if present in request
@@ -187,6 +179,48 @@ public  class PostServiceImpl implements PostService {
      }
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Response> isLike(Long id, User user) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
+
+        Optional<Like> alreadyLike = likeRepository.findFirstByPostAndUser(post, user);
+        Response response;
+
+        if (alreadyLike.isPresent() && alreadyLike.get().getIsLike()) {
+            // If the post is already liked, we unlike it
+            alreadyLike.get().setIsLike(false);
+            likeRepository.save(alreadyLike.get());
+            response = Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("User unliked Post " + post.getId())
+                    .build();
+        } else if (alreadyLike.isPresent() && !alreadyLike.get().getIsLike()) {
+            // If the post was previously unliked, we like it again
+            alreadyLike.get().setIsLike(true);
+            likeRepository.save(alreadyLike.get());
+            response = Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("User liked Post " + post.getId())  // Correct message to "liked"
+                    .build();
+        } else {
+            // If no record exists, this is the first time the user is liking the post
+            likeRepository.save(Like.builder()
+                    .post(post)
+                    .isLike(true)
+                    .user(user)
+                    .build());
+            response = Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("User first time liked Post " + post.getId())
+                    .build();
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 
     public static PostDto convertToPostDto(Post post) {
         PostDto postDto = new PostDto();
