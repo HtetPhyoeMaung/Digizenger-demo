@@ -44,6 +44,9 @@ public class Post implements Serializable {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<Like> likes;
 
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    private List<View> viewList;
+
 
 
    public enum PostType{

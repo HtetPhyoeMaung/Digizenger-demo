@@ -42,15 +42,6 @@ public class PostController {
         return postService.upload(description,postType,user,multipartFile);
     }
 
-//    @PostMapping("upload-with-image")
-//    public ResponseEntity<Response> upload(@RequestParam("description") String description
-//            , @RequestParam("postType") Post.PostType postType
-//             ,HttpServletRequest request) throws IOException {
-//
-//        User user= getUserByRequest.getUser(request);
-//
-//        return postService.upload(description,postType,user,multipartFile);
-//    }
 
     @PutMapping("/update-post/{id}")
     public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
@@ -77,6 +68,12 @@ public class PostController {
     @GetMapping("/image")
     public ResponseEntity<Response> getImage(@RequestParam("imageName") String imageName) throws IOException {
         return postService.getImage(imageName);
+    }
+    @PostMapping("/increase-view/{postId}")
+    public ResponseEntity<Response>  increaseView(@PathVariable("postId") Long id, HttpServletRequest request) {
+        User user= getUserByRequest.getUser(request);
+        System.out.print("View");
+        return postService.increaseView(id,user);
     }
 
 }

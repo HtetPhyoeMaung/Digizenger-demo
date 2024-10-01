@@ -7,11 +7,12 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
+import com.edusn.Digizenger.Demo.post.entity.View;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
+import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
-import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,14 +23,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public  class PostServiceImpl implements PostService {
@@ -41,7 +38,8 @@ public  class PostServiceImpl implements PostService {
     private LikeRepository likeRepository;
     @Autowired
     private PostRepository postRepository;
-
+    @Autowired
+    private ViewRepository viewRepository;
 
 
     @Override
@@ -131,25 +129,27 @@ public  class PostServiceImpl implements PostService {
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
-        List<User>userList = new LinkedList<>();
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
+        List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
+            // Convert user to UserDto
+            UserDto userDto = convertToUserDto(post.getUser());
 
-        for(Post post:postPage){
-            userList.add(post.getUser());
-        }
-        List<UserDto>userDtoList=userList.stream()
-                .map(user -> new UserDto
-                        (user.getFirstName(),
-                                user.getLastName(),
-                                user.getFollowers()))
-                .toList();
-        List<PostDto> postDtoList= postPage.getContent().stream()
-                .map(PostServiceImpl::convertToPostDto)
-                .toList();
+            // Fetch view count and like count for the post
+            Long viewCount = viewRepository.countByPost(post);
+            Long likeCount = likeRepository.countByPost(post);
+
+            // Convert post to PostDto and set additional fields
+            PostDto postDto = PostServiceImpl.convertToPostDto(post);
+            postDto.setUserDto(userDto);
+            postDto.setViewCount(viewCount);
+            postDto.setLikeCount(likeCount);
+
+            return postDto;
+        }).toList();
+
         Response response=Response.builder()
                 .postDtoList(postDtoList)
-                .userDtoList(userDtoList)
                 .statusCode(HttpStatus.OK.value())
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
@@ -165,6 +165,29 @@ public  class PostServiceImpl implements PostService {
        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\""+imageName+"\"").body(response);
     }
 
+    @Override
+    public ResponseEntity<Response> increaseView(Long id,User user) {
+     Post  post = postRepository.findById(id).orElseThrow(()->new CustomNotFoundException("Post not found by"+id));
+     Optional<View> alreadyView=viewRepository.findByPostAndUser(post,user);
+        Response response;
+     if(alreadyView.isPresent()){
+          response=Response.builder()
+                 .statusCode(HttpStatus.OK.value())
+                 .message("User Already View Post"+post.getId())
+                 .build();
+     }else{
+         viewRepository.save(View.builder()
+                 .post(post)
+                 .user(user)
+                 .build());
+         response=Response.builder()
+                 .statusCode(HttpStatus.OK.value())
+                 .message("Increase View Count  Post"+post.getId())
+                 .build();
+     }
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
     public static PostDto convertToPostDto(Post post) {
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
@@ -174,9 +197,15 @@ public  class PostServiceImpl implements PostService {
         postDto.setPostType(post.getPostType());
         postDto.setImageName(post.getImageName());
         postDto.setViewCount(post.getViewsCount());
-
-
         return postDto;
+    }
+    public static UserDto convertToUserDto(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setFollowers(user.getFollowers());
+
+        return userDto;
     }
 
 
