@@ -14,6 +14,8 @@ import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +44,7 @@ public  class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     @Autowired
     private ViewRepository viewRepository;
+
 
 
     @Override
@@ -127,12 +131,14 @@ public  class PostServiceImpl implements PostService {
             // Convert user to UserDto
             UserDto userDto = convertToUserDto(post.getUser());
 
+
             // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPost(post);
 
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
@@ -147,15 +153,8 @@ public  class PostServiceImpl implements PostService {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<Response> getImage(String imageName) throws IOException {
-      byte[] imageBytes = storageService.getImageByName(imageName);
-       Response response = Response.builder()
-               .statusCode(HttpStatus.OK.value())
-               .imageByte(imageBytes)
-               .build();
-       return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\""+imageName+"\"").body(response);
-    }
+
+
 
     @Override
     public ResponseEntity<Response> increaseView(Long id,User user) {
@@ -223,23 +222,10 @@ public  class PostServiceImpl implements PostService {
 
 
     public static PostDto convertToPostDto(Post post) {
-        PostDto postDto = new PostDto();
-        postDto.setId(post.getId());
-        postDto.setDescription(post.getDescription());
-        postDto.setCreatedDate(post.getCreatedDate());
-        postDto.setModifiedDate(post.getModifiedDate());
-        postDto.setPostType(post.getPostType());
-        postDto.setImageName(post.getImageName());
-        postDto.setViewCount(post.getViewsCount());
-        return postDto;
+        return MapperUtil.convertToPostDto(post);
     }
     public static UserDto convertToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setFollowers(user.getFollowers());
-
-        return userDto;
+        return MapperUtil.convertToUserDto(user);
     }
 
 

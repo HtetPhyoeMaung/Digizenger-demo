@@ -36,7 +36,7 @@ public class PostController {
 
         User user= getUserByRequest.getUser(request);
         if(multipartFile==null || multipartFile.isEmpty()){
-            return postService.upload(description,postType,user,null);
+              return postService.upload(description,postType,user,null);
 
         }
         return postService.upload(description,postType,user,multipartFile);
@@ -65,10 +65,7 @@ public class PostController {
             @RequestParam(defaultValue = "10") int _limit) {
         return postService.getPostByPage(_page,_limit);
     }
-    @GetMapping("/image")
-    public ResponseEntity<Response> getImage(@RequestParam("imageName") String imageName) throws IOException {
-        return postService.getImage(imageName);
-    }
+
     @PostMapping("/increase-view/{postId}")
     public ResponseEntity<Response>  increaseView(@PathVariable("postId") Long id, HttpServletRequest request) {
         User user= getUserByRequest.getUser(request);
