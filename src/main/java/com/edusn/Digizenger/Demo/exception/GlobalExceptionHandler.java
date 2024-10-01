@@ -64,4 +64,65 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> profileNotFoundHandler(ProfileNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProfileImageNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> profileImageNotFoundHandler(ProfileImageNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CoverImageNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> coverImageNotFoundException(CoverImageNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BioNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> BioNotFoundHandler(BioNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CareerNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> CareerNotFoundHandler(CareerNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<CustomErrorResponse> badRequestHandler(Exception ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -4,6 +4,8 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -33,5 +35,8 @@ public class Response {
 
     private String expirationDate;
 
+    private ProfileDto profileDto;
+
+    private OtherProfileDto otherProfileDto;
 
 }

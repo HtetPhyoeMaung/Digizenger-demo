@@ -47,24 +47,25 @@ public  class PostServiceImpl implements PostService {
     @Override
     public ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException {
          Post post;
-        if (multipartFile.isEmpty()) {
-             post = Post.builder()
-                    .description(description)
-                    .postType(postType)
-                     .viewsCount(0L)
-                    .createdDate(LocalDateTime.now())
-                    .user(user)
-                    .build();
-        }else {
-
+        if (multipartFile!=null) {
             String filename =storageService.uploadImage(multipartFile);
-
-             post = Post.builder()
+            post = Post.builder()
                     .description(description)
                     .postType(postType)
                     .createdDate(LocalDateTime.now())
                     .imageName(filename)
-                     .viewsCount(0L)
+                    .viewsCount(0L)
+                    .user(user)
+                    .build();
+
+        }else {
+
+
+            post = Post.builder()
+                    .description(description)
+                    .postType(postType)
+                    .viewsCount(0L)
+                    .createdDate(LocalDateTime.now())
                     .user(user)
                     .build();
         }
@@ -83,43 +84,7 @@ public  class PostServiceImpl implements PostService {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-//@Override
-//public ResponseEntity<Response> upload(String description, User user, MultipartFile multipartFile) throws IOException {
-//    Post post;
-//    if (multipartFile.isEmpty()) {
-//        post = Post.builder()
-//                .description(description)
-//                .viewsCount(0L)
-//                .createdDate(LocalDateTime.now())
-//                .user(user)
-//                .build();
-//    }else {
-//
-//        String filename =storageService.uploadImage(multipartFile);
-//
-//        post = Post.builder()
-//                .description(description)
-//                .createdDate(LocalDateTime.now())
-//                .imageName(filename)
-//                .viewsCount(0L)
-//                .user(user)
-//                .build();
-//    }
-//
-//
-//    postRepository.save(post);
-//    PostDto postDto=convertToPostDto(post);
-//
-//    postDto.setUserDto(modelMapper.map(user, UserDto.class));
-//    Long likeCount = likeRepository.findByPost(post).stream().count();
-//    postDto.setLikeCount(likeCount);
-//    Response response = Response.builder()
-//            .statusCode(HttpStatus.CREATED.value())
-//            .message("Post created successfully")
-//            .postDto(postDto)
-//            .build();
-//    return new ResponseEntity<>(response, HttpStatus.CREATED);
-//}
+
 
     @Override
     public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
