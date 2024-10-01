@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
+import com.edusn.Digizenger.Demo.auth.service.impl.UserServiceImpl;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -12,6 +13,7 @@ import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +30,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
-
+@Slf4j
 @Service
 public  class PostServiceImpl implements PostService {
     @Autowired
@@ -45,6 +48,7 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException {
+        log.info(String.valueOf(multipartFile));
          Post post;
         if (multipartFile.isEmpty()) {
              post = Post.builder()
@@ -165,17 +169,21 @@ public  class PostServiceImpl implements PostService {
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
-
+        List<User> userList= new LinkedList<>();
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
 
         for(Post post:postPage){
             post.setViewsCount(post.getViewsCount()+1);
+            userList.add(post.getUser());
 
         }
         List<PostDto> postDtoList= postPage.getContent().stream()
                 .map(PostServiceImpl::convertToPostDto)
                 .toList();
+//        List<UserDto> userDtoList = userList.stream().
+//
+//                toList()
         Response response=Response.builder()
                 .postDtoList(postDtoList)
                 .statusCode(HttpStatus.OK.value())

@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto {
     private String firstName;
-
     private String lastName;
-    private Role role;
+    private Integer followers;
 
 }

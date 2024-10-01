@@ -37,18 +37,7 @@ public class PostController {
 
         return postService.upload(description,postType,user,multipartFile);
     }
-//@PostMapping("/upload")
-//public ResponseEntity<Response> upload(@RequestParam("description") String description
-//
-//        , @RequestParam("file") MultipartFile multipartFile
-//        , HttpServletRequest request) throws IOException {
-//
-//    String token = jwtService.getJWTFromRequest(request);
-//    String emailOrPhone = jwtService.extractUsername(token);
-//    User user= checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
-//
-//    return postService.upload(description,user,multipartFile);
-//}
+
 
     @PutMapping("/update-post/{id}")
     public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
