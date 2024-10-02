@@ -147,6 +147,18 @@ public class ProfileController {
 
     /** Service Provided **/
 
+    @GetMapping("/service-provided/{serviceName}")
+    public ResponseEntity<Response> findByServiceName(HttpServletRequest request,
+                                                      @PathVariable("serviceName") String serviceName){
+        return aboutProvidedService.findByServiceName(request ,serviceName);
+    }
+
+    @PostMapping("/service-provided/{id}")
+    public ResponseEntity<Response> uploadServiceProvidedById(HttpServletRequest request,
+                                                              @PathVariable("id") Long id){
+        return aboutProvidedService.uploadServiceProvidedById(request, id);
+    }
+
     @PostMapping("/service-provided")
     public ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
                                                           @RequestParam("service") String service){
@@ -160,10 +172,12 @@ public class ProfileController {
         return aboutProvidedService.updateServiceProvided(request, id, service);
     }
 
-    @DeleteMapping("/service-provided")
+    @DeleteMapping("/service-provided/{id}")
     public ResponseEntity<Response> removeServiceProvided(HttpServletRequest request,
                                                           @PathVariable("id") Long id){
         return aboutProvidedService.removeServiceProvided(request, id);
     }
+
+
 
 }

@@ -6,7 +6,11 @@ import org.springframework.http.ResponseEntity;
 
 public interface AboutProvidedService {
 
-    ResponseEntity<Response> findByServiceName(HttpServletRequest servletRequest, String service);
+    ResponseEntity<Response> findByServiceName(HttpServletRequest request,
+                                               String service);
+
+    ResponseEntity<Response> uploadServiceProvidedById(HttpServletRequest request,
+                                                       Long id);
 
     ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
                                                    String service);

@@ -102,10 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
         /** Service Provided **/
         if(!profile.getServiceProvidedList().isEmpty()){
             List<ServiceProvidedDto> serviceProvidedDtoList = profile.getServiceProvidedList().stream().map(
-                    serviceProvided -> {
-                        ServiceProvidedDto serviceProvidedDto = modelMapper.map(serviceProvided, ServiceProvidedDto.class);
-                        return serviceProvidedDto;
-                    }
+                    serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
             ).collect(Collectors.toList());
             existProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }

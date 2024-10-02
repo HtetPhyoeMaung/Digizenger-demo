@@ -71,10 +71,7 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         /** Service Provided **/
         if(!otherProfile.getServiceProvidedList().isEmpty()){
             List<ServiceProvidedDto> serviceProvidedDtoList = otherProfile.getServiceProvidedList().stream().map(
-                    serviceProvided -> {
-                        ServiceProvidedDto serviceProvidedDto = modelMapper.map(serviceProvided, ServiceProvidedDto.class);
-                        return serviceProvidedDto;
-                    }
+                    serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
             ).collect(Collectors.toList());
             otherProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }

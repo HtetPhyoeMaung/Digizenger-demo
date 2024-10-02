@@ -30,5 +30,5 @@ public class OtherProfileDto {
     private OtherUserForProfileDto otherUserForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
     private List<EducationDto> educationDtoList = new ArrayList<>();
-    private List<ServiceProvidedDto> serviceProvidedDtoList = new ArrayList<>();
+    private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

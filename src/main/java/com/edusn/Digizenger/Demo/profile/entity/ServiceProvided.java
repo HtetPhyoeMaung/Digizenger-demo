@@ -1,10 +1,8 @@
 package com.edusn.Digizenger.Demo.profile.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.*;
 
@@ -22,5 +20,7 @@ public class ServiceProvided {
     private String service;
 
     @ManyToMany(mappedBy = "serviceProvidedList")
+    @JsonIgnoreProperties("serviceProvidedList")
     private List<Profile> profileList = new LinkedList<>();
+
 }

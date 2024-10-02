@@ -1,6 +1,8 @@
 package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,5 +59,16 @@ public class Profile {
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "service_provided_id")
     )
+    @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
+
+    public void addServiceProvided(ServiceProvided serviceProvided){
+        this.serviceProvidedList.add(serviceProvided);
+        serviceProvided.getProfileList().add(this);
+    }
+
+    public void removeProvided(ServiceProvided serviceProvided){
+        this.serviceProvidedList.remove(serviceProvided);
+        serviceProvided.getProfileList().remove(this);
+    }
 }
