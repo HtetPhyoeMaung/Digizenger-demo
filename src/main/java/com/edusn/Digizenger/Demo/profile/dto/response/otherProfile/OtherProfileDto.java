@@ -10,8 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -29,7 +28,7 @@ public class OtherProfileDto {
     private String profileLinkUrl;
     private String bio;
     private OtherUserForProfileDto otherUserForProfileDto;
-    private List<CareerHistoryDto> careerHistoryDtoList = new ArrayList<>();
+    private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
     private List<EducationDto> educationDtoList = new ArrayList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new ArrayList<>();
 }

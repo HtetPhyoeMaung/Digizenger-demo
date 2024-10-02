@@ -7,9 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -42,13 +40,8 @@ public class Profile {
     @JoinColumn(name = "userId")
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "profile_careerHistory",
-            joinColumns = @JoinColumn(name = "profile_id"),
-            inverseJoinColumns = @JoinColumn(name = "career_history_id")
-    )
-    private List<CareerHistory> careerHistoryList = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CareerHistory> careerHistoryList = new LinkedList<>();
 
     @ManyToMany
     @JoinTable(
@@ -56,7 +49,7 @@ public class Profile {
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "education_id")
     )
-    private List<Education> educationList = new ArrayList<>();
+    private Set<Education> educationList = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -64,5 +57,5 @@ public class Profile {
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "service_provided_id")
     )
-    private List<ServiceProvided> serviceProvidedList = new ArrayList<>();
+    private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 }

@@ -15,8 +15,7 @@ public interface AboutCareerHistoryService {
                                                  String companyName,
                                                  MultipartFile companyLogo,
                                                  LocalDate joinDate,
-                                                 LocalDate endDate,
-                                                 String present) throws IOException;
+                                                 LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
                                                  Long id,
@@ -24,8 +23,7 @@ public interface AboutCareerHistoryService {
                                                  String companyName,
                                                  MultipartFile companyLogo,
                                                  LocalDate joinDate,
-                                                 LocalDate endDate,
-                                                 String present) throws IOException;
+                                                 LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> removeCareerHistoryById(HttpServletRequest request, Long id);
 }

@@ -7,8 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Builder
@@ -26,7 +25,7 @@ public class ProfileDto {
     private String profileLinkUrl;
     private String bio;
     private UserForProfileDto userForProfileDto;
-    private List<CareerHistoryDto> careerHistoryDtoList = new ArrayList<>();
-    private List<EducationDto> educationDtoList = new ArrayList<>();
-    private List<ServiceProvidedDto> serviceProvidedDtoList = new ArrayList<>();
+    private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
+    private List<EducationDto> educationDtoList = new LinkedList<>();
+    private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

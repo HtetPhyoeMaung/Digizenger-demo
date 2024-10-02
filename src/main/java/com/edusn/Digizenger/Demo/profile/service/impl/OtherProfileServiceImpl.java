@@ -4,13 +4,12 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
-import com.edusn.Digizenger.Demo.profile.entity.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
-import com.edusn.Digizenger.Demo.utilis.UrlConverter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,14 +60,23 @@ public class OtherProfileServiceImpl implements OtherProfileService {
             List<CareerHistoryDto> careerHistoryDtoList = otherProfile.getCareerHistoryList().stream().map(
                     careerHistory -> {
                         CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
-                        try {
-                            careerHistoryDto.setCompanyLogoUrl(UrlConverter.convertToUrl(careerHistory.getCompanyLogoUrl()));
-                        } catch (MalformedURLException e) {
-                            throw new RuntimeException(e);
+                        if(careerHistoryDto.getCompanyLogoName() != null ) {
+                            careerHistoryDto.setCompanyLogoUrl(storageService.getImageByName(careerHistoryDto.getCompanyLogoName()));
                         }
                         return careerHistoryDto;
                     }).collect(Collectors.toList());
             otherProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+        }
+
+        /** Service Provided **/
+        if(!otherProfile.getServiceProvidedList().isEmpty()){
+            List<ServiceProvidedDto> serviceProvidedDtoList = otherProfile.getServiceProvidedList().stream().map(
+                    serviceProvided -> {
+                        ServiceProvidedDto serviceProvidedDto = modelMapper.map(serviceProvided, ServiceProvidedDto.class);
+                        return serviceProvidedDto;
+                    }
+            ).collect(Collectors.toList());
+            otherProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }
 
         Response response = Response.builder()

@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 
 public interface AboutProvidedService {
 
+    ResponseEntity<Response> findByServiceName(HttpServletRequest servletRequest, String service);
+
     ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
-                                                   String serviceProvided);
+                                                   String service);
 
     ResponseEntity<Response> updateServiceProvided(HttpServletRequest request,
                                                    Long id,
-                                                   String serviceProvided);
+                                                   String service);
 
-    ResponseEntity<Response> removeServiceProvided(Long id);
+    ResponseEntity<Response> removeServiceProvided(HttpServletRequest request,Long id);
 }

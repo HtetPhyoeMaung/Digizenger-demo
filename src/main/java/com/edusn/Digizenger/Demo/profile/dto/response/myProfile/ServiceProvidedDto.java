@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceProvidedDto {
     private Long id;
-    private String serviceProvided;
+    private String service;
 }
