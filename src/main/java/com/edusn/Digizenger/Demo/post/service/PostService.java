@@ -20,4 +20,6 @@ public interface PostService  {
     ResponseEntity<Response> getPostByPage(int _page, int _limit);
 
     ResponseEntity<Response> increaseView(Long id,User user);
+
+    ResponseEntity<Response> isLike(Long id, User user);
 }
