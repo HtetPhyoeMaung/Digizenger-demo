@@ -2,7 +2,6 @@ package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,13 +44,14 @@ public class Profile {
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareerHistory> careerHistoryList = new LinkedList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "profile_education",
-            joinColumns = @JoinColumn(name = "profile_id"),
-            inverseJoinColumns = @JoinColumn(name = "education_id")
-    )
-    private Set<Education> educationList = new HashSet<>();
+//    @ManyToMany
+//    @JoinTable(
+//            name = "profile_education",
+//            joinColumns = @JoinColumn(name = "profile_id"),
+//            inverseJoinColumns = @JoinColumn(name = "education_id")
+//    )
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EducationHistory> educationHistoryList = new LinkedList<>();
 
     @ManyToMany
     @JoinTable(

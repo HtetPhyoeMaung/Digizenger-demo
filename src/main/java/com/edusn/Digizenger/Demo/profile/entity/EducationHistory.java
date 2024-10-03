@@ -6,11 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,7 +16,7 @@ import java.util.Set;
 @Data
 @Builder
 @Table(name = "educations")
-public class Education {
+public class EducationHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +45,9 @@ public class Education {
     @Enumerated(EnumType.STRING)
     private Present present;
 
-    @ManyToMany(mappedBy = "educationList")
-    private Set<Profile> profileList = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
     public enum Type{
         UNIVERSITY,

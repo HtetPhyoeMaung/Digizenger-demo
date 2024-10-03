@@ -178,6 +178,4 @@ public class ProfileController {
         return aboutProvidedService.removeServiceProvided(request, id);
     }
 
-
-
 }
