@@ -1,5 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.entity;
 
+import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
+import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
 import com.edusn.Digizenger.Demo.post.entity.Comment;
 import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
@@ -74,6 +76,12 @@ public class User {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
     private Profile profile;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    private List<SingleChatMessage> singleChatMessages;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    private List<SingleChatRoom> singleChatRooms;
 
     public enum Gender{
         MALE,

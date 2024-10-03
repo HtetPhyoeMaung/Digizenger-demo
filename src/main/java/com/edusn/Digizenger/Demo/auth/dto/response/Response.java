@@ -1,9 +1,8 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
-import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
-import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,7 +30,7 @@ public class Response {
     private List<UserDto> userDtoList;
     private Long viewCount;
     private URL imageUrl;
-
+    private LikeDto likeDto;
     private PostDto postDto;
 
 

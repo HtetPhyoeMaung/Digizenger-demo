@@ -11,6 +11,7 @@ import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.stereotype.Service;
 import com.amazonaws.services.s3.AmazonS3;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -52,6 +53,21 @@ public class StorageService {
         space.putObject(new PutObjectRequest(BUCKET_NAME, filename, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
     return filename;
     }
+
+    public String uploadFile(byte[] fileData, String fileName, String contentType) throws IOException {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType);
+        objectMetadata.setContentLength(fileData.length);
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData)) {
+            space.putObject(new PutObjectRequest(BUCKET_NAME, fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        }
+
+        // Return the URL of the uploaded file
+        return space.getUrl(BUCKET_NAME, fileName).toString();
+    }
+
 
     public URL getImageByName(String imageName) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest =

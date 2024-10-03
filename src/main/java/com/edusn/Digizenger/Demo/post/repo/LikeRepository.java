@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface LikeRepository extends JpaRepository<Like,Long> {
     Optional<Like> findByPost(Post post);
 
-    Long countByPost(Post post);
+    Long countByPostAndIsLiked(Post post, Boolean isLike);
 
     Optional<Like> findFirstByPostAndUser(Post post, User user);
 }

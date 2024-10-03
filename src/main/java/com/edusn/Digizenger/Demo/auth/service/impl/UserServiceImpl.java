@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 throw new LoginNameExistException("Email's already exist!");
             }
              otp = otpUtil.generateOtp();
-            String fullName = request.getFirstName()+request.getLastName();
+            String fullName = request.getFirstName()+" "+request.getLastName();
             mailUtil.sendOtpEmail(fullName,request.getEmail(),otp);
 
         }else{
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
         String otp;
 
         User user=   checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
-        String fullName = user.getFirstName()+user.getLastName();
+        String fullName = user.getFirstName()+" "+user.getLastName();
         otp = otpUtil.generateOtp();
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
@@ -182,6 +182,11 @@ public class UserServiceImpl implements UserService {
                .build();
 
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public Optional<User> findById(Long recipientId) {
+        return userRepository.findById(recipientId);
     }
 
 }
