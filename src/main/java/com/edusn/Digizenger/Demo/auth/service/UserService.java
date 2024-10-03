@@ -3,8 +3,11 @@ package com.edusn.Digizenger.Demo.auth.service;
 import com.edusn.Digizenger.Demo.auth.dto.request.LoginRequest;
 import com.edusn.Digizenger.Demo.auth.dto.request.RegisterRequest;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
+import com.edusn.Digizenger.Demo.auth.entity.User;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Optional;
 
 
 public interface UserService {
@@ -16,4 +19,6 @@ public interface UserService {
     ResponseEntity<Response> resendCode(String email) throws MessagingException;
 
     ResponseEntity<Response> login(LoginRequest request);
+
+    Optional<User> findById(Long recipientId);
 }

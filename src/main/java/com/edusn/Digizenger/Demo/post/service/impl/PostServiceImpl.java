@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
+import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -129,13 +130,14 @@ public  class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findAll(pageable);
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
             // Convert user to UserDto
-            UserDto userDto = convertToUserDto(post.getUser());
 
 
             // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
-            Long likeCount = likeRepository.countByPost(post);
-
+            Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
+            UserDto userDto = convertToUserDto(post.getUser());
+            userDto.setLiked(isLike);
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
@@ -179,45 +181,7 @@ public  class PostServiceImpl implements PostService {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<Response> isLike(Long id, User user) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
 
-        Optional<Like> alreadyLike = likeRepository.findFirstByPostAndUser(post, user);
-        Response response;
-
-        if (alreadyLike.isPresent() && alreadyLike.get().getIsLike()) {
-            // If the post is already liked, we unlike it
-            alreadyLike.get().setIsLike(false);
-            likeRepository.save(alreadyLike.get());
-            response = Response.builder()
-                    .statusCode(HttpStatus.OK.value())
-                    .message("User unliked Post " + post.getId())
-                    .build();
-        } else if (alreadyLike.isPresent() && !alreadyLike.get().getIsLike()) {
-            // If the post was previously unliked, we like it again
-            alreadyLike.get().setIsLike(true);
-            likeRepository.save(alreadyLike.get());
-            response = Response.builder()
-                    .statusCode(HttpStatus.OK.value())
-                    .message("User liked Post " + post.getId())  // Correct message to "liked"
-                    .build();
-        } else {
-            // If no record exists, this is the first time the user is liking the post
-            likeRepository.save(Like.builder()
-                    .post(post)
-                    .isLike(true)
-                    .user(user)
-                    .build());
-            response = Response.builder()
-                    .statusCode(HttpStatus.OK.value())
-                    .message("User first time liked Post " + post.getId())
-                    .build();
-        }
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
 
 

@@ -44,7 +44,8 @@ public class SecurityConfig {
                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/auth/**","/api/v1/test/**",
-
+                                        "/ws/**",
+                                        "/api/v1/chat/**",
                                         "/v2/api-docs",
                                         "/v3/api-docs",
                                         "/v3/api-docs/**",
@@ -61,6 +62,8 @@ public class SecurityConfig {
 
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                                 .requestMatchers("/api/v1/posts/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
+                                .requestMatchers("/api/v1/chat/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
+
                                 .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
                         .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
                                 .requestMatchers("/api/v1/super/**").hasAnyAuthority(Role.SUPER.name(),Role.ADMIN.name())
