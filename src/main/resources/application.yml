@@ -3,6 +3,7 @@ spring:
     name: Digizenger-Demo
     server:
       port: 8080
+
   datasource:
     url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger
     username: edusn
