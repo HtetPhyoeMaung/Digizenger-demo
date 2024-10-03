@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto {
     private String firstName;
-
+    private String userProfileLink;
     private String lastName;
     private int followers;
 

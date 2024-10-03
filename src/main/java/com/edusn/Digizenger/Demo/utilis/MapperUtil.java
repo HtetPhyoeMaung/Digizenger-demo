@@ -4,9 +4,11 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class MapperUtil {
     public static PostDto convertToPostDto(Post post) {
         PostDto postDto = new PostDto();
@@ -27,6 +29,8 @@ public class MapperUtil {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setFollowers(user.getFollowers());
+        log.info(user.getProfile().getProfileLinkUrl());
+        userDto.setUserProfileLink(user.getProfile().getProfileLinkUrl());
 
         return userDto;
     }
