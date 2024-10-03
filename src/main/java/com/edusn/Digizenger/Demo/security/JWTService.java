@@ -42,6 +42,7 @@ public class JWTService {
     }
     public String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+        log.info(bearerToken);
         if (bearerToken!=null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7).trim(); // Ensure token is trimmed
         }
