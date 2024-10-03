@@ -2,6 +2,9 @@ package com.edusn.Digizenger.Demo.profile.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.profile.service.*;
+import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
+import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +26,8 @@ public class ProfileController {
     private final BioProfileService bioProfileService;
     private final UsernameService usernameService;
     private final ProfileCareerService profileCareerService;
+    private final AboutCareerHistoryService careerHistoryService;
+    private final AboutProvidedService aboutProvidedService;
 
     @GetMapping("/test")
     public String test(){
@@ -108,6 +114,68 @@ public class ProfileController {
     @DeleteMapping("/career")
     public ResponseEntity<Response> removeCareer(HttpServletRequest request){
         return profileCareerService.removeCareer(request);
+    }
+
+    /** Career History **/
+    @PostMapping("/career-history")
+    public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
+                                                        @RequestParam("careerName") String careerName,
+                                                        @RequestParam("companyName") String companyName,
+                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
+                                                        @RequestParam("joinDate") LocalDate joinDate,
+                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
+        return careerHistoryService.uploadCareerHistory(request, careerName, companyName, companyLogo, joinDate, endDate);
+    }
+
+    @PutMapping("/career-history")
+    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
+                                                        @RequestParam("id") Long id,
+                                                        @RequestParam("careerName") String careerName,
+                                                        @RequestParam("companyName") String companyName,
+                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
+                                                        @RequestParam("joinDate") LocalDate joinDate,
+                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
+        return careerHistoryService.updateCareerHistory(request, id, careerName, companyName, companyLogo, joinDate, endDate);
+    }
+
+    @DeleteMapping("/career-history/{id}")
+    public ResponseEntity<Response> removeCareerHistory(HttpServletRequest request,
+                                                        @PathVariable Long id){
+        return careerHistoryService.removeCareerHistoryById(request, id);
+    }
+
+
+    /** Service Provided **/
+
+    @GetMapping("/service-provided/{serviceName}")
+    public ResponseEntity<Response> findByServiceName(HttpServletRequest request,
+                                                      @PathVariable("serviceName") String serviceName){
+        return aboutProvidedService.findByServiceName(request ,serviceName);
+    }
+
+    @PostMapping("/service-provided/{id}")
+    public ResponseEntity<Response> uploadServiceProvidedById(HttpServletRequest request,
+                                                              @PathVariable("id") Long id){
+        return aboutProvidedService.uploadServiceProvidedById(request, id);
+    }
+
+    @PostMapping("/service-provided")
+    public ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
+                                                          @RequestParam("service") String service){
+        return aboutProvidedService.uploadServiceProvided(request, service);
+    }
+
+    @PutMapping("/service-provided")
+    public ResponseEntity<Response> updateServiceProvided(HttpServletRequest request,
+                                                          @RequestParam("id") Long id,
+                                                          @RequestParam("service") String service){
+        return aboutProvidedService.updateServiceProvided(request, id, service);
+    }
+
+    @DeleteMapping("/service-provided/{id}")
+    public ResponseEntity<Response> removeServiceProvided(HttpServletRequest request,
+                                                          @PathVariable("id") Long id){
+        return aboutProvidedService.removeServiceProvided(request, id);
     }
 
 

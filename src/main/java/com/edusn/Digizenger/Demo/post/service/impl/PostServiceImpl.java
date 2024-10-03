@@ -135,6 +135,9 @@ public  class PostServiceImpl implements PostService {
             // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+            post.setLikesCount(likeCount);
+            post.setViewsCount(viewCount);
+            postRepository.save(post);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
             userDto.setLiked(isLike);
             // Convert post to PostDto and set additional fields

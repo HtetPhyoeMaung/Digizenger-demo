@@ -4,10 +4,14 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.entity.ServiceProvided;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
@@ -22,7 +26,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +59,7 @@ public class ProfileServiceImpl implements ProfileService {
     public ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
+        Profile profile = user.getProfile();
 
         if(profile.getUsername() != null){
             profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
@@ -62,6 +68,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+
         if(profile.getUser().getPosts() != null){
             List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(
                     PostServiceImpl::convertToPostDto
@@ -81,6 +88,27 @@ public class ProfileServiceImpl implements ProfileService {
             );
         }
 
+        /** For CareerHistory **/
+        if(!profile.getCareerHistoryList().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
+                    careerHistory -> {
+                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
+                        if(careerHistoryDto.getCompanyLogoName() != null ) {
+                            careerHistoryDto.setCompanyLogoUrl(storageService.getImageByName(careerHistoryDto.getCompanyLogoName()));
+                        }
+                    return careerHistoryDto;
+            }).collect(Collectors.toList());
+            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+        }
+
+        /** Service Provided **/
+        if(!profile.getServiceProvidedList().isEmpty()){
+            List<ServiceProvidedDto> serviceProvidedDtoList = profile.getServiceProvidedList().stream().map(
+                    serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
+            ).collect(Collectors.toList());
+            existProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
+        }
+
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully showed existed profile data..")
@@ -94,7 +122,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
+        if(profile.getProfileLinkUrl() == baseProfileUrl+profileUrl){
             return showUserProfile(request);
         }
         else {

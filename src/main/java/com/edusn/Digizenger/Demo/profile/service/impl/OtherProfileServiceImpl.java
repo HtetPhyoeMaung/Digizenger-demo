@@ -3,6 +3,8 @@ package com.edusn.Digizenger.Demo.profile.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -15,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +52,28 @@ public class OtherProfileServiceImpl implements OtherProfileService {
             otherProfileDto.setCoverImageUrl(
                     storageService.getImageByName(otherProfileDto.getCoverImageName())
             );
+        }
+
+        /** For CareerHistory **/
+
+        if(!otherProfile.getCareerHistoryList().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = otherProfile.getCareerHistoryList().stream().map(
+                    careerHistory -> {
+                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
+                        if(careerHistoryDto.getCompanyLogoName() != null ) {
+                            careerHistoryDto.setCompanyLogoUrl(storageService.getImageByName(careerHistoryDto.getCompanyLogoName()));
+                        }
+                        return careerHistoryDto;
+                    }).collect(Collectors.toList());
+            otherProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+        }
+
+        /** Service Provided **/
+        if(!otherProfile.getServiceProvidedList().isEmpty()){
+            List<ServiceProvidedDto> serviceProvidedDtoList = otherProfile.getServiceProvidedList().stream().map(
+                    serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
+            ).collect(Collectors.toList());
+            otherProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }
 
         Response response = Response.builder()

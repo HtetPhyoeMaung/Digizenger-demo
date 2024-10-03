@@ -4,6 +4,7 @@ import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -33,11 +34,12 @@ public class Response {
     private LikeDto likeDto;
     private PostDto postDto;
 
-
     private String expirationDate;
 
     private ProfileDto profileDto;
 
     private OtherProfileDto otherProfileDto;
+
+    private List<ServiceProvidedDto> serviceProvidedDtoList;
 
 }
