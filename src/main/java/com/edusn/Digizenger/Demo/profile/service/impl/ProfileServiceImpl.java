@@ -4,6 +4,7 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
@@ -67,6 +68,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+
         if(profile.getUser().getPosts() != null){
             List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(
                     PostServiceImpl::convertToPostDto

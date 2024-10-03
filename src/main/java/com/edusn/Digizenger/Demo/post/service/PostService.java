@@ -3,6 +3,7 @@ package com.edusn.Digizenger.Demo.post.service;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,5 +22,5 @@ public interface PostService  {
 
     ResponseEntity<Response> increaseView(Long id,User user);
 
-    ResponseEntity<Response> isLike(Long id, User user);
+
 }

@@ -26,6 +26,7 @@ public class PostController {
     private JWTService jwtService;
     @Autowired
     private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
+
     @Autowired
     private GetUserByRequest getUserByRequest;
 
@@ -73,10 +74,6 @@ public class PostController {
         System.out.print("View");
         return postService.increaseView(id,user);
     }
-    @PostMapping("/isLike/{postId}")
-    public ResponseEntity<Response>  isLike(@PathVariable("postId") Long id, HttpServletRequest request) {
-        User user= getUserByRequest.getUser(request);
-        return postService.isLike(id,user);
-    }
+
 
 }

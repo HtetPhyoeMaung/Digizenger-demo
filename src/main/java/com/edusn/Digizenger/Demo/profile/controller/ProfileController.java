@@ -121,9 +121,9 @@ public class ProfileController {
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
                                                         @RequestParam("careerName") String careerName,
                                                         @RequestParam("companyName") String companyName,
-                                                        @RequestParam("companyLogo") MultipartFile companyLogo,
+                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
                                                         @RequestParam("joinDate") LocalDate joinDate,
-                                                        @Nullable @RequestParam("endDate") LocalDate endDate) throws IOException {
+                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
         return careerHistoryService.uploadCareerHistory(request, careerName, companyName, companyLogo, joinDate, endDate);
     }
 
@@ -132,9 +132,9 @@ public class ProfileController {
                                                         @RequestParam("id") Long id,
                                                         @RequestParam("careerName") String careerName,
                                                         @RequestParam("companyName") String companyName,
-                                                        @RequestParam("companyLogo") MultipartFile companyLogo,
+                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
                                                         @RequestParam("joinDate") LocalDate joinDate,
-                                                        @Nullable @RequestParam("endDate") LocalDate endDate) throws IOException {
+                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
         return careerHistoryService.updateCareerHistory(request, id, careerName, companyName, companyLogo, joinDate, endDate);
     }
 

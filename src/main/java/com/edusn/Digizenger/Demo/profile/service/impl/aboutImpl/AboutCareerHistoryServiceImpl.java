@@ -40,21 +40,25 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-
-        String companyLogoName = storageService.uploadImage(companyLogo);
-
         CareerHistory careerHistory = new CareerHistory();
         careerHistory.setCareerName(careerName);
         careerHistory.setCompanyName(companyName);
-        careerHistory.setCompanyLogoName(companyLogoName);
         careerHistory.setJoinDate(joinDate);
         careerHistory.setProfile(profile);
+        if (companyLogo!=null) {
 
-        if(endDate == null){
-            careerHistory.setPresent(Present.YES);
-        }else {
+            String companyLogoName = storageService.uploadImage(companyLogo);
+
+            careerHistory.setCompanyLogoName(companyLogoName);
+
+        }
+
+
+        if(endDate != null){
             careerHistory.setEndDate(endDate);
             careerHistory.setPresent(Present.NO);
+        } else {
+            careerHistory.setPresent(Present.YES);
         }
         careerHistoryRepository.save(careerHistory);
 
@@ -77,22 +81,27 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
 
-        String companyLogoName = storageService.uploadImage(companyLogo);
+
 
         for(CareerHistory careerHistory : profile.getCareerHistoryList()){
-            if(careerHistory.getId() == id){
+            if(careerHistory.getId().equals(id) ){
 
                 careerHistory.setId(id);
                 careerHistory.setCareerName(careerName);
                 careerHistory.setCompanyName(companyName);
-                careerHistory.setCompanyLogoName(companyLogoName);
+                if (companyLogo!=null) {
+                    String companyLogoName = storageService.uploadImage(companyLogo);
+                    careerHistory.setCompanyLogoName(companyLogoName);
+                }
+
                 careerHistory.setJoinDate(joinDate);
-                if(endDate == null){
-                    careerHistory.setPresent(Present.YES);
-                }else {
+                if(endDate != null){
                     careerHistory.setEndDate(endDate);
                     careerHistory.setPresent(Present.NO);
+                } else {
+                careerHistory.setPresent(Present.YES);
                 }
+
 
                 careerHistoryRepository.save(careerHistory);
             }
@@ -115,7 +124,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         Profile profile = profileRepository.findByUser(user);
 
         for(CareerHistory careerHistory : profile.getCareerHistoryList()){
-                if(careerHistory.getId() == id){
+                if(careerHistory.getId().equals(id)){
                     profile.getCareerHistoryList().remove(careerHistory);
                     careerHistoryRepository.delete(careerHistory);
                 }

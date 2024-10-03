@@ -39,7 +39,6 @@ public class EducationHistory {
     @Column(nullable = false)
     private LocalDate joinDate;
 
-    @Column(nullable = false)
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
