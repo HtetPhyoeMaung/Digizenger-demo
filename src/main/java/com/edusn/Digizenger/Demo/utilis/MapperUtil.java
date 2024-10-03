@@ -26,11 +26,12 @@ public class MapperUtil {
     }
     public static UserDto convertToUserDto(User user) {
         UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setFollowers(user.getFollowers());
         log.info(user.getProfile().getProfileLinkUrl());
-        userDto.setUserProfileLink(user.getProfile().getProfileLinkUrl());
+        userDto.setUserProfileUrlLink(user.getProfile().getProfileLinkUrl());
 
         return userDto;
     }

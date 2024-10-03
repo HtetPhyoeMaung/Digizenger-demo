@@ -131,12 +131,11 @@ public  class PostServiceImpl implements PostService {
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
             // Convert user to UserDto
 
-
+            UserDto userDto = convertToUserDto(post.getUser());
             // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
-            UserDto userDto = convertToUserDto(post.getUser());
             userDto.setLiked(isLike);
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
