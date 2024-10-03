@@ -26,6 +26,6 @@ public class ProfileDto {
     private String bio;
     private UserForProfileDto userForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
-    private List<EducationDto> educationDtoList = new LinkedList<>();
+    private List<EducationHistoryDto> educationHistoryDtoList = new LinkedList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

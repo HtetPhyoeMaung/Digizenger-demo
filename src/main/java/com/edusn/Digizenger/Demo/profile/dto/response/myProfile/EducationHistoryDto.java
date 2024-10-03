@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
 import java.time.LocalDate;
 
 @Data
@@ -15,14 +14,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EducationDto {
+public class EducationHistoryDto {
     private Long id;
-    private String type;
-    private String name;
-    private String degreeOrDiplomaName;
-    private String logoName;
-    private URL logoUrl;
+    private String educationQualificationName;
     private LocalDate joinDate;
     private LocalDate endDate;
     private Present present;
+    private AcademicInstitutionDto academicInstitutionDtoList;
 }

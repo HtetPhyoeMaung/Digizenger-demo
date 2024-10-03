@@ -44,13 +44,12 @@ public class Profile {
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareerHistory> careerHistoryList = new LinkedList<>();
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "profile_education",
-//            joinColumns = @JoinColumn(name = "profile_id"),
-//            inverseJoinColumns = @JoinColumn(name = "education_id")
-//    )
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "profile_education",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "education_id")
+    )
     private List<EducationHistory> educationHistoryList = new LinkedList<>();
 
     @ManyToMany
@@ -62,6 +61,15 @@ public class Profile {
     @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "profile_academicInstitutionList",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "academicInstitution_id")
+    )
+    @JsonIgnoreProperties("academicInstitutionList")
+    private List<AcademicInstitution> academicInstitutionList = new LinkedList<>();
+
     public void addServiceProvided(ServiceProvided serviceProvided){
         this.serviceProvidedList.add(serviceProvided);
         serviceProvided.getProfileList().add(this);
@@ -70,5 +78,15 @@ public class Profile {
     public void removeProvided(ServiceProvided serviceProvided){
         this.serviceProvidedList.remove(serviceProvided);
         serviceProvided.getProfileList().remove(this);
+    }
+
+    public void addAcademicInstitution(AcademicInstitution academicInstitution){
+        this.academicInstitutionList.add(academicInstitution);
+        academicInstitution.getProfileList().add(this);
+    }
+
+    public void removeAcademicInstitution(AcademicInstitution academicInstitution){
+        this.academicInstitutionList.remove(academicInstitution);
+        academicInstitution.getProfileList().remove(this);
     }
 }
