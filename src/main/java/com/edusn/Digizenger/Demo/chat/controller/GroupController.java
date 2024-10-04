@@ -39,5 +39,9 @@ public class GroupController {
     public ResponseEntity<Response> deleteGroup(@PathVariable("groupRoomId") Long groupRoomId){
         return groupRoomService.deleteGroup(groupRoomId);
     }
-
+    @GetMapping("/group-list")
+    public ResponseEntity<Response> groupList(HttpServletRequest request){
+        User user= getUserByRequest.getUser(request);
+        return groupRoomService.groupList(user);
+    }
 }

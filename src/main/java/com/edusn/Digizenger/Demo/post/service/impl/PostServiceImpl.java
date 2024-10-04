@@ -124,7 +124,7 @@ public  class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
+    public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
@@ -138,14 +138,14 @@ public  class PostServiceImpl implements PostService {
             post.setLikesCount(likeCount);
             post.setViewsCount(viewCount);
             postRepository.save(post);
-            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
+            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
-
+            postDto.setLiked(isLike);
             return postDto;
         }).toList();
 
