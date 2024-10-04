@@ -30,6 +30,8 @@ public class ProfileController {
     private final AboutCareerHistoryService careerHistoryService;
     private final AboutProvidedService aboutProvidedService;
     private final FollowerService followerService;
+    private final FollowingService followingService;
+    private final NeighborService neighborService;
 
     @GetMapping("/test")
     public String test(){
@@ -182,18 +184,43 @@ public class ProfileController {
 
     /** Follower **/
 
-    @PostMapping("/follow/{toFollowUserProfileId}")
+    @GetMapping("/followers")
+    public ResponseEntity<Response> profileFollowers(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return followerService.getProfileFollowersByPage(_page, _limit, profileUrl, request);
+    }
+
+    @PostMapping("/followers")
     public ResponseEntity<Response> followUserProfile(HttpServletRequest request,
-                                                      @PathVariable("toFollowUserProfileId") Long id){
-        return followerService.followToProfile(request, id);
+                                                      @RequestParam("toFollowUserProfileUrl") String url){
+        return followerService.followToProfile(request, url);
     }
 
-    @DeleteMapping("/follow/{toUnfollowUserProfileId}")
+    @DeleteMapping("/followers")
     public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
-                                                          @PathVariable("toUnfollowUserProfileId") Long id){
-        return followerService.unFollowToProfile(request, id);
+                                                          @RequestParam("toUnfollowUserProfileUrl") String url){
+        return followerService.unFollowToProfile(request, url);
     }
 
+    /** Following **/
+    @GetMapping("/following")
+    public ResponseEntity<Response> profileFollowing(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return followingService.getProfileFollowingByPage(_page, _limit, profileUrl, request);
+    }
+
+    /** Neighbor **/
+    @GetMapping("/neighbors")
+    public ResponseEntity<Response> profileNeighbors(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return neighborService.getProfileNeighborsByPage(_page, _limit, profileUrl, request);
+    }
 
 
 }

@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 
 public interface FollowerService {
 
-    ResponseEntity<Response> followToProfile(HttpServletRequest request, Long toFollowUserProfile);
+    ResponseEntity<Response> followToProfile(HttpServletRequest request, String toFollowUserProfileUrl);
 
-    ResponseEntity<Response> unFollowToProfile(HttpServletRequest request, Long toUnFollowUserProfile);
+    ResponseEntity<Response> unFollowToProfile(HttpServletRequest request, String toUnFollowUserProfileUrl);
 
-    ResponseEntity<Response> getProfileFollowers(int _page, int _limit,HttpServletRequest request, String profileURL);
+    ResponseEntity<Response> getProfileFollowersByPage(int _page,
+                                                       int _limit,
+                                                       String profileUrl,
+                                                       HttpServletRequest request);
 }

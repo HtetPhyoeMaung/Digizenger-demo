@@ -26,9 +26,9 @@ public class OtherProfileDto {
     private String username;
     private String profileLinkUrl;
     private String bio;
-    private Long followerCount;
-    private Long followingCount;
-    private Long neighborCount;
+    private Long followerCount = 0L;
+    private Long followingCount = 0L;
+    private Long neighborCount = 0L;
     private OtherUserForProfileDto otherUserForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();

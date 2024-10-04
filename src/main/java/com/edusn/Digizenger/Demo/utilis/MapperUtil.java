@@ -4,10 +4,9 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
-import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 
 @Component
 @Slf4j
@@ -24,9 +23,6 @@ public class MapperUtil {
         postDto.setViewCount(post.getViewsCount());
         postDto.setLikeCount(post.getLikesCount());
 
-
-
-
         return postDto;
     }
     public static UserDto convertToUserDto(User user) {
@@ -40,4 +36,6 @@ public class MapperUtil {
 
         return userDto;
     }
+
+
 }
