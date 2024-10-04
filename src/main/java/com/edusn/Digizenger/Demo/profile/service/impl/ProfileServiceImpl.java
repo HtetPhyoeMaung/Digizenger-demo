@@ -4,14 +4,12 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
-import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.entity.ServiceProvided;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
@@ -26,9 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,6 +103,10 @@ public class ProfileServiceImpl implements ProfileService {
                     serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
             ).collect(Collectors.toList());
             existProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
+        }
+
+        if(!profile.getFollowers().isEmpty()){
+            existProfileDto.
         }
 
         Response response = Response.builder()

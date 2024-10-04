@@ -7,6 +7,7 @@ import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ public class ProfileController {
     private final ProfileCareerService profileCareerService;
     private final AboutCareerHistoryService careerHistoryService;
     private final AboutProvidedService aboutProvidedService;
+    private final FollowerService followerService;
 
     @GetMapping("/test")
     public String test(){
@@ -177,5 +179,21 @@ public class ProfileController {
                                                           @PathVariable("id") Long id){
         return aboutProvidedService.removeServiceProvided(request, id);
     }
+
+    /** Follower **/
+
+    @PostMapping("/follow/{toFollowUserProfileId}")
+    public ResponseEntity<Response> followUserProfile(HttpServletRequest request,
+                                                      @PathVariable("toFollowUserProfileId") Long id){
+        return followerService.followToProfile(request, id);
+    }
+
+    @DeleteMapping("/follow/{toUnfollowUserProfileId")
+    public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
+                                                          @PathVariable("toUnfollowUserProfileId") Long id){
+        return followerService.unFollowToProfile(request, id);
+    }
+
+
 
 }
