@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/chat")
 public class ChatController {
 
     @Autowired
@@ -45,4 +44,6 @@ public class ChatController {
         User user= userService.findById(singleChatMessage.getSendId()).orElseThrow(()->new CustomNotFoundException("User not found by"+singleChatMessage.getSendId()));
         singleChatMessageService.sendMessage(singleChatMessage,user);
     }
+
+
 }

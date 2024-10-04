@@ -15,6 +15,5 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private int followers;
-    private boolean isLiked;
 
 }

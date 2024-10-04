@@ -22,7 +22,8 @@ public class SingleChatMessageDto {
 
     private Long id;
     private String message;
-    private LocalDateTime dateTime;
+    private LocalDateTime createDate;
+    private LocalDateTime  modifiedDate;
     private String chatId;
     private Long recipientId;
     private Type type;
