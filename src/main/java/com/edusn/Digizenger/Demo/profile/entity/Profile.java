@@ -1,11 +1,15 @@
 package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -29,7 +33,7 @@ public class Profile {
 
     private String username;
 
-    @Column(name = "profile_link_url")
+    @Column(name = "profile_link_url", unique = true)
     private String profileLinkUrl;
 
     private String bio;
@@ -38,6 +42,33 @@ public class Profile {
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToOne(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private About about;
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CareerHistory> careerHistoryList = new LinkedList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_education",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "education_id")
+    )
+    private Set<Education> educationList = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_serviceProvided",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_provided_id")
+    )
+    @JsonIgnoreProperties("profileList")
+    private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
+
+    public void addServiceProvided(ServiceProvided serviceProvided){
+        this.serviceProvidedList.add(serviceProvided);
+        serviceProvided.getProfileList().add(this);
+    }
+
+    public void removeProvided(ServiceProvided serviceProvided){
+        this.serviceProvidedList.remove(serviceProvided);
+        serviceProvided.getProfileList().remove(this);
+    }
 }

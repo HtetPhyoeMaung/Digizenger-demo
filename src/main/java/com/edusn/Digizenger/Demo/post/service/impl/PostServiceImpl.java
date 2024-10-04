@@ -73,10 +73,6 @@ public  class PostServiceImpl implements PostService {
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
         postDto.setUserDto(modelMapper.map(user, UserDto.class));
-        if(post.getImageName()!=null){
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-
-        }
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
         Response response = Response.builder()
@@ -111,10 +107,6 @@ public  class PostServiceImpl implements PostService {
 
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
-        if(post.getImageName()!=null){
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-
-        }
         postDto.setUserDto(modelMapper.map(user, UserDto.class));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -136,28 +128,24 @@ public  class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
-        if (!postPage.hasContent()) {
-            // Return a response entity with an error message
-            Response response = Response.builder()
-                    .message("No posts found.")
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .build();
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
+            // Convert user to UserDto
 
+            UserDto userDto = convertToUserDto(post.getUser());
+            // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+            post.setLikesCount(likeCount);
+            post.setViewsCount(viewCount);
+            postRepository.save(post);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
-            UserDto userDto = convertToUserDto(post.getUser());
+            // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
-            if(post.getImageName()!=null){
-                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-            }
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
-            postDto.setLiked(isLike);
+
             return postDto;
         }).toList();
 

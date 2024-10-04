@@ -26,16 +26,17 @@ public class CareerHistory {
     @Column(nullable = false)
     private String companyName;
 
+    private String companyLogoName;
+
     @Column(nullable = false)
     private LocalDate joinDate;
 
-    @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "company_logo_url")
-    private String companyLogoName;
+    @Enumerated(EnumType.STRING)
+    private Present present;
 
-    @ManyToOne
-    @JoinColumn(name = "about_id")
-    private About about;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 }

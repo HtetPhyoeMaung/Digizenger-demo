@@ -1,11 +1,13 @@
 package com.edusn.Digizenger.Demo.profile.dto.response.myProfile;
 
+import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.net.URL;
 import java.time.LocalDate;
 
 @Data
@@ -15,9 +17,12 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EducationDto {
     private Long id;
-    private String universityName;
-    private String degreeName;
-    private String universityLogoName;
+    private String type;
+    private String name;
+    private String degreeOrDiplomaName;
+    private String logoName;
+    private URL logoUrl;
     private LocalDate joinDate;
     private LocalDate endDate;
+    private Present present;
 }
