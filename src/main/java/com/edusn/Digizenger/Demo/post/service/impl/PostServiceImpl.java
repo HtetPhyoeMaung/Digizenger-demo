@@ -139,7 +139,6 @@ public  class PostServiceImpl implements PostService {
             post.setViewsCount(viewCount);
             postRepository.save(post);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
-            userDto.setLiked(isLike);
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));

@@ -21,7 +21,8 @@ public class SingleChatMessage {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
         private String message;
-        private LocalDateTime dateTime;
+        private LocalDateTime createDate;
+        private LocalDateTime modifiedDate;
         private String photoOrVideo;
         private String chatId;
         private Long recipientId;

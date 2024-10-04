@@ -42,7 +42,8 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         List<SingleChatMessageDto> singleChatMessageDtos = singleChatMessages.stream()
                 .map(message -> SingleChatMessageDto.builder()
                         .message(message.getMessage())
-                        .dateTime(message.getDateTime())
+                        .createDate(message.getCreateDate())
+                        .modifiedDate(message.getModifiedDate())
                         .recipientId(message.getRecipientId())
                         .userDto(UserDto.builder()
                                 .id(message.getUser().getId())
@@ -90,7 +91,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .getChatRoomId(singleChatMessage.getUser(),singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
         singleChatMessage.setChatId(chatId);
-        singleChatMessage.setDateTime(LocalDateTime.now());
+        singleChatMessage.setCreateDate(LocalDateTime.now());
         singleChatMessageRepository.save(singleChatMessage);
         messagingTemplate.convertAndSend("/topic/chat/" + singleChatMessage.getRecipientId(), singleChatMessage);
     }

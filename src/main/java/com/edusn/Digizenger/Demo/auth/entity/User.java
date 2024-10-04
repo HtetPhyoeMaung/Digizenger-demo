@@ -1,5 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.entity;
 
+import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
+import com.edusn.Digizenger.Demo.chat.entity.GroupRoom;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
 import com.edusn.Digizenger.Demo.post.entity.Comment;
@@ -13,6 +15,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -83,6 +86,11 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<SingleChatRoom> singleChatRooms;
 
+    @ManyToMany(cascade = { CascadeType.MERGE },fetch = FetchType.LAZY)
+    @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name = "groups_id")
+    )
+    private List<GroupRoom> groupRooms = new ArrayList<>();
     public enum Gender{
         MALE,
         FEMALE,

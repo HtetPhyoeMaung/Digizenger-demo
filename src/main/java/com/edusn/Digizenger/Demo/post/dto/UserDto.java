@@ -16,6 +16,5 @@ public class UserDto {
     private String lastName;
     private String userProfileUrlLink;
     private int followers;
-    private boolean isLiked;
 
 }
