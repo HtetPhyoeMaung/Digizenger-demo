@@ -24,11 +24,10 @@ public class ProfileDto {
     private String username;
     private String profileLinkUrl;
     private String bio;
-    private Long followers;
-    private Long following;
-    private Long neighbors;
+    private Long followersCount;
+    private Long followingCount;
+    private Long neighborCount;
     private UserForProfileDto userForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
-//    private List<EducationHistoryDto> educationHistoryDtoList = new LinkedList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

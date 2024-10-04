@@ -38,6 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final GetUserByRequest getUserByRequest;
     @Value("${app.profileUrl}")
     private String baseProfileUrl;
+
     /** Create profile **/
     @Override
     public void createUserProfile(User user) {
@@ -105,8 +106,19 @@ public class ProfileServiceImpl implements ProfileService {
             existProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }
 
+        /** Service **/
         if(!profile.getFollowers().isEmpty()){
-            existProfileDto.
+            existProfileDto.setFollowersCount(Long.valueOf(profile.getFollowers().size()));
+        }
+
+        /** Following **/
+        if(!profile.getFollowing().isEmpty()){
+            existProfileDto.setFollowingCount(Long.valueOf(profile.getFollowing().size()));
+        }
+
+        /** Neighbors **/
+        if(!profile.getNeighbors().isEmpty()){
+            existProfileDto.setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
         }
 
         Response response = Response.builder()

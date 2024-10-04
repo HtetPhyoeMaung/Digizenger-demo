@@ -45,7 +45,13 @@ public class Profile {
     )
     private List<Profile> followers = new LinkedList<>();
 
-    @ManyToMany(mappedBy = "followers")
+    @ManyToMany
+    @JoinTable(
+            name = "profile_following",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
+
+    )
     private List<Profile> following = new LinkedList<>();
 
     @ManyToMany

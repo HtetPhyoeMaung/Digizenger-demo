@@ -188,7 +188,7 @@ public class ProfileController {
         return followerService.followToProfile(request, id);
     }
 
-    @DeleteMapping("/follow/{toUnfollowUserProfileId")
+    @DeleteMapping("/follow/{toUnfollowUserProfileId}")
     public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
                                                           @PathVariable("toUnfollowUserProfileId") Long id){
         return followerService.unFollowToProfile(request, id);
