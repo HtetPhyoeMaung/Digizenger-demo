@@ -45,7 +45,8 @@ public  class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     @Autowired
     private ViewRepository viewRepository;
-
+    @Autowired
+    private  MapperUtil mapperUtil;
 
 
     @Override
@@ -72,7 +73,7 @@ public  class PostServiceImpl implements PostService {
         }
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-        postDto.setUserDto(modelMapper.map(user, UserDto.class));
+        postDto.setUserDto(MapperUtil.convertToUserDto(user));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
         Response response = Response.builder()
@@ -139,7 +140,7 @@ public  class PostServiceImpl implements PostService {
             post.setViewsCount(viewCount);
             postRepository.save(post);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
-            // Convert post to PostDto and set additional fields
+            System.out.println(isLike);
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);

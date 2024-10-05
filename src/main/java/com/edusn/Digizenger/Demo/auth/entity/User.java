@@ -86,7 +86,10 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<SingleChatRoom> singleChatRooms;
 
-    @ManyToMany(cascade = { CascadeType.MERGE },fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    private List<GroupChatMessage> groupChatMessages;
+
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "groups_id")
     )

@@ -20,10 +20,9 @@ public class GroupChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String text;
+    private String message;
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
-    private String photoOrVideo;
     private Type type;
     public enum Type{
         IMAGE,VIDEO,TEXT,VOICE
@@ -35,6 +34,5 @@ public class GroupChatMessage {
     private User user;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "group_room_id")
-    @JsonIgnore
     private GroupRoom groupRoom;
 }

@@ -35,7 +35,7 @@ public class MapperUtil {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setFollowers(user.getFollowers());
-        log.info(user.getProfile().getProfileLinkUrl());
+        userDto.setProfileImage(user.getProfile().getProfileImageName());
         userDto.setUserProfileUrlLink(user.getProfile().getProfileLinkUrl());
 
         return userDto;

@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.chat.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ public class GroupRoom {
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
     @ManyToMany(mappedBy = "groupRooms")
+    @JsonIgnore
     private List<User> users=new ArrayList<>();
 
 }

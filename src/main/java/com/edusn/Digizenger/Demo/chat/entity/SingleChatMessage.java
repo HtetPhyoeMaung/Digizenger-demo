@@ -23,14 +23,14 @@ public class SingleChatMessage {
         private String message;
         private LocalDateTime createDate;
         private LocalDateTime modifiedDate;
-        private String photoOrVideo;
         private String chatId;
         private Long recipientId;
         private Type type;
-        @Transient
-        private Long sendId;
+//        @Transient
+//        private Long sendId;
         @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
         @JoinColumn(name = "user_id")
+        @JsonIgnore
         private User user;
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT
