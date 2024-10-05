@@ -72,7 +72,7 @@ public  class PostServiceImpl implements PostService {
         }
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-        postDto.setUserDto(modelMapper.map(user, UserDto.class));
+        postDto.setUserDto(convertToUserDto(user));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
         Response response = Response.builder()
@@ -107,7 +107,7 @@ public  class PostServiceImpl implements PostService {
 
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
-        postDto.setUserDto(modelMapper.map(user, UserDto.class));
+        postDto.setUserDto(convertToUserDto(user));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Post updated successfully")
