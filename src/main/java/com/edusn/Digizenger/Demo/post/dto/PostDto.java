@@ -24,12 +24,14 @@ public class PostDto {
     private LocalDateTime modifiedDate;
     private Post.PostType postType;
     private String imageName;
-    private URL imageUrl;
-    private URL vedioUrl;
+    private String  imageUrl;
+    private String  vedioUrl;
     private UserDto userDto;
+    private ProfileDto profileDto;
     private Long likeCount ;
     private Long viewCount;
     private boolean isLiked;
+
 
 
 }

@@ -20,7 +20,7 @@ public class CareerHistoryDto {
     private String careerName;
     private String companyName;
     private String companyLogoName;
-    private URL companyLogoUrl;
+    private String companyLogoUrl;
     private LocalDate joinDate;
     private LocalDate endDate;
     private Present present;

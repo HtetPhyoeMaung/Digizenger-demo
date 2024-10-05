@@ -69,11 +69,11 @@ public class StorageService {
     }
 
 
-    public URL getImageByName(String imageName) {
+    public String  getImageByName(String imageName) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(BUCKET_NAME, imageName);
 
-        return space.generatePresignedUrl(generatePresignedUrlRequest);
+        return space.generatePresignedUrl(generatePresignedUrlRequest).toString();
     }
 
     public String  updateImage(MultipartFile file, String filename) throws IOException {

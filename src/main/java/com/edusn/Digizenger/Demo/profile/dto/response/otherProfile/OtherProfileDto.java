@@ -20,8 +20,8 @@ public class OtherProfileDto {
     private Long id;
     private String profileCareer;
     private String profileImageName;
-    private URL profileImageUrl;
-    private URL coverImageUrl;
+    private String profileImageUrl;
+    private String coverImageUrl;
     private String coverImageName;
     private String username;
     private String profileLinkUrl;

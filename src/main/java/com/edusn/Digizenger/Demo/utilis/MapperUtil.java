@@ -4,6 +4,8 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,7 @@ public class MapperUtil {
         postDto.setPostType(post.getPostType());
         postDto.setViewCount(post.getViewsCount());
         postDto.setLikeCount(post.getLikesCount());
-
+        postDto.setProfileDto(convertToProfileDto(post.getUser().getProfile()));
         return postDto;
     }
     public static UserDto convertToUserDto(User user) {
@@ -31,10 +33,16 @@ public class MapperUtil {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setFollowers(user.getFollowers());
-        userDto.setProfileImage(user.getProfile().getProfileImageName());
-        userDto.setUserProfileUrlLink(user.getProfile().getProfileLinkUrl());
+
 
         return userDto;
+    }
+
+    public static ProfileDto convertToProfileDto(Profile profile){
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setProfileImageUrl(profile.getProfileLinkUrl());
+        profileDto.setProfileLinkUrl(profile.getProfileLinkUrl());
+        return profileDto;
     }
 
 

@@ -17,9 +17,9 @@ public class RelationShipDto {
     private String lastName;
     private String profileCareer;
     private String profileImageName;
-    private URL profileImageUrl;
+    private String  profileImageUrl;
     private String coverImageName;
-    private URL coverImageUrl;
+    private String  coverImageUrl;
     private String username;
     private String profileLinkUrl;
     private Long followersCount = 0L;
