@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.chat.service.impl;
 
+import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.chat.dto.GroupChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
@@ -10,6 +11,8 @@ import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +35,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
     private GroupRoomRepository groupRoomRepository;
 
     @Override
-    public void sendGroupMessage(GroupChatMessage groupChatMessage, User sender) {
+    public ResponseEntity<Response> sendGroupMessage(GroupChatMessage groupChatMessage, User sender) {
         GroupRoom groupRoom = groupRoomRepository.findById(groupChatMessage.getGroupRoom().getId()).orElseThrow(()->new CustomNotFoundException("Group is not found by this id"));
         if(groupChatMessage.getMessage()!=null && groupChatMessage.getType() != GroupChatMessage.Type.TEXT){
             String fileData = groupChatMessage.getMessage(); // This should contain the base64 data
@@ -76,6 +79,11 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                                                 .modifiedDate(savedMessage.getModifiedDate())
                                                 .build();
         messagingTemplate.convertAndSend(groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        Response response=Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Group Message send success")
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 }

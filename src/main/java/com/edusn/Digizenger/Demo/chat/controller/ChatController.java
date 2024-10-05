@@ -49,9 +49,9 @@ public class ChatController {
     }
 
     @MessageMapping("/group-chat")
-    public void sendGroupMessage(@RequestBody GroupChatMessage groupChatMessage,HttpServletRequest request){
+    public ResponseEntity<Response> sendGroupMessage(@RequestBody GroupChatMessage groupChatMessage,HttpServletRequest request){
         User sender= getUserByRequest.getUser(request);
-        groupChatMessageService.sendGroupMessage(groupChatMessage,sender);
+        return groupChatMessageService.sendGroupMessage(groupChatMessage,sender);
     }
 
 
