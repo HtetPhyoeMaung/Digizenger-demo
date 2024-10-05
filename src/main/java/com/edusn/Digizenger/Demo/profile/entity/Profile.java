@@ -2,7 +2,6 @@ package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +37,31 @@ public class Profile {
 
     private String bio;
 
+    @ManyToMany
+    @JoinTable(
+            name = "profile_follower",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private List<Profile> followers = new LinkedList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_following",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
+
+    )
+    private List<Profile> following = new LinkedList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_neighbors",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "neighbors_id")
+    )
+    private List<Profile> neighbors = new LinkedList<>();
+
     @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "userId")
     private User user;
@@ -45,13 +69,6 @@ public class Profile {
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareerHistory> careerHistoryList = new LinkedList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "profile_education",
-            joinColumns = @JoinColumn(name = "profile_id"),
-            inverseJoinColumns = @JoinColumn(name = "education_id")
-    )
-    private Set<Education> educationList = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -62,6 +79,23 @@ public class Profile {
     @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 
+    //@ManyToMany
+//    @JoinTable(
+//            name = "profile_education",
+//            joinColumns = @JoinColumn(name = "profile_id"),
+//            inverseJoinColumns = @JoinColumn(name = "education_id")
+//    )
+//    private List<EducationHistory> educationHistoryList = new LinkedList<>();
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "profile_academicInstitutionList",
+//            joinColumns = @JoinColumn(name = "profile_id"),
+//            inverseJoinColumns = @JoinColumn(name = "academicInstitution_id")
+//    )
+//    @JsonIgnoreProperties("academicInstitutionList")
+//    private List<AcademicInstitution> academicInstitutionList = new LinkedList<>();
+
     public void addServiceProvided(ServiceProvided serviceProvided){
         this.serviceProvidedList.add(serviceProvided);
         serviceProvided.getProfileList().add(this);
@@ -71,4 +105,14 @@ public class Profile {
         this.serviceProvidedList.remove(serviceProvided);
         serviceProvided.getProfileList().remove(this);
     }
+
+//    public void addAcademicInstitution(AcademicInstitution academicInstitution){
+//        this.academicInstitutionList.add(academicInstitution);
+//        academicInstitution.getProfileList().add(this);
+//    }
+//
+//    public void removeAcademicInstitution(AcademicInstitution academicInstitution){
+//        this.academicInstitutionList.remove(academicInstitution);
+//        academicInstitution.getProfileList().remove(this);
+//    }
 }

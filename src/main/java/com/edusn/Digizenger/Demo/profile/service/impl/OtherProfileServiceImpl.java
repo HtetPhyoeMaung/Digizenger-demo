@@ -76,6 +76,20 @@ public class OtherProfileServiceImpl implements OtherProfileService {
             otherProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
         }
 
+        if(!otherProfile.getFollowers().isEmpty()){
+            otherProfileDto.setFollowerCount(Long.valueOf(otherProfile.getFollowers().size()));
+        }
+
+        /** Following **/
+        if(!otherProfile.getFollowing().isEmpty()){
+            otherProfileDto.setFollowingCount(Long.valueOf(otherProfile.getFollowing().size()));
+        }
+
+        /** Neighbors **/
+        if(!otherProfile.getNeighbors().isEmpty()){
+            otherProfileDto.setNeighborCount(Long.valueOf(otherProfile.getNeighbors().size()));
+        }
+
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully got another user profile..")
