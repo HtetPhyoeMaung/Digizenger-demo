@@ -64,8 +64,10 @@ public class PostController {
     @GetMapping("/getPost")
     public ResponseEntity<Response> getPosts(
             @RequestParam(defaultValue = "1") int _page,
-            @RequestParam(defaultValue = "10") int _limit) {
-        return postService.getPostByPage(_page,_limit);
+            @RequestParam(defaultValue = "10") int _limit,HttpServletRequest request) {
+        User user= getUserByRequest.getUser(request);
+
+        return postService.getPostByPage(_page,_limit,user);
     }
 
     @PostMapping("/increase-view/{postId}")

@@ -36,7 +36,7 @@ public class Response {
     private LikeDto likeDto;
     private PostDto postDto;
     private GroupRoomDto groupRoomDto;
-
+    private List<GroupRoomDto>groupRoomDtoList;
     private String expirationDate;
 
     private ProfileDto profileDto;

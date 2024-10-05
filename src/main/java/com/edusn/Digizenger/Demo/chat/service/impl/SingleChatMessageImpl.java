@@ -99,11 +99,11 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                             .createDate(LocalDateTime.now())
                                             .build());
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
-             .message(savedMessage.getMessage())
-             .type(savedMessage.getType())
-             .createDate(savedMessage.getCreateDate())
-             .recipientId(savedMessage.getRecipientId())
-             .build();
+                             .message(savedMessage.getMessage())
+                             .type(savedMessage.getType())
+                             .createDate(savedMessage.getCreateDate())
+                             .recipientId(savedMessage.getRecipientId())
+                             .build();
 
         messagingTemplate.convertAndSend(singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
         Response response=Response.builder()

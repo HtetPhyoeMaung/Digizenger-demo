@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.chat.repo.GroupRoomRepository;
 import com.edusn.Digizenger.Demo.chat.service.GroupRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,8 @@ public class GroupRoomImpl implements GroupRoomService {
     private UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private MapperUtil mapperUtil;
     @Override
     @Transactional
     public ResponseEntity<Response> createGroupRoom(GroupRoom groupRoom) {
@@ -36,13 +40,12 @@ public class GroupRoomImpl implements GroupRoomService {
                 .map(User::getId)
                 .toList();
         List<User> users = userRepository.findAllById(userIds);
+        List<UserDto> userDtoList = new LinkedList<>();
         GroupRoom createdGroup=groupRoomRepository.save(groupRoom);
         for (User user : users) {
             user.getGroupRooms().add(createdGroup);
+            userDtoList.add(modelMapper.map(user, UserDto.class));
         }
-        List<UserDto> userDtoList = createdGroup.getUsers().stream()
-                .map(userInGroup -> modelMapper.map(userInGroup, UserDto.class))
-                .toList();
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
         groupRoomDto.setUserDtoList(userDtoList);
         Response response=Response.builder()
@@ -65,7 +68,6 @@ public class GroupRoomImpl implements GroupRoomService {
                 .toList();
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
         groupRoomDto.setUserDtoList(userDtoList);
-
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("User Remove Success")
@@ -88,7 +90,7 @@ public class GroupRoomImpl implements GroupRoomService {
             groupRoom.getUsers().add(user);
         user.getGroupRooms().add(groupRoom);
         List<UserDto> userDtoList = groupRoom.getUsers().stream()
-                .map(userInGroup -> modelMapper.map(userInGroup, UserDto.class))
+                .map(user1 -> modelMapper.map(user1, UserDto.class))
                 .toList();
         groupRoomRepository.save(groupRoom);
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
@@ -114,6 +116,33 @@ public class GroupRoomImpl implements GroupRoomService {
                 .message("Group Room deleted successfully")
                 .build();
 
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> groupList(User user) {
+    List<GroupRoom> groupRooms=groupRoomRepository.findByUsersContains(user);
+        List<GroupRoomDto> groupRoomDtoList = groupRooms.stream()
+                .map(groupRoom -> GroupRoomDto.builder()
+                        .id(groupRoom.getId())
+                        .groupName(groupRoom.getGroupName())
+                        .createDate(groupRoom.getCreateDate())
+                        .userDtoList(groupRoom.getUsers().stream()
+                                .map(groupUser -> UserDto.builder()
+                                        .id(groupUser.getId())
+                                        .firstName(groupUser.getFirstName())
+                                        .lastName(groupUser.getLastName())
+                                        .userProfileUrlLink(groupUser.getProfile().getProfileLinkUrl())  // Assuming this field exists
+                                        .followers(groupUser.getFollowers())    // Assuming followers is a list or set
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                        .toList();
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .groupRoomDtoList(groupRoomDtoList)
+                .message("Group Room List")
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

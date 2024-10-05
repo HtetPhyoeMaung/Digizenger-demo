@@ -45,8 +45,7 @@ public  class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     @Autowired
     private ViewRepository viewRepository;
-    @Autowired
-    private  MapperUtil mapperUtil;
+
 
 
     @Override
@@ -73,7 +72,7 @@ public  class PostServiceImpl implements PostService {
         }
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-        postDto.setUserDto(MapperUtil.convertToUserDto(user));
+        postDto.setUserDto(modelMapper.map(user, UserDto.class));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
         Response response = Response.builder()
@@ -125,7 +124,7 @@ public  class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
+    public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
@@ -139,14 +138,14 @@ public  class PostServiceImpl implements PostService {
             post.setLikesCount(likeCount);
             post.setViewsCount(viewCount);
             postRepository.save(post);
-            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
-            System.out.println(isLike);
+            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
+            // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
-
+            postDto.setLiked(isLike);
             return postDto;
         }).toList();
 
