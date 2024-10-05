@@ -4,6 +4,10 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
+import com.edusn.Digizenger.Demo.post.repo.PostRepository;
+import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
@@ -27,6 +31,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.edusn.Digizenger.Demo.utilis.MapperUtil.convertToUserDto;
+
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -36,6 +42,9 @@ public class ProfileServiceImpl implements ProfileService {
     private final OtherProfileService otherProfileService;
     private final StorageService storageService;
     private final GetUserByRequest getUserByRequest;
+    private final ViewRepository viewRepository;
+    private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
     @Value("${app.profileUrl}")
     private String baseProfileUrl;
 
@@ -67,9 +76,25 @@ public class ProfileServiceImpl implements ProfileService {
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
 
         if(profile.getUser().getPosts() != null){
-            List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(
-                    PostServiceImpl::convertToPostDto
-            ).collect(Collectors.toList());
+            List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(post -> {
+                UserDto userDto = convertToUserDto(post.getUser());
+                Long viewCount = viewRepository.countByPost(post);
+                Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
+                boolean isLike = post.getLikes().stream()
+                        .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
+                PostDto postDto = PostServiceImpl.convertToPostDto(post);
+                if (post.getUser().getProfile().getProfileImageName() != null) {
+                    postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
+                    postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+                }
+                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+                postDto.setUserDto(userDto);
+                postDto.setViewCount(viewCount);
+                postDto.setLikeCount(likeCount);
+                postDto.setLiked(isLike);
+                return postDto;
+            }).collect(Collectors.toList()); // Collect into a List
+
             userForProfileDto.setPostDtoList(postDtoList);
         }
 

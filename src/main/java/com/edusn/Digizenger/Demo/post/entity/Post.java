@@ -28,8 +28,7 @@ public class Post implements Serializable {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private PostType postType;
-    private Long viewsCount;
-    private Long likesCount;
+
 
 
     private String imageName;

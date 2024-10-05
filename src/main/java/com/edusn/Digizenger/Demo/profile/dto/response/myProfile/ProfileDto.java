@@ -13,14 +13,13 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileDto {
     private Long id;
     private String profileCareer;
     private String profileImageName;
-    private URL profileImageUrl;
+    private String  profileImageUrl;
     private String coverImageName;
-    private URL coverImageUrl;
+    private String coverImageUrl;
     private String username;
     private String profileLinkUrl;
     private String bio;

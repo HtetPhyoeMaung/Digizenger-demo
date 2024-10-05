@@ -54,14 +54,12 @@ public  class PostServiceImpl implements PostService {
                     .postType(postType)
                     .createdDate(LocalDateTime.now())
                     .imageName(filename)
-                    .viewsCount(0L)
                     .user(user)
                     .build();
         }else {
             post = Post.builder()
                     .description(description)
                     .postType(postType)
-                    .viewsCount(0L)
                     .createdDate(LocalDateTime.now())
                     .user(user)
                     .build();
@@ -103,6 +101,7 @@ public  class PostServiceImpl implements PostService {
 
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
+
         postDto.setUserDto(convertToUserDto(user));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -125,17 +124,16 @@ public  class PostServiceImpl implements PostService {
         Page<Post> postPage = postRepository.findAll(pageable);
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
             UserDto userDto = convertToUserDto(post.getUser());
-            if(post.getImageName()!=null){
-                userDto.setProfileImageUrl(storageService.getImageByName(post.getImageName()));
-            }
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
-            post.setLikesCount(likeCount);
-            post.setViewsCount(viewCount);
-            postRepository.save(post);
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
+
+            if(post.getUser().getProfile().getProfileImageName()!=null){
+                postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
+                postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+            }
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
