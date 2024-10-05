@@ -133,7 +133,6 @@ public class GroupRoomImpl implements GroupRoomService {
                                         .firstName(groupUser.getFirstName())
                                         .lastName(groupUser.getLastName())
                                         .userProfileUrlLink(groupUser.getProfile().getProfileLinkUrl())  // Assuming this field exists
-                                        .followers(groupUser.getFollowers())    // Assuming followers is a list or set
                                         .build())
                                 .collect(Collectors.toList()))
                         .build())

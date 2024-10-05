@@ -4,7 +4,9 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -30,10 +32,9 @@ public class MapperUtil {
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
-        userDto.setFollowers(user.getFollowers());
+        userDto.setFollowers(user.getProfile().getFollowers().size());
         userDto.setProfileImage(user.getProfile().getProfileImageName());
         userDto.setUserProfileUrlLink(user.getProfile().getProfileLinkUrl());
-
         return userDto;
     }
 

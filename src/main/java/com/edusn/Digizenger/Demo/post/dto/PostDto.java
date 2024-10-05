@@ -31,5 +31,4 @@ public class PostDto {
     private Long viewCount;
     private boolean isLiked;
 
-
 }

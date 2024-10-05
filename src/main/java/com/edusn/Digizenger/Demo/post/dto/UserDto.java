@@ -17,7 +17,8 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String userProfileUrlLink;
-    private int followers;
+    private long followers;
     private String profileImage;
+    private URL profileImageUrl;
 
 }

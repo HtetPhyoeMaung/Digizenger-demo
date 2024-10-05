@@ -181,9 +181,7 @@ public class ProfileController {
                                                           @PathVariable("id") Long id){
         return aboutProvidedService.removeServiceProvided(request, id);
     }
-
     /** Follower **/
-
     @GetMapping("/followers")
     public ResponseEntity<Response> profileFollowers(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,

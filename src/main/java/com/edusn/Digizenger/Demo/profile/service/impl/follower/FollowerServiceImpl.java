@@ -53,7 +53,6 @@ public class FollowerServiceImpl implements FollowerService {
         String message = "You following to "
                 +toFollowUserProfile.getUser().getFirstName()
                 + " "+toFollowUserProfile.getUser().getLastName();
-
         if(toFollowUserProfile.getFollowing().contains(profile)){
             profile.getNeighbors().add(toFollowUserProfile);
             toFollowUserProfile.getNeighbors().add(profile);
@@ -62,7 +61,6 @@ public class FollowerServiceImpl implements FollowerService {
                     + " "+toFollowUserProfile.getUser().getLastName()
                     + ".And now  You are neighbors.";
         }
-
         profileRepository.save(profile);
         profileRepository.save(toFollowUserProfile);
 

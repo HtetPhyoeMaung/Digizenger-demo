@@ -104,7 +104,6 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                              .createDate(savedMessage.getCreateDate())
                              .recipientId(savedMessage.getRecipientId())
                              .build();
-
         messagingTemplate.convertAndSend(singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
