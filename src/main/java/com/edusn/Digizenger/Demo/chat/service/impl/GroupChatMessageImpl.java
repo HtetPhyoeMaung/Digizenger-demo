@@ -37,26 +37,30 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
     @Override
     public ResponseEntity<Response> sendGroupMessage(GroupChatMessage groupChatMessage, User sender) {
         GroupRoom groupRoom = groupRoomRepository.findById(groupChatMessage.getGroupRoom().getId()).orElseThrow(()->new CustomNotFoundException("Group is not found by this id"));
-        if(groupChatMessage.getMessage()!=null && groupChatMessage.getType() != GroupChatMessage.Type.TEXT){
-            String fileData = groupChatMessage.getMessage(); // This should contain the base64 data
-            String fileName = UUID.randomUUID() + (groupChatMessage.getType() == GroupChatMessage.Type.VOICE ? ".wav" : ".file"); // Generate a unique filename based on your logic
-            byte[] decodedBytes = Base64.getDecoder().decode(fileData.split(",")[1]); // Get the data part
+        if (groupChatMessage.getMessage() != null && groupChatMessage.getType() != GroupChatMessage.Type.TEXT) {
+            String fileData = groupChatMessage.getMessage();  // Contains base64 data directly
+            byte[] decodedBytes = Base64.getDecoder().decode(fileData); // Decode directly
+
+            String fileName;
             String contentType;
+
             switch (groupChatMessage.getType()) {
                 case IMAGE:
-                    contentType = "image/jpeg"; // Adjust based on your image format
-                    fileName = UUID.randomUUID() + ".jpg"; // Use appropriate extension for images
+                    fileName = UUID.randomUUID() + ".jpg";
+                    contentType = "image/jpeg";
                     break;
                 case VIDEO:
-                    contentType = "video/mp4"; // Adjust based on your video format
-                    fileName = UUID.randomUUID() + ".mp4"; // Use appropriate extension for videos
+                    fileName = UUID.randomUUID() + ".mp4";
+                    contentType = "video/mp4";
                     break;
                 case VOICE:
-                    contentType = "audio/wav"; // Change if you support different audio formats
+                    fileName = UUID.randomUUID() + ".wav";
+                    contentType = "audio/wav";
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported message type: " + groupChatMessage.getType());
             }
+
             try {
                 String fileUrl = storageService.uploadFile(decodedBytes, fileName, contentType);
                 groupChatMessage.setMessage(fileUrl); // Set the URL of the uploaded file
@@ -78,11 +82,43 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                                                 .createDate(savedMessage.getCreateDate())
                                                 .modifiedDate(savedMessage.getModifiedDate())
                                                 .build();
-        messagingTemplate.convertAndSend(groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        messagingTemplate.convertAndSend("/topic/"+groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Group Message send success")
                 .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> deleteMessage(GroupChatMessage groupChatMessage) {
+        groupChatMessageRepository.delete(groupChatMessage);
+        Response response=Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Group Message Delete success")
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> updateMessage(GroupChatMessage groupChatMessage) {
+        GroupChatMessage existGroupMessage=groupChatMessageRepository.findById(groupChatMessage.getId())
+                                                .orElseThrow(()->new CustomNotFoundException("Group Message not found with this id "+groupChatMessage.getId()));
+        existGroupMessage.setMessage(groupChatMessage.getMessage());
+        existGroupMessage.setModifiedDate(LocalDateTime.now());
+        GroupChatMessage savedMessage=groupChatMessageRepository.save(existGroupMessage);
+        GroupChatMessageDto groupChatMessageDto=GroupChatMessageDto.builder()
+                                                .id(savedMessage.getId())
+                                                .text(savedMessage.getMessage())
+                                                .type(savedMessage.getType())
+                                                .createDate(savedMessage.getCreateDate())
+                                                .modifiedDate(savedMessage.getModifiedDate())
+                                                .build();
+        messagingTemplate.convertAndSend("/topic/"+groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        Response response=Response.builder()
+                                    .statusCode(HttpStatus.OK.value())
+                                    .message("Group Message update success")
+                                    .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

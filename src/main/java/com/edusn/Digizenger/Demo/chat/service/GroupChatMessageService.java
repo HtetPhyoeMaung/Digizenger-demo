@@ -7,4 +7,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface GroupChatMessageService {
     ResponseEntity<Response> sendGroupMessage(GroupChatMessage groupChatMessage, User sender);
+
+    ResponseEntity<Response> deleteMessage(GroupChatMessage groupChatMessage);
+
+    ResponseEntity<Response> updateMessage(GroupChatMessage groupChatMessage);
 }

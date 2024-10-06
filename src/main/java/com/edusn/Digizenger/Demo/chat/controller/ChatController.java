@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -42,16 +43,38 @@ public class ChatController {
     }
 
     @MessageMapping("/message")
-    public ResponseEntity<Response> sendMessage(@RequestBody SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.sendMessage(singleChatMessage,sender);
 
     }
+    @MessageMapping("/message-delete")
+    @SendTo("/topic/public")
+    public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
+        return singleChatMessageService.deleteMessage(singleChatMessage);
+
+    }
+    @MessageMapping("/update-message")
+    public ResponseEntity<Response> updateMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
+        return singleChatMessageService.updateMessage(singleChatMessage);
+
+    }
+
 
     @MessageMapping("/group-chat")
-    public ResponseEntity<Response> sendGroupMessage(@RequestBody GroupChatMessage groupChatMessage,HttpServletRequest request){
+    public ResponseEntity<Response> sendGroupMessage(@Payload GroupChatMessage groupChatMessage,HttpServletRequest request){
         User sender= getUserByRequest.getUser(request);
         return groupChatMessageService.sendGroupMessage(groupChatMessage,sender);
+    }
+
+    @MessageMapping("/group-message-delete")
+    @SendTo("/topic/public")
+    public ResponseEntity<Response> deleteGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
+        return groupChatMessageService.deleteMessage(groupChatMessage);
+    }
+    @MessageMapping("/group-message-update")
+    public ResponseEntity<Response> updateGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
+        return groupChatMessageService.updateMessage(groupChatMessage);
     }
 
 
