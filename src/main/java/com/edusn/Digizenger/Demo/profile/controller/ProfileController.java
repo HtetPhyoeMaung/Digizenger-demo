@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/api/v1/profile/")
 public class ProfileController {
 

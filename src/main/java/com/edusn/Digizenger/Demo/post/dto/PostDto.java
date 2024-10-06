@@ -29,6 +29,7 @@ public class PostDto {
     private UserDto userDto;
     private Long likeCount;
     private Long viewCount;
+    private ProfileDto profileDto;
     private boolean isLiked;
 
 
