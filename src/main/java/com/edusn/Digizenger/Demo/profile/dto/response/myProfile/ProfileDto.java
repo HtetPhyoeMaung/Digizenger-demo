@@ -13,19 +13,20 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileDto {
     private Long id;
     private String profileCareer;
     private String profileImageName;
-    private URL profileImageUrl;
+    private String  profileImageUrl;
     private String coverImageName;
-    private URL coverImageUrl;
+    private String coverImageUrl;
     private String username;
     private String profileLinkUrl;
     private String bio;
+    private Long followersCount = 0L;
+    private Long followingCount = 0L;
+    private Long neighborCount = 0L;
     private UserForProfileDto userForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
-    private List<EducationDto> educationDtoList = new LinkedList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

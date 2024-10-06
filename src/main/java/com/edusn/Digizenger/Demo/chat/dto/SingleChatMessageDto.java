@@ -26,11 +26,9 @@ public class SingleChatMessageDto {
     private LocalDateTime  modifiedDate;
     private String chatId;
     private Long recipientId;
-    private Type type;
+    private SingleChatMessage.Type type;
     @JsonIgnore
     private UserDto userDto;
 
-    public enum Type{
-        IMAGE,VIDEO
-    }
+
 }

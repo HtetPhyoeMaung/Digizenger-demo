@@ -26,10 +26,12 @@ public class GroupController {
     public ResponseEntity<Response> createGroupRoom(@RequestBody GroupRoom groupRoom) {
         return groupRoomService.createGroupRoom(groupRoom);
     }
+
     @DeleteMapping("/{groupRoomId}/remove-user/{userId}")
     public ResponseEntity<Response> removerUserFromGroup(@PathVariable("groupRoomId") Long groupRoomId,@PathVariable("userId") Long userId){
         return groupRoomService.removeUser(groupRoomId,userId);
     }
+
     @PostMapping("/{groupRoomId}/invite-user/{userId}")
     public ResponseEntity<Response> inviteUserForGroup(@PathVariable("groupRoomId") Long groupRoomId,@PathVariable("userId") Long userId){
         return groupRoomService.inviteUser(groupRoomId,userId);
@@ -40,4 +42,15 @@ public class GroupController {
         return groupRoomService.deleteGroup(groupRoomId);
     }
 
-}
+    @GetMapping("/group-list")
+    public ResponseEntity<Response> groupList(HttpServletRequest request){
+        User user= getUserByRequest.getUser(request);
+        return groupRoomService.groupList(user);
+    }
+
+    @PutMapping("/update-group")
+    public ResponseEntity<Response> updateGroup(@RequestBody GroupRoom groupRoom){
+        return groupRoomService.updateGroup(groupRoom);
+    }
+
+    }

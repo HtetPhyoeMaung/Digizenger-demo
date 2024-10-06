@@ -14,13 +14,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CareerHistoryDto {
     private Long id;
     private String careerName;
     private String companyName;
     private String companyLogoName;
-    private URL companyLogoUrl;
+    private String companyLogoUrl;
     private LocalDate joinDate;
     private LocalDate endDate;
     private Present present;

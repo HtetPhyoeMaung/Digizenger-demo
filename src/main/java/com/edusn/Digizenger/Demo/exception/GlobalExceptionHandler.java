@@ -135,6 +135,56 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FollowerNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> followerNotFoundHandler(FollowingNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FollowingNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> followingNotFoundHandler(FollowingNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NeighborNotFoundException.class)
+    public ResponseEntity<CustomErrorResponse> neighborNotFoundHandler(NeighborNotFoundException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CannotFollowException.class)
+    public ResponseEntity<CustomErrorResponse> cannotFollowHandler(CannotFollowException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_ACCEPTABLE.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(CannotUnfollowException.class)
+    public ResponseEntity<CustomErrorResponse> cannotUnfollowHandler(CannotUnfollowException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_ACCEPTABLE.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> badRequestHandler(Exception ex){
         CustomErrorResponse response = CustomErrorResponse.builder()

@@ -7,6 +7,7 @@ import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,9 @@ public class ProfileController {
     private final ProfileCareerService profileCareerService;
     private final AboutCareerHistoryService careerHistoryService;
     private final AboutProvidedService aboutProvidedService;
+    private final FollowerService followerService;
+    private final FollowingService followingService;
+    private final NeighborService neighborService;
 
     @GetMapping("/test")
     public String test(){
@@ -178,7 +182,44 @@ public class ProfileController {
                                                           @PathVariable("id") Long id){
         return aboutProvidedService.removeServiceProvided(request, id);
     }
+    /** Follower **/
+    @GetMapping("/followers")
+    public ResponseEntity<Response> profileFollowers(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return followerService.getProfileFollowersByPage(_page, _limit, profileUrl, request);
+    }
 
+    @PostMapping("/followers")
+    public ResponseEntity<Response> followUserProfile(HttpServletRequest request,
+                                                      @RequestParam("toFollowUserProfileUrl") String url){
+        return followerService.followToProfile(request, url);
+    }
+
+    @DeleteMapping("/followers")
+    public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
+                                                          @RequestParam("toUnfollowUserProfileUrl") String url){
+        return followerService.unFollowToProfile(request, url);
+    }
+
+    /** Following **/
+    @GetMapping("/following")
+    public ResponseEntity<Response> profileFollowing(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return followingService.getProfileFollowingByPage(_page, _limit, profileUrl, request);
+    }
+
+    /** Neighbor **/
+    @GetMapping("/neighbors")
+    public ResponseEntity<Response> profileNeighbors(@RequestParam("_page") int _page,
+                                                     @RequestParam("_limit") int _limit,
+                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     HttpServletRequest request){
+        return neighborService.getProfileNeighborsByPage(_page, _limit, profileUrl, request);
+    }
 
 
 }

@@ -1,11 +1,9 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
-import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
@@ -14,7 +12,6 @@ import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -23,16 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -60,21 +54,23 @@ public  class PostServiceImpl implements PostService {
                     .postType(postType)
                     .createdDate(LocalDateTime.now())
                     .imageName(filename)
-                    .viewsCount(0L)
                     .user(user)
                     .build();
         }else {
             post = Post.builder()
                     .description(description)
                     .postType(postType)
-                    .viewsCount(0L)
                     .createdDate(LocalDateTime.now())
                     .user(user)
                     .build();
         }
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-        postDto.setUserDto(modelMapper.map(user, UserDto.class));
+        if(post.getImageName()!=null){
+            postDto.setImageName(post.getImageName());
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        }
+        postDto.setUserDto(convertToUserDto(user));
         Long likeCount = likeRepository.findByPost(post).stream().count();
         postDto.setLikeCount(likeCount);
         Response response = Response.builder()
@@ -109,7 +105,8 @@ public  class PostServiceImpl implements PostService {
 
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
-        postDto.setUserDto(modelMapper.map(user, UserDto.class));
+
+        postDto.setUserDto(convertToUserDto(user));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Post updated successfully")
@@ -126,27 +123,26 @@ public  class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<Response> getPostByPage(int _page, int _limit) {
+    public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
-        // Fetch paginated posts
         Page<Post> postPage = postRepository.findAll(pageable);
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
-            // Convert user to UserDto
-
             UserDto userDto = convertToUserDto(post.getUser());
-            // Fetch view count and like count for the post
             Long viewCount = viewRepository.countByPost(post);
             Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
-
-            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(post.getUser())&& like.isLiked());
+            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
+
+            if(post.getUser().getProfile().getProfileImageName()!=null){
+                postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
+                postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+            }
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
-//            ProfileDto profileDto = Pro
-
+            postDto.setLiked(isLike);
             return postDto;
         }).toList();
 

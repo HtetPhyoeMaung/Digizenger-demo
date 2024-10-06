@@ -1,7 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.dto.response.otherProfile;
 
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -16,19 +15,20 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OtherProfileDto {
     private Long id;
     private String profileCareer;
     private String profileImageName;
-    private URL profileImageUrl;
+    private String profileImageUrl;
+    private String coverImageUrl;
     private String coverImageName;
-    private URL coverImageUrl;
     private String username;
     private String profileLinkUrl;
     private String bio;
+    private Long followerCount = 0L;
+    private Long followingCount = 0L;
+    private Long neighborCount = 0L;
     private OtherUserForProfileDto otherUserForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
-    private List<EducationDto> educationDtoList = new ArrayList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
 }

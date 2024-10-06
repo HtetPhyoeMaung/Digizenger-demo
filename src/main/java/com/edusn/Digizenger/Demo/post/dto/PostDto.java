@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostDto {
 
     private Long id;
@@ -24,13 +23,14 @@ public class PostDto {
     private LocalDateTime modifiedDate;
     private Post.PostType postType;
     private String imageName;
-    private URL imageUrl;
-    private URL vedioUrl;
+    private String  imageUrl;
+    private String  vedioUrl;
     private UserDto userDto;
-    private Long likeCount;
-    private Long viewCount;
     private ProfileDto profileDto;
+    private Long likeCount ;
+    private Long viewCount;
     private boolean isLiked;
+
 
 
 }
