@@ -143,4 +143,24 @@ public class GroupRoomImpl implements GroupRoomService {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Response> updateGroup(GroupRoom groupRoom) {
+        GroupRoom existGroupRoom = groupRoomRepository.findById(groupRoom.getId())
+                .orElseThrow(() -> new CustomNotFoundException("Group is not found by this id"));
+        existGroupRoom.setGroupName(groupRoom.getGroupName());
+        existGroupRoom.setModifiedDate(LocalDateTime.now());
+        GroupRoom saveGroup=groupRoomRepository.save(existGroupRoom);
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .groupRoomDto(GroupRoomDto.builder()
+                        .id(saveGroup.getId())
+                        .groupName(saveGroup.getGroupName())
+                        .createDate(saveGroup.getCreateDate())
+                        .modifiedDate(saveGroup.getModifiedDate())
+                        .build())
+                .message("Update Group Room Success")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

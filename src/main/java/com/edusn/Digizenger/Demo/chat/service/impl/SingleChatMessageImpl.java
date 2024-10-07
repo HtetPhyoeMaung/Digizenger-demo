@@ -6,6 +6,7 @@ import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatMessageRepository;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatMessageService;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatRoomService;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,20 +60,23 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     public ResponseEntity<Response> sendMessage(SingleChatMessage singleChatMessage, User user) {
         if(singleChatMessage.getMessage()!=null && singleChatMessage.getType() != SingleChatMessage.Type.TEXT){
             String fileData = singleChatMessage.getMessage(); // This should contain the base64 data
-            String fileName = UUID.randomUUID() + (singleChatMessage.getType() == SingleChatMessage.Type.VOICE ? ".wav" : ".file"); // Generate a unique filename based on your logic
-            byte[] decodedBytes = Base64.getDecoder().decode(fileData.split(",")[1]); // Get the data part
+            byte[] decodedBytes = Base64.getDecoder().decode(fileData); // Decode directly
+
+            String fileName;
             String contentType;
+
             switch (singleChatMessage.getType()) {
                 case IMAGE:
-                    contentType = "image/jpeg"; // Adjust based on your image format
-                    fileName = UUID.randomUUID() + ".jpg"; // Use appropriate extension for images
+                    fileName = UUID.randomUUID() + ".jpg";
+                    contentType = "image/jpeg";
                     break;
                 case VIDEO:
-                    contentType = "video/mp4"; // Adjust based on your video format
-                    fileName = UUID.randomUUID() + ".mp4"; // Use appropriate extension for videos
+                    fileName = UUID.randomUUID() + ".mp4";
+                    contentType = "video/mp4";
                     break;
                 case VOICE:
-                    contentType = "audio/wav"; // Change if you support different audio formats
+                    fileName = UUID.randomUUID() + ".wav";
+                    contentType = "audio/wav";
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported message type: " + singleChatMessage.getType());
@@ -88,7 +89,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
             }
         }
         var chatId = singleChatRoomService
-                .getChatRoomId(singleChatMessage.getUser(),singleChatMessage.getRecipientId(), true)
+                .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
      SingleChatMessage savedMessage= singleChatMessageRepository.save(SingleChatMessage.builder()
                                             .user(user)
@@ -96,18 +97,53 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                             .type(singleChatMessage.getType())
                                             .chatId(chatId)
                                             .createDate(LocalDateTime.now())
+                                            .recipientId(singleChatMessage.getRecipientId())
                                             .build());
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
-                             .message(savedMessage.getMessage())
-                             .type(savedMessage.getType())
-                             .createDate(savedMessage.getCreateDate())
-                             .recipientId(savedMessage.getRecipientId())
-                             .build();
-        messagingTemplate.convertAndSend(singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
+                                                     .id(savedMessage.getId())
+                                                     .message(savedMessage.getMessage())
+                                                     .type(savedMessage.getType())
+                                                     .createDate(savedMessage.getCreateDate())
+                                                     .recipientId(savedMessage.getRecipientId())
+                                                     .build();
+        messagingTemplate.convertAndSend("/topic/"+singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Message send success")
                             .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> deleteMessage(SingleChatMessage singleChatMessage) {
+            singleChatMessageRepository.delete(singleChatMessage);
+        Response response=Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Message delete success")
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> updateMessage(SingleChatMessage singleChatMessage) {
+        SingleChatMessage existMessage=singleChatMessageRepository.findById(singleChatMessage.getId())
+                                        .orElseThrow(()->new CustomNotFoundException("Message not found with this id"));
+        existMessage.setMessage(singleChatMessage.getMessage());
+        existMessage.setModifiedDate(LocalDateTime.now());
+        SingleChatMessage updateMessage=singleChatMessageRepository.save(existMessage);
+        SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
+                .id(updateMessage.getId())
+                .message(updateMessage.getMessage())
+                .type(updateMessage.getType())
+                .createDate(updateMessage.getCreateDate())
+                .modifiedDate(updateMessage.getModifiedDate())
+                .recipientId(updateMessage.getRecipientId())
+                .build();
+        messagingTemplate.convertAndSend("/topic/"+singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
+        Response response=Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Message update success")
+                .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
