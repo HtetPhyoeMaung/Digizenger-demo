@@ -36,7 +36,6 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
 
-
     @Override
     public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId) {
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
