@@ -44,7 +44,6 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         OtherUserForProfileDto otherUserForProfileDto = modelMapper.map(otherUser, OtherUserForProfileDto.class);
         if(otherUser.getPosts() != null){
             List<PostDto> postDtoList = otherProfile.getUser().getPosts().stream().map(post -> {
-                UserDto userDto = convertToUserDto(post.getUser());
                 Long viewCount = viewRepository.countByPost(post);
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
@@ -55,7 +54,7 @@ public class OtherProfileServiceImpl implements OtherProfileService {
                     postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
                 }
                 postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-                postDto.setUserDto(userDto);
+                postDto.setProfileDto(null);
                 postDto.setViewCount(viewCount);
                 postDto.setLikeCount(likeCount);
                 postDto.setLiked(isLike);
