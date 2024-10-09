@@ -77,7 +77,6 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(profile.getUser().getPosts() != null){
             List<PostDto> postDtoList = profile.getUser().getPosts().stream().map(post -> {
-                UserDto userDto = convertToUserDto(post.getUser());
                 Long viewCount = viewRepository.countByPost(post);
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
@@ -88,8 +87,8 @@ public class ProfileServiceImpl implements ProfileService {
                     postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
                 }
                 postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-                postDto.setUserDto(userDto);
                 postDto.setViewCount(viewCount);
+                postDto.setProfileDto(null);
                 postDto.setLikeCount(likeCount);
                 postDto.setLiked(isLike);
                 return postDto;
