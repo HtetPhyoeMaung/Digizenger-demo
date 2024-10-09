@@ -61,7 +61,7 @@ public class PostController {
 
         return postService.deletePost(id);
     }
-    @GetMapping("/getPost")
+    @GetMapping("/getPosts")
     public ResponseEntity<Response> getPosts(
             @RequestParam(defaultValue = "1") int _page,
             @RequestParam(defaultValue = "10") int _limit,HttpServletRequest request) {
