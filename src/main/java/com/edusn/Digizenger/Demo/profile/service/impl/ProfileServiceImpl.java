@@ -158,7 +158,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl() == baseProfileUrl+profileUrl){
+        if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
             return showUserProfile(request);
         }
         else {
