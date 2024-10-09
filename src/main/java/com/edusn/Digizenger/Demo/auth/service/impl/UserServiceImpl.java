@@ -9,10 +9,12 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
 import com.edusn.Digizenger.Demo.auth.service.UserService;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.OtpUtil;
@@ -58,7 +60,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ProfileService profileService;
     private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
-
+    @Autowired
+    private StorageService storageService;
 
 
 
@@ -176,6 +179,13 @@ public class UserServiceImpl implements UserService {
 
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
+               .userDto(UserDto.builder()
+                       .id(checkUser.getId())
+                       .firstName(checkUser.getFirstName())
+                       .lastName(checkUser.getLastName())
+                       .role(Role.valueOf(checkUser.getRole()))
+                       .profileImageUrl(storageService.getImageByName(checkUser.getProfile().getProfileImageName()))
+                       .build())
                .message("Login Success!")
                .token(token)
                .expirationDate("7days")

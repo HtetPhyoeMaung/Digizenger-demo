@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatMessageService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class ChatController {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.findChatMessages(sender,selectedUserId);
     }
+    @GetMapping("/friend-list")
+    public ResponseEntity<List<UserDto>> getFriendList(){
+        return null;
+    }
 
     @MessageMapping("/message")
     public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
@@ -57,7 +62,6 @@ public class ChatController {
     @MessageMapping("/update-message")
     public ResponseEntity<Response> updateMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         return singleChatMessageService.updateMessage(singleChatMessage);
-
     }
 
 

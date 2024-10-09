@@ -126,6 +126,14 @@ public  class PostServiceImpl implements PostService {
     public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         Page<Post> postPage = postRepository.findAll(pageable);
+        if (postPage.isEmpty()) {
+            Response response = Response.builder()
+                    .message("No more posts available.")
+                    .statusCode(HttpStatus.NO_CONTENT.value())
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
         List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
             UserDto userDto = convertToUserDto(post.getUser());
             Long viewCount = viewRepository.countByPost(post);
@@ -138,7 +146,10 @@ public  class PostServiceImpl implements PostService {
                 postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
                 postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
             }
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+            if(post.getImageName() !=null){
+                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+
+            }
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);

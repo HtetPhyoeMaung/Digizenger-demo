@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.chat.dto;
 
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

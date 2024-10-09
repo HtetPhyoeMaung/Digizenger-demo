@@ -33,6 +33,7 @@ public class Response {
     private List<UserDto> userDtoList;
     private Long viewCount;
     private URL imageUrl;
+    private UserDto userDto;
     private LikeDto likeDto;
     private PostDto postDto;
     private GroupRoomDto groupRoomDto;
