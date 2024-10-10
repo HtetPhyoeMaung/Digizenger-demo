@@ -1,5 +1,4 @@
 package com.edusn.Digizenger.Demo.auth.service.impl;
-
 import com.edusn.Digizenger.Demo.auth.dto.request.LoginRequest;
 import com.edusn.Digizenger.Demo.auth.dto.request.RegisterRequest;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
@@ -10,14 +9,9 @@ import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
-import com.edusn.Digizenger.Demo.post.dto.PostDto;
-import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
-import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -44,14 +38,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.edusn.Digizenger.Demo.utilis.MapperUtil.convertToUserDto;
 
 @Service
 @Slf4j
+
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -67,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private OtpUtil otpUtil;
-    
+
     @Autowired
     private UserDetailServiceForUser userDetailServiceForUser;
     @Autowired
@@ -88,9 +79,8 @@ public class UserServiceImpl implements UserService {
     private LikeRepository likeRepository;
     @Value("${app.profileUrl}")
     private String baseProfileUrl;
+
     private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
-
-
 
 
     @Override
@@ -125,12 +115,14 @@ public class UserServiceImpl implements UserService {
                 user.setDateOfBirth(request.getDateOfBirth());
                 user.setOtp(otp);
                 user.setPhone(request.getPhone());
-                user.setRole(Role.USER.name());
                 user.setOtpGeneratedTime(LocalDateTime.now());
                 user.setAddress(address);
                 user.setGender(User.Gender.valueOf(request.getGender()));
-                user.setCreatedDate(LocalDateTime.now());
-
+        if(request.getRole() != null){
+            user.setRole(request.getRole());
+        }else {
+            user.setRole(Role.USER.name());
+        }
         userRepository.save(user);
         String result = request.getEmail().isEmpty()?request.getPhone():request.getEmail();
         Response response = Response.builder()
@@ -140,12 +132,13 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return new ResponseEntity<>(response,HttpStatus.CREATED);
-    }
+        }
     public ResponseEntity<Response> verifyAccount(String emailOrPhone, String otp) {
         User user=checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
         if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(1*60)){
             user.setActivated(true);
 
+            user.setCreatedDate(LocalDateTime.now());
             userRepository.save(user);
 
             /* Create user's profile */
@@ -250,5 +243,8 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findById(Long recipientId) {
         return userRepository.findById(recipientId);
     }
+
+
+
 
 }
