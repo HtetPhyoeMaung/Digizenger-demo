@@ -13,15 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-public class AdminDashBoardController {
+public class DashBoardController {
 
     private final AdminDashBoardServiceImpl adminDashBoardService;
 
-    @GetMapping("/admin")
-    public ResponseEntity<Response>  getDashBoard(HttpServletRequest  request,
+    @GetMapping("/admin/getUsers")
+    public ResponseEntity<Response>  getAllUsers(HttpServletRequest  request,
                                                   @RequestParam("_page") int _page,
                                                   @RequestParam("_limit") int _limit){
 
         return  adminDashBoardService.showAdminDashBoard(request, _page, _limit);
     }
+
+
+
+
 }

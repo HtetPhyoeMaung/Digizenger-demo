@@ -1,5 +1,4 @@
 package com.edusn.Digizenger.Demo.dashboard.admin.service;
-
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -21,10 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +40,6 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         if(user.getRole().equals(Role.USER.name())) throw new CustomNotFoundException(" Can't  accept by user!");
 
         Pageable pageable = PageRequest.of(_page - 1, _limit);
-
 
         Page<User> userList = userRepository.findAll(pageable);
         List<UserDtoForDashBoard> userDtoForDashBoardList = userList.stream().map(
