@@ -5,10 +5,7 @@ import com.edusn.Digizenger.Demo.dashboard.admin.service.impl.AdminDashBoardServ
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/dashboard/admin")
@@ -25,6 +22,11 @@ public class DashBoardController {
         return  adminDashBoardService.showAdminDashBoard(request, _page, _limit);
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<Response> showUserData(HttpServletRequest request,
+                                                 @PathVariable("userId") Long id){
+        return adminDashBoardService.showUserData(request, id);
+    }
 
 
 

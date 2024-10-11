@@ -1,4 +1,5 @@
 package com.edusn.Digizenger.Demo.dashboard.admin.service.impl;
+
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -6,8 +7,13 @@ import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.ProfileDtoForDashBoard;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.UserDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.ProfileDataDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDataDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.service.AdminDashBoardService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
@@ -23,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,5 +97,67 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .build();
 
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    /* To show user's profile by admin */
+
+    @Override
+    public ResponseEntity<Response> showUserData(HttpServletRequest request, Long id) {
+        User user = getUserByRequest.getUser(request);
+        if(user.getRole().equals(Role.USER.name())) throw new CustomNotFoundException("Can't accepted by a user");
+
+        User showUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User cannot found by id : "+id));
+
+
+        UserDataDto userDataDto = modelMapper.map(showUser, UserDataDto.class);
+
+        ProfileDataDto profileDataDto = modelMapper.map(showUser.getProfile(), ProfileDataDto.class);
+
+        /* If profile image and cover image have, set this image url */
+        profileDataDto.setProfileImageUrl(
+                showUser.getProfile().getProfileImageName() != null
+                        ? storageService.getImageByName(showUser.getProfile().getProfileImageName())
+                        : null
+        );
+
+        profileDataDto.setCoverImageUrl(
+                showUser.getProfile().getCoverImageName() != null
+                        ? storageService.getImageByName(showUser.getProfile().getCoverImageName())
+                        : null
+
+        );
+
+        profileDataDto.setPostCount((long) showUser.getPosts().size());
+        profileDataDto.setFollowerCount((long) showUser.getProfile().getFollowers().size());
+        profileDataDto.setFollowingCount((long) showUser.getProfile().getFollowing().size());
+        profileDataDto.setNeighborCount((long) showUser.getProfile().getNeighbors().size());
+
+
+        /* careerHistory */
+        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistoryList()
+                .stream().map(
+                        careerHistory -> modelMapper.map(careerHistory, CareerHistoryDto.class)
+                ).collect(Collectors.toList());
+
+        /* serviceProvided */
+        List<ServiceProvidedDto> serviceProvidedDtoList = showUser.getProfile().getServiceProvidedList()
+                .stream().map(
+                        serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
+                ).collect(Collectors.toList());
+
+        /* Now Save to profileDataDto */
+        profileDataDto.setCareerHistoryList(careerHistoryDtoList);
+        profileDataDto.setServiceProvidedList(serviceProvidedDtoList);
+
+        /* profile data must be save to the user data dto */
+        userDataDto.setProfileDataDto(profileDataDto);
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got user's data by :" + user.getRole())
+                .userDataDto(userDataDto)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

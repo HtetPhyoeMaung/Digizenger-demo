@@ -62,6 +62,7 @@ public class User {
 //    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
+    private LocalDateTime lastLoginTime;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Post> posts;

@@ -7,4 +7,6 @@ public interface AdminDashBoardService  {
 
     ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request,int _page, int _limit);
 
+    ResponseEntity<Response> showUserData(HttpServletRequest request, Long id);
+
 }

@@ -32,6 +32,7 @@ public class UsernameServiceImpl implements UsernameService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         profile.setUsername(username.trim().toLowerCase());
+        profile.setProfileLinkUrl(profileUrl+username);
         profileRepository.save(profile);
 
         Response response = Response.builder()

@@ -213,6 +213,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User can't found by "+email));
         Profile profile = profileRepository.findByUser(user);
 
+        /* Last Login Time */
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
+
         if(profile.getUsername() != null){
             profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
             profileRepository.save(profile);
