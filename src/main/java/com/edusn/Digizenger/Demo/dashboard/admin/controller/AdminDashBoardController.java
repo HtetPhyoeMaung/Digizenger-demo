@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,8 +18,10 @@ public class AdminDashBoardController {
     private final AdminDashBoardServiceImpl adminDashBoardService;
 
     @GetMapping("/admin")
-    public ResponseEntity<Response>  getDashBoard(HttpServletRequest  request){
+    public ResponseEntity<Response>  getDashBoard(HttpServletRequest  request,
+                                                  @RequestParam("_page") int _page,
+                                                  @RequestParam("_limit") int _limit){
 
-        return  adminDashBoardService.showAdminDashBoard(request);
+        return  adminDashBoardService.showAdminDashBoard(request, _page, _limit);
     }
 }

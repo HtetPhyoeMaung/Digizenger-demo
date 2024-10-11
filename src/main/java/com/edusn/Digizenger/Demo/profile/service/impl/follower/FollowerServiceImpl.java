@@ -116,7 +116,7 @@ public class FollowerServiceImpl implements FollowerService {
 
             Page<Profile> followers = profileRepository.findFollowersByProfileId(profile.getId(),pageable);
             List<RelationShipDto> profileFollowers = followers.stream().map(
-                    follower -> profileMapperUtils.convertToRelationShipDto(follower)
+                    profileMapperUtils::convertToRelationShipDto
             ).collect(Collectors.toList());
 
             Response response = Response.builder()
@@ -135,7 +135,7 @@ public class FollowerServiceImpl implements FollowerService {
                     +"'s profile.");
         Page<Profile> followers = profileRepository.findFollowersByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> otherProfileFollowers = followers.stream().map(
-                follower -> profileMapperUtils.convertToRelationShipDto(follower)
+                profileMapperUtils::convertToRelationShipDto
         ).collect(Collectors.toList());
 
         Response response = Response.builder()

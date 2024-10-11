@@ -24,10 +24,12 @@ public class AuthController {
         return userService.register(request);
     }
 
+
     @PutMapping("/verify-account")
     public ResponseEntity<Response> verifyAccount(@RequestParam String emailOrPhone, @RequestParam String otp) {
         return userService.verifyAccount(emailOrPhone, otp);
     }
+
 
     @PutMapping("/resend-code")
     public ResponseEntity<Response> resendCode(@RequestParam String emailOrPhone) throws MessagingException {

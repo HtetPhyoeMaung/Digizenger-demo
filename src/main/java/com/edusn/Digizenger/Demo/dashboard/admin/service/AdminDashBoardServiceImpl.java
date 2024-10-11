@@ -15,11 +15,16 @@ import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,38 +38,55 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
 
     @Override
-    public ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request) {
+    public ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request,int _page, int _limit) {
         User user =  getUserByRequest.getUser(request);
         if(user.getRole().equals(Role.USER.name())) throw new CustomNotFoundException(" Can't  accept by user!");
 
-        /* Profile-Dto*/
-        Profile profile = profileRepository.findByUser(user);
+        Pageable pageable = PageRequest.of(_page - 1, _limit);
 
-        ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
-                .id(profile.getId())
-                .profileLinkUrl(profile.getProfileLinkUrl())
-                .build();
 
-        if(profile.getProfileImageName() != null){
-            profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));
-        }
+        Page<User> userList = userRepository.findAll(pageable);
+        List<UserDtoForDashBoard> userDtoForDashBoardList = userList.stream().map(
+                userPage -> {
+                    // UserDto //
+                    UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(userPage,UserDtoForDashBoard.class);
+                    userDtoForDashBoard.setCountry(userPage.getAddress().getCountry());
+                    if(userDtoForDashBoard.getVerified() == null){
+                        userDtoForDashBoard.setVerified(false);
+                    }
+                    /* Profile-Dto*/
+                    Profile profile = profileRepository.findByUser(userPage);
 
-        // UserDto //
-        UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(user,UserDtoForDashBoard.class);
-        userDtoForDashBoard.setProfileDtoForDashBoard(profileDtoForDashBoard);
+                    ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
+                            .id(profile.getId())
+                            .profileLinkUrl(profile.getProfileLinkUrl())
+                            .build();
+
+                    if(profile.getProfileImageName() != null) {
+                        profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));
+                    }
+
+                    userDtoForDashBoard.setProfileDtoForDashBoard(profileDtoForDashBoard);
+
+                    return userDtoForDashBoard;
+
+                }
+        ).toList();
 
         // adminDashBoardDto //
         AdminDashBoardDto adminDashBoardDto =new AdminDashBoardDto();
+
+        /* Total Users **/
         adminDashBoardDto.setTotalUsers(userRepository.count());
 
-        /* New User **/
+        /* New Users **/
         LocalDateTime last30days = LocalDateTime.now().minusDays(30);
         adminDashBoardDto.setNewUsers(userRepository.countByCreatedDateAfter(last30days));
 
-
+        /* Verified Users **/
         adminDashBoardDto.setVerifiedUsers(userRepository.countByVerifiedTrue());
 
-        adminDashBoardDto.setUserDtoForDashBoard(userDtoForDashBoard);
+        adminDashBoardDto.setUserDtoForDashBoard(userDtoForDashBoardList);
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

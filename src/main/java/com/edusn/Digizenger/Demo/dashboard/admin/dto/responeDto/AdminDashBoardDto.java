@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class AdminDashBoardDto {
 
     private Long inactiveUsers = 0L;
 
-    private UserDtoForDashBoard userDtoForDashBoard;
+    private List<UserDtoForDashBoard> userDtoForDashBoard;
 
 
 }

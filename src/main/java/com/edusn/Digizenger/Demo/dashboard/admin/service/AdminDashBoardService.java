@@ -5,6 +5,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface AdminDashBoardService  {
 
-    ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request);
+    ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request,int _page, int _limit);
 
 }
