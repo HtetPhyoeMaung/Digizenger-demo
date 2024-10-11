@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.service;
+package com.edusn.Digizenger.Demo.dashboard.admin.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -6,6 +6,7 @@ import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.ProfileDtoForDashBoard;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.UserDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.admin.service.AdminDashBoardService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -47,9 +48,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                     // UserDto //
                     UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(userPage,UserDtoForDashBoard.class);
                     userDtoForDashBoard.setCountry(userPage.getAddress().getCountry());
-                    if(userDtoForDashBoard.getVerified() == null){
-                        userDtoForDashBoard.setVerified(false);
-                    }
+                    userDtoForDashBoard.setVerified(userPage.getVerified());
                     /* Profile-Dto*/
                     Profile profile = profileRepository.findByUser(userPage);
 

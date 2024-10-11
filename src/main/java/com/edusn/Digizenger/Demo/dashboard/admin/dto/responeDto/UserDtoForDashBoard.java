@@ -37,7 +37,6 @@ public class UserDtoForDashBoard {
     private LocalDate dateOfBirth;
 
     private User.Gender gender;
-    //    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
     private String country;

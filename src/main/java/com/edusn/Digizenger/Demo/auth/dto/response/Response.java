@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
+import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
@@ -48,5 +49,7 @@ public class Response {
 
     private List<ServiceProvidedDto> serviceProvidedDtoList;
     private AdminDashBoardDto adminDashBoardDto;
+
+    private CheckUserDto checkUserDto;
 
 }

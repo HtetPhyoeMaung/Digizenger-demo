@@ -139,6 +139,11 @@ public class UserServiceImpl implements UserService {
             user.setActivated(true);
 
             user.setCreatedDate(LocalDateTime.now());
+            if(user.getRole().equals(Role.ADMIN.name())){
+                user.setVerified(true);
+            }else{
+                user.setVerified(false);
+            }
             userRepository.save(user);
 
             /* Create user's profile */
