@@ -10,7 +10,7 @@ spring:
       port: 8080
 
   datasource:
-    url: jdbc:mysql:// digizener-uat-db-do-user-14478497-0.e.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
+    url: jdbc:mysql://digizener-uat-db-do-user-14478497-0.e.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
     username: doadmin
     password: AVNS_HCwlyEf6s862HP4-btO
 
@@ -42,4 +42,4 @@ spring:
             enable: true
 
 app:
-  profileUrl: https://digizenger.org/api/v1/profile/
+  profileUrl: https://digizenger.info/api/v1/profile/
