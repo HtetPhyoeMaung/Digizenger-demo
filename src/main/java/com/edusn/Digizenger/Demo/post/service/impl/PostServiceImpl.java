@@ -105,6 +105,10 @@ public  class PostServiceImpl implements PostService {
 
         // Convert to DTO and return response
         PostDto postDto = convertToPostDto(post);
+        if (post.getImageName()!=null) {
+            postDto.setImageName(post.getImageName());
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        }
 
         postDto.setUserDto(convertToUserDto(user));
         Response response = Response.builder()
