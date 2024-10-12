@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
-
 @Service
 @RequiredArgsConstructor
 public class UsernameServiceImpl implements UsernameService {
@@ -32,6 +30,7 @@ public class UsernameServiceImpl implements UsernameService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         profile.setUsername(username.trim().toLowerCase());
+        profile.setProfileLinkUrl(profileUrl+username);
         profileRepository.save(profile);
 
         Response response = Response.builder()

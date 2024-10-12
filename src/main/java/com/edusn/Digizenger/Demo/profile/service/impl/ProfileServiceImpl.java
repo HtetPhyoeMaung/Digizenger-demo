@@ -9,11 +9,9 @@ import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.entity.School;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
@@ -143,6 +141,24 @@ public class ProfileServiceImpl implements ProfileService {
         /** Neighbors **/
         if(!profile.getNeighbors().isEmpty()){
             existProfileDto.setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
+        }
+
+        if(!profile.getEducationHistories().isEmpty()){
+            List<EducationHistoryDto> educationHistoryDtoList = profile.getEducationHistories().stream().map(
+                    educationHistory -> {
+                        EducationHistoryDto educationHistoryDto = modelMapper.map(educationHistory, EducationHistoryDto.class);
+
+                        SchoolDto schoolDto = modelMapper.map(educationHistory.getSchool(), SchoolDto.class);
+                        if(educationHistory.getSchool().getLogoImageName() != null){
+                            schoolDto.setLogoImageUrl(storageService.getImageByName(educationHistory.getSchool().getLogoImageName()));
+                        }
+                        educationHistoryDto.setSchoolDto(schoolDto);
+                        return educationHistoryDto;
+
+                    }
+            ).collect(Collectors.toList());
+
+            existProfileDto.setEducationHistoryDtoList(educationHistoryDtoList);
         }
 
         Response response = Response.builder()

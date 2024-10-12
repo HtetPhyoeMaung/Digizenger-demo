@@ -8,6 +8,8 @@ import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.SchoolDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
@@ -111,6 +113,22 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         /** Neighbors **/
         if(!otherProfile.getNeighbors().isEmpty()){
             otherProfileDto.setNeighborCount(Long.valueOf(otherProfile.getNeighbors().size()));
+        }
+
+        if(!otherProfile.getEducationHistories().isEmpty()){
+            List<EducationHistoryDto> educationHistoryDtoList = otherProfile.getEducationHistories().stream().map(
+                    educationHistory -> {
+                        EducationHistoryDto educationHistoryDto = modelMapper.map(educationHistory, EducationHistoryDto.class);
+                        SchoolDto schoolDto = modelMapper.map(educationHistory.getSchool(), SchoolDto.class);
+                        if(educationHistory.getSchool().getLogoImageName() != null){
+                            schoolDto.setLogoImageUrl(storageService.getImageByName(educationHistory.getSchool().getLogoImageName()));
+                        }
+                        return educationHistoryDto;
+
+                    }
+            ).collect(Collectors.toList());
+
+            otherProfileDto.setEducationHistoryDtoList(educationHistoryDtoList);
         }
 
         Response response = Response.builder()
