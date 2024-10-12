@@ -6,7 +6,7 @@ import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ServiceProvidedNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.entity.ServiceProvided;
+import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.repo.ServiceProvidedRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;

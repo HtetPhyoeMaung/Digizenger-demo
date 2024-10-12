@@ -1,6 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.repo;
 
-import com.edusn.Digizenger.Demo.profile.entity.ServiceProvided;
+import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

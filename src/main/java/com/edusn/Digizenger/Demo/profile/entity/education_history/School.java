@@ -1,5 +1,6 @@
-package com.edusn.Digizenger.Demo.profile.entity;
+package com.edusn.Digizenger.Demo.profile.entity.education_history;
 
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,11 +26,16 @@ public class School {
 
     private String LogoImageName;
 
-    @OneToMany(mappedBy = "school",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "school",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories;
 
     @ManyToMany(mappedBy = "schools")
     @JsonIgnoreProperties("schools")
     private List<Profile> profiles = new LinkedList<>();
+
+    public void removeEducationHistory(EducationHistory educationHistory){
+        this.getEducationHistories().remove(educationHistory);
+        educationHistory.setSchool(null);
+    }
 
 }

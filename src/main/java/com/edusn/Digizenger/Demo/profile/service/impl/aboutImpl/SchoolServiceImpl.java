@@ -3,7 +3,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
-import com.edusn.Digizenger.Demo.profile.entity.School;
+import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.repo.SchoolRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.SchoolService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
@@ -41,4 +41,6 @@ public class SchoolServiceImpl implements SchoolService {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
 }

@@ -2,10 +2,11 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.profile.entity.EducationHistory;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.entity.School;
+import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.repo.EducationHistoryRepository;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.repo.SchoolRepository;
@@ -92,8 +93,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         profile.setEducationHistories(educationHistories);
         profile.setSchools(schools);
 
-//        profileRepository.save(profile);
-//        schoolRepository.save(school);
         educationHistoryRepository.save(educationHistory);
 
         Response response = Response.builder()
@@ -104,12 +103,101 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
     }
 
     @Override
-    public ResponseEntity<Response> updateEducationHistory(HttpServletRequest request, Long educationHistoryId, String schoolName, String degreeName, String fieldOfStudy, MultipartFile logoImage, LocalDate joinDate, LocalDate endDate) {
-        return null;
+    public ResponseEntity<Response> updateEducationHistory(HttpServletRequest request,
+                                                           Long educationHistoryId,
+                                                           String schoolName,
+                                                           String degreeName,
+                                                           String fieldOfStudy,
+                                                           MultipartFile logoImage,
+                                                           LocalDate joinDate,
+                                                           LocalDate endDate) throws IOException {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+        List<Profile> profiles = new LinkedList<>();
+        profiles.add(profile);
+
+        for(EducationHistory educationHistory : profile.getEducationHistories()){
+            if(educationHistory.getId() == educationHistoryId){
+
+                educationHistory.setId(educationHistoryId);
+
+                String logoImageName = null;
+                if(logoImage != null){
+                    logoImageName = storageService.uploadImage(logoImage);
+                }
+
+
+                School school;
+
+                if(!schoolRepository.existsBySchoolName(schoolName) && schoolName != null){
+                    school = School.builder()
+                            .schoolName(schoolName)
+                            .LogoImageName(logoImageName)
+                            .profiles(profiles)
+                            .build();
+                }else{
+                    school = schoolRepository.findBySchoolName(schoolName);
+                }
+
+                educationHistory.setSchool(school);
+
+                if(degreeName != null) educationHistory.setDegree(degreeName);
+                if(fieldOfStudy != null) educationHistory.setFieldOfStudy(fieldOfStudy);
+                if(joinDate != null) educationHistory.setJoinDate(joinDate);
+                educationHistory.setProfile(profile);
+
+
+                if(endDate != null){
+                    educationHistory.setEndDate(endDate);
+                    educationHistory.setPresent(Present.NO);
+                } else {
+                    educationHistory.setPresent(Present.YES);
+                }
+
+                List<EducationHistory> educationHistories = new LinkedList<>();
+                educationHistories.add(educationHistory);
+
+                List<School> schools = new LinkedList<>();
+                schools.add(school);
+
+                school.setEducationHistories(educationHistories);
+                profile.setEducationHistories(educationHistories);
+                profile.setSchools(schools);
+
+                educationHistoryRepository.save(educationHistory);
+            }
+        }
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully updated education history")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Response> removeEducationHistory(HttpServletRequest request, Long educationHistoryId) {
-        return null;
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+
+        EducationHistory educationHistory = educationHistoryRepository.findById(educationHistoryId)
+                        .orElseThrow
+                                (() -> new CustomNotFoundException("educationHistory can't exist by id : "+educationHistoryId));
+
+        if(!educationHistory.getProfile().getId().equals(profile.getId()))
+            throw new CustomNotFoundException("You cannot remove other's educationHistory.");
+
+        profile.removeEducationHistory(educationHistory);
+        School school = schoolRepository.findById(educationHistory.getSchool().getId())
+                .orElseThrow(() -> new CustomNotFoundException("school not found"));
+        school.removeEducationHistory(educationHistory);
+        schoolRepository.save(school);
+        profileRepository.save(profile);
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully deleted.")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

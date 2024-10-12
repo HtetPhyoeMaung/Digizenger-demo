@@ -230,11 +230,29 @@ public class ProfileController {
     public ResponseEntity<Response> uploadEducationHistory(HttpServletRequest request,
                                                            @RequestParam("schoolName") String schoolName,
                                                            @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
-                                                           @Nullable @RequestParam(value = "endDate",required = false) String degreeName,
+                                                           @Nullable @RequestParam(value = "degreeName",required = false) String degreeName,
                                                            @RequestParam("fieldOfStudy") String fieldOfStudy,
                                                            @RequestParam("joinDate") LocalDate joinDate,
                                                            @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
         return educationHistoryService.uploadEducationHistory(request, schoolName, logoImage, degreeName, fieldOfStudy, joinDate, endDate);
+    }
+
+    @PutMapping("/education-history/{id}")
+    public ResponseEntity<Response> updateEducationHistory(HttpServletRequest request,
+                                                           @PathVariable("id") Long educationHistoryId,
+                                                           @Nullable @RequestParam("schoolName") String schoolName,
+                                                           @Nullable @RequestParam(value = "degreeName", required = false) String degreeName,
+                                                           @Nullable @RequestParam(value = "fieldOfStudy", required = false) String fieldOfStudy,
+                                                           @Nullable @RequestParam(value = "logoImage", required = false) MultipartFile logoImage,
+                                                           @Nullable @RequestParam(value = "joinDate", required = false) LocalDate joinDate,
+                                                           @Nullable @RequestParam(value = "endDate", required = false) LocalDate endDate) throws IOException {
+        return educationHistoryService.updateEducationHistory(request, educationHistoryId, schoolName, degreeName, fieldOfStudy, logoImage, joinDate, endDate);
+    }
+
+    @DeleteMapping("/education-history/{id}")
+    public ResponseEntity<Response> deleteEducationHistory(HttpServletRequest request,
+                                                           @PathVariable("id") Long id){
+        return educationHistoryService.removeEducationHistory(request, id);
     }
 
     @GetMapping("/school/{schoolName}")
@@ -242,6 +260,7 @@ public class ProfileController {
                                                             @PathVariable("schoolName") String name){
         return schoolService.getExistingSchoolNameByName(request, name);
     }
+
 
 
 }

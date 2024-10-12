@@ -2,8 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.CareerHistoryNotFoundException;
-import com.edusn.Digizenger.Demo.profile.entity.CareerHistory;
+import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.CareerHistoryRepository;
