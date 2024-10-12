@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
-
 @Service
 @RequiredArgsConstructor
 public class UsernameServiceImpl implements UsernameService {

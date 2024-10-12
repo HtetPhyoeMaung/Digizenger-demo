@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -54,5 +55,7 @@ public class Response {
     private CheckUserDto checkUserDto;
 
     private UserDataDto userDataDto;
+
+    private List<String> schoolNameList;
 
 }
