@@ -103,18 +103,6 @@ public class ProfileServiceImpl implements ProfileService {
             );
         }
 
-        /** For CareerHistory **/
-        if(!profile.getCareerHistoryList().isEmpty()){
-            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
-                    careerHistory -> {
-                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
-                        if(careerHistoryDto.getCompanyLogoName() != null ) {
-                            careerHistoryDto.setCompanyLogoUrl(storageService.getImageByName(careerHistoryDto.getCompanyLogoName()));
-                        }
-                    return careerHistoryDto;
-            }).collect(Collectors.toList());
-            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
-        }
 
         /** Service Provided **/
         if(!profile.getServiceProvidedList().isEmpty()){
@@ -139,6 +127,7 @@ public class ProfileServiceImpl implements ProfileService {
             existProfileDto.setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
         }
 
+        /* Education Histories **/
         if(!profile.getEducationHistories().isEmpty()){
             List<EducationHistoryDto> educationHistoryDtoList = profile.getEducationHistories().stream().map(
                     educationHistory -> {
@@ -155,6 +144,25 @@ public class ProfileServiceImpl implements ProfileService {
             ).collect(Collectors.toList());
 
             existProfileDto.setEducationHistoryDtoList(educationHistoryDtoList);
+        }
+
+        /* Career Histories **/
+        if(!profile.getCareerHistoryList().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
+                    careerHistory -> {
+                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
+
+                        CompanyDto companyDto = modelMapper.map(careerHistory.getCompany(), CompanyDto.class);
+                        if(careerHistory.getCompany().getLogoImageName() != null){
+                            companyDto.setLogoImageUrl(storageService.getImageByName(careerHistory.getCompany().getLogoImageName()));
+                        }
+                        careerHistoryDto.setCompanyDto(companyDto);
+                        return careerHistoryDto;
+
+                    }
+            ).collect(Collectors.toList());
+
+            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
         }
 
         Response response = Response.builder()

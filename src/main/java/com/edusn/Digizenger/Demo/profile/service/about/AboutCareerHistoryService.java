@@ -11,19 +11,19 @@ import java.time.LocalDate;
 public interface AboutCareerHistoryService {
 
     ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
-                                                 String careerName,
-                                                 String companyName,
-                                                 MultipartFile companyLogo,
-                                                 LocalDate joinDate,
-                                                 LocalDate endDate) throws IOException;
+                                                    String companyName,
+                                                    MultipartFile logoImage,
+                                                    String designation,
+                                                    LocalDate joinDate,
+                                                    LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
-                                                 Long id,
-                                                 String careerName,
-                                                 String companyName,
-                                                 MultipartFile companyLogo,
-                                                 LocalDate joinDate,
-                                                 LocalDate endDate) throws IOException;
+                                                    Long careerHistoryId,
+                                                    String companyName,
+                                                    String designation,
+                                                    MultipartFile logoImage,
+                                                    LocalDate joinDate,
+                                                    LocalDate endDate) throws IOException;
 
-    ResponseEntity<Response> removeCareerHistoryById(HttpServletRequest request, Long id);
+    ResponseEntity<Response> removeCareerHistory(HttpServletRequest request, Long careerHistoryId);
 }

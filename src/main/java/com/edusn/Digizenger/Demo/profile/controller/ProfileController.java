@@ -2,10 +2,7 @@ package com.edusn.Digizenger.Demo.profile.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.profile.service.*;
-import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
-import com.edusn.Digizenger.Demo.profile.service.about.AboutEducationHistoryService;
-import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
-import com.edusn.Digizenger.Demo.profile.service.about.SchoolService;
+import com.edusn.Digizenger.Demo.profile.service.about.*;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +34,7 @@ public class ProfileController {
     private final NeighborService neighborService;
     private final AboutEducationHistoryService educationHistoryService;
     private final SchoolService schoolService;
+    private final CompanyService companyService;
 
     @GetMapping("/test")
     public String test(){
@@ -123,34 +121,6 @@ public class ProfileController {
     @DeleteMapping("/career")
     public ResponseEntity<Response> removeCareer(HttpServletRequest request){
         return profileCareerService.removeCareer(request);
-    }
-
-    /** Career History **/
-    @PostMapping("/career-history")
-    public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
-                                                        @RequestParam("careerName") String careerName,
-                                                        @RequestParam("companyName") String companyName,
-                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
-                                                        @RequestParam("joinDate") LocalDate joinDate,
-                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
-        return careerHistoryService.uploadCareerHistory(request, careerName, companyName, companyLogo, joinDate, endDate);
-    }
-
-    @PutMapping("/career-history")
-    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
-                                                        @RequestParam("id") Long id,
-                                                        @RequestParam("careerName") String careerName,
-                                                        @RequestParam("companyName") String companyName,
-                                                        @Nullable @RequestParam(value = "companyLogo",required = false) MultipartFile companyLogo,
-                                                        @RequestParam("joinDate") LocalDate joinDate,
-                                                        @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
-        return careerHistoryService.updateCareerHistory(request, id, careerName, companyName, companyLogo, joinDate, endDate);
-    }
-
-    @DeleteMapping("/career-history/{id}")
-    public ResponseEntity<Response> removeCareerHistory(HttpServletRequest request,
-                                                        @PathVariable Long id){
-        return careerHistoryService.removeCareerHistoryById(request, id);
     }
 
 
@@ -260,6 +230,43 @@ public class ProfileController {
                                                             @PathVariable("schoolName") String name){
         return schoolService.getExistingSchoolNameByName(request, name);
     }
+
+
+    /** Career History **/
+    @PostMapping("/career-history")
+    public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
+                                                           @RequestParam("companyName") String companyNmae,
+                                                           @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
+                                                           @Nullable @RequestParam(value = "designation",required = false) String designation,
+                                                           @RequestParam("joinDate") LocalDate joinDate,
+                                                           @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
+        return careerHistoryService.uploadCareerHistory(request, companyNmae, logoImage, designation, joinDate, endDate);
+    }
+
+    @PutMapping("/career-history/{id}")
+    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
+                                                           @PathVariable("id") Long careerHistoryId,
+                                                           @Nullable @RequestParam("companyName") String companyName,
+                                                           @Nullable @RequestParam(value = "designation", required = false) String designation,
+                                                           @Nullable @RequestParam(value = "logoImage", required = false) MultipartFile logoImage,
+                                                           @Nullable @RequestParam(value = "joinDate", required = false) LocalDate joinDate,
+                                                           @Nullable @RequestParam(value = "endDate", required = false) LocalDate endDate) throws IOException {
+        return careerHistoryService.updateCareerHistory(request, careerHistoryId, companyName, designation, logoImage, joinDate, endDate);
+    }
+
+    @DeleteMapping("/career-history/{id}")
+    public ResponseEntity<Response> deleteCareerHistory(HttpServletRequest request,
+                                                           @PathVariable("id") Long id){
+        return careerHistoryService.removeCareerHistory(request, id);
+    }
+
+    @GetMapping("/company/{companyName}")
+    public ResponseEntity<Response> findCompanyByDynamicName(HttpServletRequest request,
+                                                            @PathVariable("companyName") String name){
+        return companyService.getExistingCompanyNameByName(request, name);
+    }
+
+
 
 
 

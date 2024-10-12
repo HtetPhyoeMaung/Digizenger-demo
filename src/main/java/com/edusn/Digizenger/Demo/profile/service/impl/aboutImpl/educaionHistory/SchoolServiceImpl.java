@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl;
+package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.educaionHistory;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;

@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
+import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
@@ -70,8 +71,17 @@ public class Profile {
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CareerHistory> careerHistoryList = new LinkedList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_company",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "company_id")
+    )
+    @JsonIgnoreProperties("profiles")
+    private List<Company> companies = new LinkedList<>();
 
     @ManyToMany
     @JoinTable(
@@ -110,5 +120,10 @@ public class Profile {
     public void removeEducationHistory(EducationHistory educationHistory){
         this.educationHistories.remove(educationHistory);
         educationHistory.setProfile(null);
+    }
+
+    public void removeCareerHistory(CareerHistory careerHistory){
+        this.careerHistoryList.remove(careerHistory);
+        careerHistory.setProfile(null);
     }
 }

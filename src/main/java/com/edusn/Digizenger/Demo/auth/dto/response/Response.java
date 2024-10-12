@@ -58,4 +58,6 @@ public class Response {
 
     private List<String> schoolNameList;
 
+    private List<String> companyNameList;
+
 }

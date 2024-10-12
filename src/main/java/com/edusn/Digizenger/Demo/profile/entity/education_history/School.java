@@ -24,7 +24,7 @@ public class School {
     private Long id;
     private String schoolName;
 
-    private String LogoImageName;
+    private String logoImageName;
 
     @OneToMany(mappedBy = "school",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories;

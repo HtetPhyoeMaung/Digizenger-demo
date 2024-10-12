@@ -22,15 +22,8 @@ public class CareerHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String careerName;
+    private String designation;
 
-    @Column(nullable = false)
-    private String companyName;
-
-    private String companyLogoName;
-
-    @Column(nullable = false)
     private LocalDate joinDate;
 
     private LocalDate endDate;
@@ -42,7 +35,7 @@ public class CareerHistory {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "company_id")
-//    private Company company;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
+    private Company company;
 }
