@@ -11,7 +11,10 @@ import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.stereotype.Service;
 import com.amazonaws.services.s3.AmazonS3;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -19,6 +22,7 @@ import java.net.URL;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 
 
 @Service
@@ -42,18 +46,40 @@ public class StorageService {
                 )
                 .build();
     }
-
-
-
-    public String  uploadImage(MultipartFile file) throws IOException {
-        String filename = UUIDUtil.generateUUID()+file.getOriginalFilename();
+    public BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        Image resultingImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(resultingImage, 0, 0, null);
+        g2d.dispose();
+        return outputImage;
+    }
+    public String uploadImage(MultipartFile file) throws IOException {
+        // Generate unique file name
+        String filename = UUIDUtil.generateUUID() + file.getOriginalFilename();
+        // Convert MultipartFile to BufferedImage
+        BufferedImage inputImage = ImageIO.read(file.getInputStream());
+        // Resize image (you can specify target width and height here)
+        int targetWidth = 500;
+        int targetHeight = 300;
+        BufferedImage resizedImage = resizeImage(inputImage, targetWidth, targetHeight);
+        // Convert resized BufferedImage back to InputStream
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, "jpg", baos);
+        byte[] resizedBytes = baos.toByteArray();
+        ByteArrayInputStream resizedInputStream = new ByteArrayInputStream(resizedBytes);
+        // Create object metadata
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
-        objectMetadata.setContentLength(file.getSize());
-        space.putObject(new PutObjectRequest(BUCKET_NAME, filename, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-    return filename;
+        objectMetadata.setContentLength(resizedBytes.length);
+        // Upload to DigitalOcean Spaces
+        space.putObject(new PutObjectRequest(BUCKET_NAME, filename, resizedInputStream, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        return filename;
     }
 
+    //hello
     public String uploadFile(byte[] fileData, String fileName, String contentType) throws IOException {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(contentType);

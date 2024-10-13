@@ -19,7 +19,6 @@ public class RegisterRequest {
 
     private String password;
 
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
@@ -27,7 +26,8 @@ public class RegisterRequest {
 
     private String country;
 
-
     private String city;
 
-}
+    private String role;
+
+   }

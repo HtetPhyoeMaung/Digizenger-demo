@@ -26,7 +26,6 @@ public class GroupRoom {
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
     @ManyToMany(mappedBy = "groupRooms")
-    @JsonIgnore
     private List<User> users=new ArrayList<>();
 
 }

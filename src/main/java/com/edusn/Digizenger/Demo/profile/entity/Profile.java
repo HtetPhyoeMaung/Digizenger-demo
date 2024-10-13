@@ -69,6 +69,15 @@ public class Profile {
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareerHistory> careerHistoryList = new LinkedList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "profile_school",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "school_id")
+    )
+    @JsonIgnoreProperties("profiles")
+    private List<School> schools = new LinkedList<>();
+
 
     @ManyToMany
     @JoinTable(
@@ -79,13 +88,8 @@ public class Profile {
     @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 
-    //@ManyToMany
-//    @JoinTable(
-//            name = "profile_education",
-//            joinColumns = @JoinColumn(name = "profile_id"),
-//            inverseJoinColumns = @JoinColumn(name = "education_id")
-//    )
-//    private List<EducationHistory> educationHistoryList = new LinkedList<>();
+    @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<EducationHistory> educationHistories = new LinkedList<>();
 
 //    @ManyToMany
 //    @JoinTable(

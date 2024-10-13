@@ -3,7 +3,9 @@ package com.edusn.Digizenger.Demo.profile.controller;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.profile.service.*;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
+import com.edusn.Digizenger.Demo.profile.service.about.AboutEducationHistoryService;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
+import com.edusn.Digizenger.Demo.profile.service.about.SchoolService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/api/v1/profile/")
 public class ProfileController {
 
@@ -32,6 +35,8 @@ public class ProfileController {
     private final FollowerService followerService;
     private final FollowingService followingService;
     private final NeighborService neighborService;
+    private final AboutEducationHistoryService educationHistoryService;
+    private final SchoolService schoolService;
 
     @GetMapping("/test")
     public String test(){
@@ -218,6 +223,24 @@ public class ProfileController {
                                                      @RequestParam("profileUrl") String profileUrl,
                                                      HttpServletRequest request){
         return neighborService.getProfileNeighborsByPage(_page, _limit, profileUrl, request);
+    }
+
+    /** Education History **/
+    @PostMapping("/education-history")
+    public ResponseEntity<Response> uploadEducationHistory(HttpServletRequest request,
+                                                           @RequestParam("schoolName") String schoolName,
+                                                           @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
+                                                           @Nullable @RequestParam(value = "endDate",required = false) String degreeName,
+                                                           @RequestParam("fieldOfStudy") String fieldOfStudy,
+                                                           @RequestParam("joinDate") LocalDate joinDate,
+                                                           @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
+        return educationHistoryService.uploadEducationHistory(request, schoolName, logoImage, degreeName, fieldOfStudy, joinDate, endDate);
+    }
+
+    @GetMapping("/school/{schoolName}")
+    public ResponseEntity<Response> findSchoolByDynamicName(HttpServletRequest request,
+                                                            @PathVariable("schoolName") String name){
+        return schoolService.getExistingSchoolNameByName(request, name);
     }
 
 

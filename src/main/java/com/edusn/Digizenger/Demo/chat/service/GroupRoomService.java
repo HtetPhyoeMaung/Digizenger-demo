@@ -15,4 +15,6 @@ public interface GroupRoomService {
     ResponseEntity<Response> deleteGroup(Long groupRoomId);
 
     ResponseEntity<Response> groupList(User user);
+
+    ResponseEntity<Response> updateGroup(GroupRoom groupRoom);
 }

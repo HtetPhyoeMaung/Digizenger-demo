@@ -9,12 +9,14 @@ import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatMessageService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -40,18 +42,43 @@ public class ChatController {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.findChatMessages(sender,selectedUserId);
     }
+    @GetMapping("/friend-list")
+    public ResponseEntity<List<UserDto>> getFriendList(){
+        return null;
+    }
 
     @MessageMapping("/message")
-    public ResponseEntity<Response> sendMessage(@RequestBody SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.sendMessage(singleChatMessage,sender);
 
     }
+    @MessageMapping("/message-delete")
+    @SendTo("/topic/public")
+    public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
+        return singleChatMessageService.deleteMessage(singleChatMessage);
+
+    }
+    @MessageMapping("/update-message")
+    public ResponseEntity<Response> updateMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
+        return singleChatMessageService.updateMessage(singleChatMessage);
+    }
+
 
     @MessageMapping("/group-chat")
-    public void sendGroupMessage(@RequestBody GroupChatMessage groupChatMessage,HttpServletRequest request){
+    public ResponseEntity<Response> sendGroupMessage(@Payload GroupChatMessage groupChatMessage,HttpServletRequest request){
         User sender= getUserByRequest.getUser(request);
-        groupChatMessageService.sendGroupMessage(groupChatMessage,sender);
+        return groupChatMessageService.sendGroupMessage(groupChatMessage,sender);
+    }
+
+    @MessageMapping("/group-message-delete")
+    @SendTo("/topic/public")
+    public ResponseEntity<Response> deleteGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
+        return groupChatMessageService.deleteMessage(groupChatMessage);
+    }
+    @MessageMapping("/group-message-update")
+    public ResponseEntity<Response> updateGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
+        return groupChatMessageService.updateMessage(groupChatMessage);
     }
 
 
