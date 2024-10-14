@@ -4,6 +4,9 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CompanyDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.SchoolDto;
 import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
@@ -14,6 +17,8 @@ import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
+import com.edusn.Digizenger.Demo.utilis.MailUtil;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -87,11 +92,18 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         profile.setCareerHistoryList(careerHistories);
         profile.setCompanies(companies);
 
-        careerHistoryRepository.save(careerHistory);
+        CareerHistory createdCareerHistory = careerHistoryRepository.save(careerHistory);
+        CareerHistoryDto careerHistoryDto = MapperUtil.convertToCareerHistoryDto(createdCareerHistory);
+
+        if(createdCareerHistory.getCompany().getLogoImageName() != null)
+            careerHistoryDto.getCompanyDto().setLogoImageUrl(storageService.getImageByName(
+                    createdCareerHistory.getCompany().getLogoImageName()
+            ));
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("successfully uploaded career history")
+                .careerHistoryDto(careerHistoryDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -104,6 +116,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         List<Profile> profiles = new LinkedList<>();
         profiles.add(profile);
 
+        CareerHistoryDto careerHistoryDto = null;
         for(CareerHistory careerHistory : profile.getCareerHistoryList()){
             if(careerHistory.getId() == careerHistoryId){
 
@@ -151,13 +164,21 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 profile.setCareerHistoryList(careerHistories);
                 profile.setCompanies(companies);
 
-                careerHistoryRepository.save(careerHistory);
+                CareerHistory updatedCareerHistory = careerHistoryRepository.save(careerHistory);
+                careerHistoryDto = MapperUtil.convertToCareerHistoryDto(updatedCareerHistory);
+
+                if(updatedCareerHistory.getCompany().getLogoImageName() != null)
+                    careerHistoryDto.getCompanyDto().setLogoImageUrl(storageService.getImageByName(
+                            updatedCareerHistory.getCompany().getLogoImageName()
+                    ));
+
             }
         }
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated career history")
+                .careerHistoryDto(careerHistoryDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
