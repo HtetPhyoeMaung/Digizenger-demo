@@ -28,4 +28,6 @@ public interface AboutEducationHistoryService {
                                                     LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> removeEducationHistory(HttpServletRequest request, Long educationHistoryId);
+
+    ResponseEntity<Response> EducationHistoryGetById(HttpServletRequest request, Long educationHistoryId);
 }

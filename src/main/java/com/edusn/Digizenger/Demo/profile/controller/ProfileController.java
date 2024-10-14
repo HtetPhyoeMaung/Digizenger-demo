@@ -231,6 +231,12 @@ public class ProfileController {
         return schoolService.getExistingSchoolNameByName(request, name);
     }
 
+    @GetMapping("/education-history/{id}")
+    public ResponseEntity<Response> educationHistoryGetById(HttpServletRequest request,
+                                                            @PathVariable("id") Long id){
+        return educationHistoryService.EducationHistoryGetById(request, id);
+    }
+
 
     /** Career History **/
     @PostMapping("/career-history")
@@ -264,6 +270,12 @@ public class ProfileController {
     public ResponseEntity<Response> findCompanyByDynamicName(HttpServletRequest request,
                                                             @PathVariable("companyName") String name){
         return companyService.getExistingCompanyNameByName(request, name);
+    }
+
+    @GetMapping("/career-history/{id}")
+    public ResponseEntity<Response> careerHistoryGetById(HttpServletRequest request,
+                                                         @PathVariable("id") Long id){
+        return careerHistoryService.careerHistoryGetById(request, id);
     }
 
 

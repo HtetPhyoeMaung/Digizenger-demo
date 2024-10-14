@@ -26,4 +26,6 @@ public interface AboutCareerHistoryService {
                                                     LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> removeCareerHistory(HttpServletRequest request, Long careerHistoryId);
+
+    ResponseEntity<Response> careerHistoryGetById(HttpServletRequest request,Long careerHistoryId);
 }

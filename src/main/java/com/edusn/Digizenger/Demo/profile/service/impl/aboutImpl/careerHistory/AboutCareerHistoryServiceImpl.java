@@ -2,11 +2,8 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.careerHistory;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CompanyDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.SchoolDto;
 import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
@@ -17,7 +14,6 @@ import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
-import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -207,6 +203,34 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully deleted.")
                 .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> careerHistoryGetById(HttpServletRequest request, Long careerHistoryId) {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+
+        CareerHistoryDto careerHistoryDto = null;
+        if(profile.getCareerHistoryList().isEmpty())
+            throw new CustomNotFoundException("career history list cannot found.");
+        for(CareerHistory careerHistory: profile.getCareerHistoryList()){
+            if(careerHistory.getId().equals(careerHistoryId)){
+                careerHistoryDto = MapperUtil.convertToCareerHistoryDto(careerHistory);
+                careerHistoryDto.getCompanyDto().setLogoImageUrl(
+                        storageService.getImageByName(careerHistory.getCompany().getLogoImageName())
+                );
+            }
+        }
+
+        if(careerHistoryDto == null) throw new CustomNotFoundException("career history cannot found in you profile");
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got career History")
+                .careerHistoryDto(careerHistoryDto)
+                .build();
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

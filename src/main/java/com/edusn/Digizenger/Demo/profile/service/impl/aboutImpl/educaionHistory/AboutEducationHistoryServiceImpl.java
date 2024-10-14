@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.educaionHistory
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
@@ -215,6 +216,34 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully deleted.")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> EducationHistoryGetById(HttpServletRequest request, Long educationHistoryId) {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+
+        EducationHistoryDto educationHistoryDto = null;
+        if(profile.getEducationHistories().isEmpty())
+            throw new CustomNotFoundException("education cannot found in your profile");
+        for (EducationHistory educationHistory : profile.getEducationHistories()){
+            if(educationHistory.getId().equals(educationHistoryId)){
+                educationHistoryDto = MapperUtil.convertToEducationHistoryDto(educationHistory);
+                if(educationHistory.getSchool().getLogoImageName() != null)
+                    educationHistoryDto.getSchoolDto().setLogoImageUrl(
+                            storageService.getImageByName(educationHistory.getSchool().getLogoImageName())
+                    );
+            }
+        }
+
+        if(educationHistoryDto == null) throw  new CustomNotFoundException("education history cannot found in your profile");
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got education history.")
+                .educationHistoryDto(educationHistoryDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
