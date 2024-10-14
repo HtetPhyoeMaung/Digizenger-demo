@@ -16,12 +16,10 @@ import java.time.LocalDate;
 @Builder
 public class CareerHistoryDto {
     private Long id;
-    private String careerName;
-    private String companyName;
-    private String companyLogoName;
-    private String companyLogoUrl;
+    private String designation;
     private LocalDate joinDate;
     private LocalDate endDate;
     private Present present;
+    private CompanyDto companyDto;
 
 }

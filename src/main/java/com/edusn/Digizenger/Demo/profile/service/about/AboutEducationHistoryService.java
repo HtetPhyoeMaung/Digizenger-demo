@@ -25,7 +25,7 @@ public interface AboutEducationHistoryService {
                                                     String fieldOfStudy,
                                                     MultipartFile logoImage,
                                                     LocalDate joinDate,
-                                                    LocalDate endDate);
+                                                    LocalDate endDate) throws IOException;
 
     ResponseEntity<Response> removeEducationHistory(HttpServletRequest request, Long educationHistoryId);
 }

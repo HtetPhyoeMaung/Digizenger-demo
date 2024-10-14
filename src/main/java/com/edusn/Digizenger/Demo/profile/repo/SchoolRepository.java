@@ -1,6 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.repo;
 
-import com.edusn.Digizenger.Demo.profile.entity.School;
+import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +14,5 @@ public interface SchoolRepository extends JpaRepository<School,Long> {
     boolean existsBySchoolName(String name);
 
     School findBySchoolName(String name);
+
 }

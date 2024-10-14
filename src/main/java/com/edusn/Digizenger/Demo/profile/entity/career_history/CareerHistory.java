@@ -1,5 +1,7 @@
-package com.edusn.Digizenger.Demo.profile.entity;
+package com.edusn.Digizenger.Demo.profile.entity.career_history;
 
+import com.edusn.Digizenger.Demo.profile.entity.Present;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,28 +15,27 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @Builder
-@Table(name = "educationHistories")
-public class EducationHistory {
+@Table(name = "career_histories")
+public class CareerHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String degree;
-    private String fieldOfStudy;
+
+    private String designation;
 
     private LocalDate joinDate;
+
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     private Present present;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    @JoinColumn(name = "school_id")
-    private School school;
-
-
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
+    private Company company;
 }
