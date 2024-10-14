@@ -44,8 +44,8 @@ public class ProfileController {
     @GetMapping("/")
     public ResponseEntity<Response> getProfile(HttpServletRequest request,
                                                @RequestParam("_page") int _page,
-                                               @RequestParam("_limit")) throws IOException {
-        return profileService.showUserProfile(request,);
+                                               @RequestParam("_limit") int _limit) throws IOException {
+        return profileService.showUserProfile(request, _page, _limit);
     }
 
 

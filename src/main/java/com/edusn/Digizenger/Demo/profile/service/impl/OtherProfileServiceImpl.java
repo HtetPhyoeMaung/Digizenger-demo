@@ -31,7 +31,7 @@ public class OtherProfileServiceImpl implements OtherProfileService {
     private final LikeRepository likeRepository;
 
     @Override
-    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile) {
+    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile , int _page, int _limit) {
 
         User otherUser = otherProfile.getUser();
         OtherUserForProfileDto otherUserForProfileDto = modelMapper.map(otherUser, OtherUserForProfileDto.class);
