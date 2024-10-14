@@ -218,4 +218,33 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+    @Override
+    public ResponseEntity<Response> EducationHistoryGetById(HttpServletRequest request, Long educationHistoryId) {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+
+        EducationHistoryDto educationHistoryDto = null;
+        if(profile.getEducationHistories().isEmpty())
+            throw new CustomNotFoundException("education cannot found in your profile");
+        for (EducationHistory educationHistory : profile.getEducationHistories()){
+            if(educationHistory.getId().equals(educationHistoryId)){
+                educationHistoryDto = MapperUtil.convertToEducationHistoryDto(educationHistory);
+                if(educationHistory.getSchool().getLogoImageName() != null)
+                    educationHistoryDto.getSchoolDto().setLogoImageUrl(
+                            storageService.getImageByName(educationHistory.getSchool().getLogoImageName())
+                    );
+            }
+        }
+
+        if(educationHistoryDto == null) throw  new CustomNotFoundException("education history cannot found in your profile");
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got education history.")
+                .educationHistoryDto(educationHistoryDto)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

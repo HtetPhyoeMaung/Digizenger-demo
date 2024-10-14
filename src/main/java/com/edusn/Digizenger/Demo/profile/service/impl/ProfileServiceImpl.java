@@ -72,7 +72,7 @@ public class ProfileServiceImpl implements ProfileService {
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
 
         if(profile.getUser().getPosts() != null){
-            Pageable pageable =  PageRequest.of(_page, _limit);
+            Pageable pageable =  PageRequest.of(_page -1, _limit);
             List<PostDto> postDtoList = postRepository.findByUserIdOrderByCreatedDateDesc(user.getId(), pageable).stream().map(post -> {
                 Long viewCount = viewRepository.countByPost(post);
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
@@ -187,7 +187,7 @@ public class ProfileServiceImpl implements ProfileService {
         else {
             Profile otherProfile = profileRepository.findByProfileLinkUrl(baseProfileUrl+profileUrl);
             if(otherProfile == null){throw new ProfileNotFoundException("profile cannot found by url : "+profile.getProfileLinkUrl());}
-            return otherProfileService.showOtherUserProfile(otherProfile, _page, _limit);
+            return otherProfileService.showOtherUserProfile(otherProfile, profile, _page, _limit);
         }
     }
 }

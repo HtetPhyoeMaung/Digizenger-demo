@@ -236,6 +236,13 @@ public class ProfileController {
     }
 
 
+    @GetMapping("/education-history/{id}")
+    public ResponseEntity<Response> educationHistoryGetById(HttpServletRequest request,
+                                                            @PathVariable("id") Long id){
+        return educationHistoryService.EducationHistoryGetById(request, id);
+    }
+
+
     /** Career History **/
     @PostMapping("/career-history")
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
@@ -270,7 +277,11 @@ public class ProfileController {
         return companyService.getExistingCompanyNameByName(request, name);
     }
 
-
+    @GetMapping("/career-history/{id}")
+    public ResponseEntity<Response> careerHistoryGetById(HttpServletRequest request,
+                                                         @PathVariable("id") Long id){
+        return careerHistoryService.careerHistoryGetById(request, id);
+    }
 
 
 

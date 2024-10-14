@@ -209,4 +209,33 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Response> careerHistoryGetById(HttpServletRequest request, Long careerHistoryId) {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+
+        CareerHistoryDto careerHistoryDto = null;
+        if(profile.getCareerHistoryList().isEmpty())
+            throw new CustomNotFoundException("career history list cannot found.");
+        for(CareerHistory careerHistory: profile.getCareerHistoryList()){
+            if(careerHistory.getId().equals(careerHistoryId)){
+                careerHistoryDto = MapperUtil.convertToCareerHistoryDto(careerHistory);
+                careerHistoryDto.getCompanyDto().setLogoImageUrl(
+                        storageService.getImageByName(careerHistory.getCompany().getLogoImageName())
+                );
+            }
+        }
+
+        if(careerHistoryDto == null) throw new CustomNotFoundException("career history cannot found in you profile");
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got career History")
+                .careerHistoryDto(careerHistoryDto)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
