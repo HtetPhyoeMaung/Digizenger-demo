@@ -29,11 +29,7 @@ public class Post implements Serializable {
     private LocalDateTime modifiedDate;
     private PostType postType;
 
-
-
     private String imageName;
-
-
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")

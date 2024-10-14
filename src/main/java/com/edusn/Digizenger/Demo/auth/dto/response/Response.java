@@ -2,8 +2,8 @@ package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
 import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.AdminDashBoardDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
@@ -18,7 +18,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data

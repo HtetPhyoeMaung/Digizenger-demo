@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
     Profile findByUser(User user);
@@ -22,4 +21,7 @@ public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
     @Query("SELECT p.neighbors FROM Profile p WHERE p.id = :profileId")
     Page<Profile> findNeighborsByProfileId(Long profileId, Pageable pageable);
+
+    boolean existsByUsername(String username);
+
 }

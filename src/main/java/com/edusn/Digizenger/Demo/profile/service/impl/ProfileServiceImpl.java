@@ -56,7 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     /** Get Logged-in user's Profile **/
     @Override
-    public ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> showUserProfile(HttpServletRequest request, int _page, int _limit) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = user.getProfile();
@@ -174,7 +174,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request, int _page, int limit) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);

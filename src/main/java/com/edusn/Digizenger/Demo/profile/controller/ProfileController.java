@@ -42,15 +42,19 @@ public class ProfileController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Response> getProfile(HttpServletRequest request) throws IOException {
-        return profileService.showUserProfile(request);
+    public ResponseEntity<Response> getProfile(HttpServletRequest request,
+                                               @RequestParam("_page") int _page,
+                                               @RequestParam("_limit")) throws IOException {
+        return profileService.showUserProfile(request,);
     }
 
 
     @GetMapping("/{username}")
     public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit,
                                                     HttpServletRequest request) throws IOException {
-        return profileService.getProfileByProfileUrlLink(username,request);
+        return profileService.getProfileByProfileUrlLink(username,request,_page, _limit);
     }
 
     /** Profile Image **/

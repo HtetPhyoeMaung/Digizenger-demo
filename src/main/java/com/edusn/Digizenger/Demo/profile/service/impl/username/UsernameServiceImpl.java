@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.username;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.UsernameService;
@@ -29,6 +30,8 @@ public class UsernameServiceImpl implements UsernameService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
+        if(profileRepository.existsByUsername(username))
+            throw new CustomNotFoundException("username is already exists.Please enter another name.");
         profile.setUsername(username.trim().toLowerCase());
         profile.setProfileLinkUrl(profileUrl+username);
         profileRepository.save(profile);
