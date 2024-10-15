@@ -7,13 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
-import java.util.PrimitiveIterator;
+
 
 
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
-    Profile findByUser(User user);
+   Profile findByUser(User user);
 
     Profile findByProfileLinkUrl(String profileUrl);
 
