@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,29 +51,26 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
 
         Page<User> userList = userRepository.findAll(pageable);
-        List<UserDtoForDashBoard> userDtoForDashBoardList = userList.stream().map(
-                userPage -> {
-                    // UserDto //
-                    UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(userPage,UserDtoForDashBoard.class);
-                    userDtoForDashBoard.setCountry(userPage.getAddress().getCountry());
-                    userDtoForDashBoard.setVerified(userPage.getVerified());
-                    /* Profile-Dto*/
-                    Profile profile = profileRepository.findByUser(userPage);
+        List<UserDtoForDashBoard> userDtoForDashBoardList = new LinkedList<>();
 
-                    ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
-                            .id(profile.getId())
-                            .profileLinkUrl(profile.getProfileLinkUrl())
-                            .build();
+        userList.forEach(u->{
+            UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(u,UserDtoForDashBoard.class);
+            userDtoForDashBoard.setCountry(u.getAddress().getCountry());
+            userDtoForDashBoard.setVerified(u.getVerified());
+            /* Profile-Dto*/
+            Profile profile = profileRepository.findByUser(u);
+            ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
+                    .id(profile.getId())
+                    .profileLinkUrl(profile.getProfileLinkUrl())
+                    .build();
+            if(profile.getProfileImageName() != null) {
+                profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));
+            }
 
-                    if(profile.getProfileImageName() != null) {
-                        profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));
-                    }
+            userDtoForDashBoard.setProfileDtoForDashBoard(profileDtoForDashBoard);
+            userDtoForDashBoardList.add(userDtoForDashBoard);
 
-                    userDtoForDashBoard.setProfileDtoForDashBoard(profileDtoForDashBoard);
-
-                    return userDtoForDashBoard;
-                }
-        ).toList();
+        });
 
         // adminDashBoardDto //
         AdminDashBoardDto adminDashBoardDto =new AdminDashBoardDto();
