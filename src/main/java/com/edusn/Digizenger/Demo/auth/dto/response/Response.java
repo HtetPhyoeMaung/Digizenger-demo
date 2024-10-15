@@ -7,6 +7,8 @@ import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDat
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
@@ -56,6 +58,12 @@ public class Response {
 
     private UserDataDto userDataDto;
 
+    private CareerHistoryDto careerHistoryDto;
+
+    private EducationHistoryDto educationHistoryDto;
+
     private List<String> schoolNameList;
+
+    private List<String> companyNameList;
 
 }

@@ -1,5 +1,6 @@
-package com.edusn.Digizenger.Demo.profile.entity;
+package com.edusn.Digizenger.Demo.profile.entity.serviceProvided;
 
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;

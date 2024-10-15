@@ -4,14 +4,12 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
-import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.entity.School;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
@@ -28,8 +26,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.edusn.Digizenger.Demo.utilis.MapperUtil.convertToUserDto;
 
 @Service
 @RequiredArgsConstructor
@@ -107,18 +103,6 @@ public class ProfileServiceImpl implements ProfileService {
             );
         }
 
-        /** For CareerHistory **/
-        if(!profile.getCareerHistoryList().isEmpty()){
-            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
-                    careerHistory -> {
-                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
-                        if(careerHistoryDto.getCompanyLogoName() != null ) {
-                            careerHistoryDto.setCompanyLogoUrl(storageService.getImageByName(careerHistoryDto.getCompanyLogoName()));
-                        }
-                    return careerHistoryDto;
-            }).collect(Collectors.toList());
-            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
-        }
 
         /** Service Provided **/
         if(!profile.getServiceProvidedList().isEmpty()){
@@ -143,6 +127,7 @@ public class ProfileServiceImpl implements ProfileService {
             existProfileDto.setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
         }
 
+        /* Education Histories **/
         if(!profile.getEducationHistories().isEmpty()){
             List<EducationHistoryDto> educationHistoryDtoList = profile.getEducationHistories().stream().map(
                     educationHistory -> {
@@ -159,6 +144,25 @@ public class ProfileServiceImpl implements ProfileService {
             ).collect(Collectors.toList());
 
             existProfileDto.setEducationHistoryDtoList(educationHistoryDtoList);
+        }
+
+        /* Career Histories **/
+        if(!profile.getCareerHistoryList().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
+                    careerHistory -> {
+                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
+
+                        CompanyDto companyDto = modelMapper.map(careerHistory.getCompany(), CompanyDto.class);
+                        if(careerHistory.getCompany().getLogoImageName() != null){
+                            companyDto.setLogoImageUrl(storageService.getImageByName(careerHistory.getCompany().getLogoImageName()));
+                        }
+                        careerHistoryDto.setCompanyDto(companyDto);
+                        return careerHistoryDto;
+
+                    }
+            ).collect(Collectors.toList());
+
+            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
         }
 
         Response response = Response.builder()
