@@ -53,19 +53,8 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Pageable pageable = PageRequest.of(_page - 1, _limit);
 
         Page<User> userList = userRepository.findAll(pageable);
-<<<<<<< HEAD
-        List<UserDtoForDashBoard> userDtoForDashBoardList = userList.stream().map(
-                userPage -> {
-                    // UserDto //
-                    UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(userPage,UserDtoForDashBoard.class);
-                    userDtoForDashBoard.setCountry(userPage.getAddress().getCountry());
-                    userDtoForDashBoard.setVerified(userPage.getVerified());
-
-                    /* Profile-Dto*/
-                    Profile profile = profileRepository.findByUser(userPage);
-=======
         List<UserDtoForDashBoard> userDtoForDashBoardList = new LinkedList<>();
->>>>>>> 8bdec6c4c17b2da8538b59fe220f1cd7b4a89b42
+
 
         userList.forEach(u->{
             UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(u,UserDtoForDashBoard.class);
