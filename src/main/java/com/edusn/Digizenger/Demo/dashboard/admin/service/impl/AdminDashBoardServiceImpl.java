@@ -20,6 +20,7 @@ import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
     private final UserRepository userRepository;
@@ -56,6 +58,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                     UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(userPage,UserDtoForDashBoard.class);
                     userDtoForDashBoard.setCountry(userPage.getAddress().getCountry());
                     userDtoForDashBoard.setVerified(userPage.getVerified());
+
                     /* Profile-Dto*/
                     Profile profile = profileRepository.findByUser(userPage);
 
