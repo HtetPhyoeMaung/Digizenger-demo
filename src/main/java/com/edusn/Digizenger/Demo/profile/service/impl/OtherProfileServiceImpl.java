@@ -51,7 +51,7 @@ public class OtherProfileServiceImpl implements OtherProfileService {
                 postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBOURS, pageable);
             }else{
                 postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS,pageable);
-            }
+        }
 
             List<PostDto> postDtoList = postList.stream().map(post -> {
                 Long viewCount = viewRepository.countByPost(post);
