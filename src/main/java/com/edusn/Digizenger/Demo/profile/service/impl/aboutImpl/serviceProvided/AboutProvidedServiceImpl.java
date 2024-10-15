@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.serviceProvided
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ServiceProvidedNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
@@ -53,7 +54,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
 
     @Override
     public ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
-                                                          String service) {
+                                                          String service){
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         List<Profile> profileList = new LinkedList<>();
