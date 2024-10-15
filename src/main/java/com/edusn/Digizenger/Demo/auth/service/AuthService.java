@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 
 
-public interface UserService {
+public interface AuthService {
 
     ResponseEntity<Response> register(RegisterRequest request) throws MessagingException;
 

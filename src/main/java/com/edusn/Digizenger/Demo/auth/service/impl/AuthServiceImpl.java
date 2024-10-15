@@ -18,7 +18,7 @@ import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
-import com.edusn.Digizenger.Demo.auth.service.UserService;
+import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
@@ -43,7 +43,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 

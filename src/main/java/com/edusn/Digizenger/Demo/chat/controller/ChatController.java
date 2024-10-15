@@ -2,13 +2,12 @@ package com.edusn.Digizenger.Demo.chat.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.auth.service.UserService;
+import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatMessageService;
-import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +28,7 @@ public class ChatController {
     private GetUserByRequest getUserByRequest;
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @Autowired
     private SingleChatMessageService singleChatMessageService;
