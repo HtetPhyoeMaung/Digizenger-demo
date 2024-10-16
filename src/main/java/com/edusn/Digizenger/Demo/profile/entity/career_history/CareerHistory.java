@@ -1,5 +1,7 @@
-package com.edusn.Digizenger.Demo.profile.entity;
+package com.edusn.Digizenger.Demo.profile.entity.career_history;
 
+import com.edusn.Digizenger.Demo.profile.entity.Present;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +22,8 @@ public class CareerHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String careerName;
+    private String designation;
 
-    @Column(nullable = false)
-    private String companyName;
-
-    private String companyLogoName;
-
-    @Column(nullable = false)
     private LocalDate joinDate;
 
     private LocalDate endDate;
@@ -39,4 +34,8 @@ public class CareerHistory {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "profile_id")
     private Profile profile;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_id")
+    private Company company;
 }

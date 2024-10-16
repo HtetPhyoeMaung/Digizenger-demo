@@ -43,6 +43,8 @@ public class User {
 
     private String otp;
 
+    private Boolean verified;
+
     private boolean activated;
 
     private boolean locked;
@@ -59,6 +61,8 @@ public class User {
     private Gender gender;
 //    @Column(name = "created_date")
     private LocalDateTime createdDate;
+
+    private LocalDateTime lastLoginTime;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Post> posts;

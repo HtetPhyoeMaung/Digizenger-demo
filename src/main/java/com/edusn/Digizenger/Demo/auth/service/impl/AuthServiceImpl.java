@@ -1,5 +1,4 @@
 package com.edusn.Digizenger.Demo.auth.service.impl;
-
 import com.edusn.Digizenger.Demo.auth.dto.request.LoginRequest;
 import com.edusn.Digizenger.Demo.auth.dto.request.RegisterRequest;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
@@ -9,16 +8,26 @@ import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
+import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
-import com.edusn.Digizenger.Demo.auth.service.UserService;
+import com.edusn.Digizenger.Demo.auth.service.AuthService;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.OtpUtil;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +42,8 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+
+public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
@@ -48,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private OtpUtil otpUtil;
-    
+
     @Autowired
     private UserDetailServiceForUser userDetailServiceForUser;
     @Autowired
@@ -57,9 +67,20 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private ProfileRepository profileRepository;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private StorageService storageService;
+    @Autowired
+    private ViewRepository viewRepository;
+    @Autowired
+    private LikeRepository likeRepository;
+    @Value("${app.profileUrl}")
+    private String baseProfileUrl;
+
     private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
-
-
 
 
     @Override
@@ -94,12 +115,14 @@ public class UserServiceImpl implements UserService {
                 user.setDateOfBirth(request.getDateOfBirth());
                 user.setOtp(otp);
                 user.setPhone(request.getPhone());
-                user.setRole(Role.USER.name());
                 user.setOtpGeneratedTime(LocalDateTime.now());
                 user.setAddress(address);
                 user.setGender(User.Gender.valueOf(request.getGender()));
-                user.setCreatedDate(LocalDateTime.now());
-
+        if(request.getRole() != null){
+            user.setRole(request.getRole());
+        }else {
+            user.setRole(Role.USER.name());
+        }
         userRepository.save(user);
         String result = request.getEmail().isEmpty()?request.getPhone():request.getEmail();
         Response response = Response.builder()
@@ -109,13 +132,19 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return new ResponseEntity<>(response,HttpStatus.CREATED);
-    }
+        }
     public ResponseEntity<Response> verifyAccount(String emailOrPhone, String otp) {
         User user=checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
         if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(1*60)){
             user.setActivated(true);
 
-            User checkUser= userRepository.save(user);
+            user.setCreatedDate(LocalDateTime.now());
+            if(user.getRole().equals(Role.ADMIN.name())){
+                user.setVerified(true);
+            }else{
+                user.setVerified(false);
+            }
+            userRepository.save(user);
 
             /* Create user's profile */
             profileService.createUserProfile(user);
@@ -178,17 +207,55 @@ public class UserServiceImpl implements UserService {
         if (!checkUser.isActivated()){
          throw new UnverifiedException("Email was not verified. So please verified your email!");
         }
+
+
+
         // authentication
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmailOrPhone(),request.getPassword()));
         userDetails = userDetailServiceForUser.loadUserByUsername(request.getEmailOrPhone());
 
-       String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateToken(userDetails);
+
+        /** To gave profile with login token **/
+
+        String email = jwtService.extractUsername(token);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User can't found by "+email));
+        Profile profile = profileRepository.findByUser(user);
+
+        /* Last Login Time */
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
+
+        if(profile.getUsername() != null){
+            profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
+            profileRepository.save(profile);
+        }
+
+        ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
+        UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+
+
+        existProfileDto.setUserForProfileDto(userForProfileDto);
+        if(existProfileDto.getProfileImageName() != null){
+            existProfileDto.setProfileImageUrl(
+                    storageService.getImageByName(existProfileDto.getProfileImageName())
+            );
+        }
+        if(existProfileDto.getCoverImageName() != null){
+            existProfileDto.setCoverImageUrl(
+                    storageService.getImageByName(existProfileDto.getCoverImageName())
+            );
+        }
+
+
 
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
                .message("Login Success!")
                .token(token)
+               .profileDto(existProfileDto)
                .expirationDate("7days")
                .build();
 
@@ -199,5 +266,8 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findById(Long recipientId) {
         return userRepository.findById(recipientId);
     }
+
+
+
 
 }

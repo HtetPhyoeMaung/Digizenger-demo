@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.service.impl.username;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -15,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
-
 @Service
 @RequiredArgsConstructor
 public class UsernameServiceImpl implements UsernameService {
@@ -31,7 +30,11 @@ public class UsernameServiceImpl implements UsernameService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
+        if (profileRepository.existsByUsername(username)) {
+            throw new AlreadyExistsException(username);
+        }
         profile.setUsername(username.trim().toLowerCase());
+        profile.setProfileLinkUrl(profileUrl+username);
         profileRepository.save(profile);
 
         Response response = Response.builder()
@@ -47,7 +50,7 @@ public class UsernameServiceImpl implements UsernameService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getUsername() == null)
-            throw new UsernameNotFoundException("username not found by : "+ profile.getUsername());
+            throw new UsernameNotFoundException("username not found!" );
         profile.setUsername(null);
         String randomString = UrlGenerator.generateRandomString();
         profile.setProfileLinkUrl(profileUrl+randomString);

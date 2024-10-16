@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +30,10 @@ public class SecurityConfig {
     @Autowired
     private UserDetailServiceForUser userDetailsService;
 
-
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
     @Autowired
     private UserDetailServiceForUser userDetailServiceForUser;
-
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
@@ -64,9 +60,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                                 .requestMatchers("/api/v1/posts/**","/api/v1/chat/**","/api/v1/group/**","/api/v1/notification/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
 
-                                .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
-                        .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.SUPER.name())
-                                .requestMatchers("/api/v1/super/**").hasAnyAuthority(Role.SUPER.name(),Role.ADMIN.name())
+                                .requestMatchers("/api/v1/profile/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.STAFF.name())
+                        .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(),Role.ADMIN.name(),Role.STAFF.name())
+                                .requestMatchers("/api/v1/super/**").hasAnyAuthority(Role.STAFF.name(),Role.ADMIN.name())
                         .anyRequest().authenticated()
                         )
                .exceptionHandling(handler->handler.authenticationEntryPoint(jwtAuthEntryPoint))

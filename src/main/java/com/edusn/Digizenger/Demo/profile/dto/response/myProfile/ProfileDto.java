@@ -29,4 +29,5 @@ public class ProfileDto {
     private UserForProfileDto userForProfileDto;
     private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
     private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
+    private List<EducationHistoryDto> educationHistoryDtoList = new LinkedList<>();
 }

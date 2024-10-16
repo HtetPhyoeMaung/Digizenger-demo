@@ -47,21 +47,21 @@ public class PostController {
 
     @PutMapping("/update-post/{id}")
     public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
-            ,@RequestParam("description") String discription
+            ,@RequestParam("description") String description
             , @RequestParam("postType") Post.PostType postType
             , @RequestParam("file") MultipartFile multipartFile
-            ,HttpServletRequest request, String imageName) throws IOException {
+            ,HttpServletRequest request,@RequestParam("imageName") String imageName) throws IOException {
 
 
         User user= getUserByRequest.getUser(request);
-        return  postService.updatePost(id,discription,postType,user,multipartFile,imageName);
+        return  postService.updatePost(id,description,postType,user,multipartFile,imageName);
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(@PathVariable("id") long id) {
 
         return postService.deletePost(id);
     }
-    @GetMapping("/getPost")
+    @GetMapping("/getPosts")
     public ResponseEntity<Response> getPosts(
             @RequestParam(defaultValue = "1") int _page,
             @RequestParam(defaultValue = "10") int _limit,HttpServletRequest request) {

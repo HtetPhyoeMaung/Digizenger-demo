@@ -1,14 +1,18 @@
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 40MB
+      max-request-size: 40MB
   application:
     name: Digizenger-Demo
     server:
       port: 8080
 
   datasource:
-    url: jdbc:mysql://localhost:3306/digizenger
-    username: root
-    password: ggwpnoob321
-
+    url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
+    username: edusn
+    password: AVNS_fDr_E9j3sI3DBiZfpHO
 
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -37,4 +41,4 @@ spring:
             enable: true
 
 app:
-  profileUrl: http://localhost:8080/api/v1/profile/
+  profileUrl: https://digizenger.info/api/v1/profile/

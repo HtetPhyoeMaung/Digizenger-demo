@@ -5,6 +5,8 @@ import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
@@ -14,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -35,6 +38,7 @@ public class Response {
     private List<UserDto> userDtoList;
     private Long viewCount;
     private URL imageUrl;
+    private UserDto userDto;
     private LikeDto likeDto;
     private PostDto postDto;
     private GroupRoomDto groupRoomDto;
@@ -47,5 +51,18 @@ public class Response {
     private List<RelationShipDto> relationShipDtoList;
 
     private List<ServiceProvidedDto> serviceProvidedDtoList;
+    private AdminDashBoardDto adminDashBoardDto;
+
+    private CheckUserDto checkUserDto;
+
+    private UserDataDto userDataDto;
+
+    private CareerHistoryDto careerHistoryDto;
+
+    private EducationHistoryDto educationHistoryDto;
+
+    private List<String> schoolNameList;
+
+    private List<String> companyNameList;
 
 }

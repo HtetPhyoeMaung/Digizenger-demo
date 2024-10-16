@@ -1,25 +1,24 @@
-package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl;
+package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.serviceProvided;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ServiceProvidedNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
-import com.edusn.Digizenger.Demo.profile.entity.ServiceProvided;
+import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.repo.ServiceProvidedRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutProvidedService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.asm.IModelFilter;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,7 +54,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
 
     @Override
     public ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
-                                                          String service) {
+                                                          String service){
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         List<Profile> profileList = new LinkedList<>();

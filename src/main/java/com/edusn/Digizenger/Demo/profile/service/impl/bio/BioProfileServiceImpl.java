@@ -43,6 +43,7 @@ public class BioProfileServiceImpl implements BioProfileService {
 
         if(profile.getBio() == null) throw new BioNotFoundException("Bio not found in profile.");
 
+
         profile.setBio(null);
         profileRepository.save(profile);
 

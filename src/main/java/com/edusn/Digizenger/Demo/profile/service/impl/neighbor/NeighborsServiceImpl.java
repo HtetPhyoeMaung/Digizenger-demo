@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.neighbor;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;

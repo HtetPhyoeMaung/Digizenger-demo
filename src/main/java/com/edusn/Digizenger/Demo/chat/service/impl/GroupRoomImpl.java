@@ -9,6 +9,8 @@ import com.edusn.Digizenger.Demo.chat.repo.GroupRoomRepository;
 import com.edusn.Digizenger.Demo.chat.service.GroupRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,10 @@ public class GroupRoomImpl implements GroupRoomService {
     private ModelMapper modelMapper;
     @Autowired
     private MapperUtil mapperUtil;
+    @Autowired
+    private StorageService storageService;
+
+
     @Override
     @Transactional
     public ResponseEntity<Response> createGroupRoom(GroupRoom groupRoom) {
@@ -41,10 +47,16 @@ public class GroupRoomImpl implements GroupRoomService {
                 .toList();
         List<User> users = userRepository.findAllById(userIds);
         List<UserDto> userDtoList = new LinkedList<>();
+
         GroupRoom createdGroup=groupRoomRepository.save(groupRoom);
         for (User user : users) {
             user.getGroupRooms().add(createdGroup);
-            userDtoList.add(modelMapper.map(user, UserDto.class));
+            UserDto userDto = MapperUtil.convertToUserDto(user);
+                if(user.getProfile().getProfileImageName()!=null){
+                    userDto.setProfileImageUrl(storageService.getImageByName(user.getProfile().getProfileImageName()));
+                }
+            userDtoList.add(userDto);
+
         }
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
         groupRoomDto.setUserDtoList(userDtoList);
@@ -64,7 +76,13 @@ public class GroupRoomImpl implements GroupRoomService {
         groupRoom.getUsers().remove(user);
         user.getGroupRooms().remove(groupRoom);
         List<UserDto> userDtoList = groupRoom.getUsers().stream()
-                .map(userInGroup -> modelMapper.map(userInGroup, UserDto.class))
+                .map(userInGroup -> {
+                            UserDto userDto = modelMapper.map(userInGroup, UserDto.class);
+                            if (userInGroup.getProfile().getProfileImageName() != null) {
+                                userDto.setProfileImageUrl(storageService.getImageByName(userInGroup.getProfile().getProfileImageName()));
+                            }
+                            return userDto;
+                        })
                 .toList();
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
         groupRoomDto.setUserDtoList(userDtoList);
@@ -90,7 +108,13 @@ public class GroupRoomImpl implements GroupRoomService {
             groupRoom.getUsers().add(user);
         user.getGroupRooms().add(groupRoom);
         List<UserDto> userDtoList = groupRoom.getUsers().stream()
-                .map(user1 -> modelMapper.map(user1, UserDto.class))
+                .map(userInGroup -> {
+                    UserDto userDto = modelMapper.map(userInGroup, UserDto.class);
+                    if (userInGroup.getProfile().getProfileImageName() != null) {
+                        userDto.setProfileImageUrl(storageService.getImageByName(userInGroup.getProfile().getProfileImageName()));
+                    }
+                    return userDto;
+                })
                 .toList();
         groupRoomRepository.save(groupRoom);
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
@@ -132,6 +156,7 @@ public class GroupRoomImpl implements GroupRoomService {
                                         .id(groupUser.getId())
                                         .firstName(groupUser.getFirstName())
                                         .lastName(groupUser.getLastName())
+                                        .profileImageUrl(storageService.getImageByName(groupUser.getProfile().getProfileImageName()))
                                         .build())
                                 .collect(Collectors.toList()))
                         .build())
@@ -140,6 +165,26 @@ public class GroupRoomImpl implements GroupRoomService {
                 .statusCode(HttpStatus.OK.value())
                 .groupRoomDtoList(groupRoomDtoList)
                 .message("Group Room List")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> updateGroup(GroupRoom groupRoom) {
+        GroupRoom existGroupRoom = groupRoomRepository.findById(groupRoom.getId())
+                .orElseThrow(() -> new CustomNotFoundException("Group is not found by this id"));
+        existGroupRoom.setGroupName(groupRoom.getGroupName());
+        existGroupRoom.setModifiedDate(LocalDateTime.now());
+        GroupRoom saveGroup=groupRoomRepository.save(existGroupRoom);
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .groupRoomDto(GroupRoomDto.builder()
+                        .id(saveGroup.getId())
+                        .groupName(saveGroup.getGroupName())
+                        .createDate(saveGroup.getCreateDate())
+                        .modifiedDate(saveGroup.getModifiedDate())
+                        .build())
+                .message("Update Group Room Success")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
