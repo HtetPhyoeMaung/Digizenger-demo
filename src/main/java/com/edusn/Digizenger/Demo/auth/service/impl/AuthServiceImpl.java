@@ -149,8 +149,19 @@ public class AuthServiceImpl implements AuthService {
             /* Create user's profile */
             profileService.createUserProfile(user);
 
+
+            // check (isActivated)
+            UserDetails userDetails;
+            if (!checkUser.isActivated()){
+                throw new UnverifiedException("Email was not verified. So please verified your email!");
+            }
+
+            userDetails = userDetailServiceForUser.loadUserByUsername(checkUser.getEmail().isEmpty()?user.getPhone():user.getEmail());
+            String token = jwtService.generateToken(userDetails);
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
+                    .token(token)
+                    .expirationDate("7days")
                     .message("Successfully Registered!")
                     .statusCode(HttpStatus.CREATED.value())
                     .build();

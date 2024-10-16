@@ -1,9 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
-import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
@@ -35,6 +33,7 @@ public class Response {
     private String  role;
 
     private String otp;
+    private Long unreadNotificationCount;
     private List<PostDto> postDtoList;
     private List<UserDto> userDtoList;
     private Long viewCount;
@@ -45,7 +44,7 @@ public class Response {
     private GroupRoomDto groupRoomDto;
     private List<GroupRoomDto>groupRoomDtoList;
     private String expirationDate;
-
+    private List<NotificationDto> notificationDtoList;
     private ProfileDto profileDto;
 
     private OtherProfileDto otherProfileDto;

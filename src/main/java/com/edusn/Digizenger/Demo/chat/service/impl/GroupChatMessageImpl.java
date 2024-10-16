@@ -82,7 +82,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                                                 .createDate(savedMessage.getCreateDate())
                                                 .modifiedDate(savedMessage.getModifiedDate())
                                                 .build();
-        messagingTemplate.convertAndSend("/topic/"+groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(groupChatMessage.getGroupRoom().getId()),"/queue/group-messages" , groupChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Group Message send success")
@@ -114,7 +114,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                                                 .createDate(savedMessage.getCreateDate())
                                                 .modifiedDate(savedMessage.getModifiedDate())
                                                 .build();
-        messagingTemplate.convertAndSend("/topic/"+groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(groupChatMessage.getGroupRoom().getId()),"/queue/group-messages" , groupChatMessageDto);
         Response response=Response.builder()
                                     .statusCode(HttpStatus.OK.value())
                                     .message("Group Message update success")
