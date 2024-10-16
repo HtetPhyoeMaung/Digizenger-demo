@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
 
-    Profile findByUser(User user);
+   Profile findByUser(User user);
 
     Profile findByProfileLinkUrl(String profileUrl);
+
+    Boolean existsByUsername(String username);
 
     @Query("SELECT p.followers FROM Profile p WHERE p.id = :profileId")
     Page<Profile> findFollowersByProfileId(Long profileId, Pageable pageable);

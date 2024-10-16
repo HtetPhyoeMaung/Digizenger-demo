@@ -235,6 +235,12 @@ public class ProfileController {
         return schoolService.getExistingSchoolNameByName(request, name);
     }
 
+    @GetMapping("/education-history/{id}")
+    public ResponseEntity<Response> educationHistoryGetById(HttpServletRequest request,
+                                                            @PathVariable("id") Long id){
+        return educationHistoryService.EducationHistoryGetById(request, id);
+    }
+
 
     @GetMapping("/education-history/{id}")
     public ResponseEntity<Response> educationHistoryGetById(HttpServletRequest request,

@@ -2,11 +2,8 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.careerHistory;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CompanyDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.SchoolDto;
 import com.edusn.Digizenger.Demo.profile.entity.Present;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
@@ -17,7 +14,6 @@ import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.AboutCareerHistoryService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
-import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -237,5 +233,4 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }

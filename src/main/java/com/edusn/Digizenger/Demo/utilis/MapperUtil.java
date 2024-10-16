@@ -1,6 +1,8 @@
 package com.edusn.Digizenger.Demo.utilis;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
@@ -44,6 +46,18 @@ public class MapperUtil {
         profileDto.setProfileLinkUrl(profile.getProfileLinkUrl());
         profileDto.setFollowersCount((long) profile.getFollowers().size());
         return profileDto;
+    }
+
+    public static NotificationDto convertToNotificationDto(Notification notification){
+        NotificationDto notificationDto=new NotificationDto();
+        notificationDto.setId(notification.getId());
+        notificationDto.setRead(notification.isRead());
+        notificationDto.setMessage(notification.getMessage());
+        notificationDto.setCreateDate(notification.getCreateDate());
+        notificationDto.setPostId(notification.getPost().getId());
+        notificationDto.setUserId(notification.getUser().getId());
+        notificationDto.setProfileUrl(notification.getProfileUrl());
+        return notificationDto;
     }
 
     public static CareerHistoryDto convertToCareerHistoryDto(CareerHistory careerHistory){

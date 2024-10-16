@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.educaionHistory
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
@@ -218,7 +219,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
     @Override
     public ResponseEntity<Response> EducationHistoryGetById(HttpServletRequest request, Long educationHistoryId) {

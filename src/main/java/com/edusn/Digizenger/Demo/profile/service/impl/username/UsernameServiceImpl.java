@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.service.impl.username;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
@@ -49,7 +50,7 @@ public class UsernameServiceImpl implements UsernameService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getUsername() == null)
-            throw new UsernameNotFoundException("username not found by : "+ profile.getUsername());
+            throw new UsernameNotFoundException("username not found!" );
         profile.setUsername(null);
         String randomString = UrlGenerator.generateRandomString();
         profile.setProfileLinkUrl(profileUrl+randomString);
