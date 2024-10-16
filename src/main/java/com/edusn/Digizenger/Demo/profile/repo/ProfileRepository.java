@@ -24,6 +24,5 @@ public interface ProfileRepository extends JpaRepository<Profile,Long> {
     @Query("SELECT p.neighbors FROM Profile p WHERE p.id = :profileId")
     Page<Profile> findNeighborsByProfileId(Long profileId, Pageable pageable);
 
-    boolean existsByUsername(String username);
 
 }
