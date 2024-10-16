@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.post.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class Post implements Serializable {
 
 
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -48,6 +49,8 @@ public class Post implements Serializable {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<View> viewList;
 
+    @OneToMany( fetch = FetchType.LAZY,cascade = CascadeType.ALL ,orphanRemoval = true,mappedBy = "post")
+    private List<Notification> notificationList;
 
 
    public enum PostType{

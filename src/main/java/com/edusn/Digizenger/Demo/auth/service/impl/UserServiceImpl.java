@@ -115,13 +115,24 @@ public class UserServiceImpl implements UserService {
         if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(1*60)){
             user.setActivated(true);
 
-            userRepository.save(user);
+            User checkUser= userRepository.save(user);
 
             /* Create user's profile */
             profileService.createUserProfile(user);
 
+
+            // check (isActivated)
+            UserDetails userDetails;
+            if (!checkUser.isActivated()){
+                throw new UnverifiedException("Email was not verified. So please verified your email!");
+            }
+
+            userDetails = userDetailServiceForUser.loadUserByUsername(checkUser.getEmail().isEmpty()?user.getPhone():user.getEmail());
+            String token = jwtService.generateToken(userDetails);
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
+                    .token(token)
+                    .expirationDate("7days")
                     .message("Successfully Registered!")
                     .statusCode(HttpStatus.CREATED.value())
                     .build();

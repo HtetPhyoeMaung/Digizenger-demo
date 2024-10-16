@@ -75,7 +75,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                                                 .createDate(savedMessage.getCreateDate())
                                                 .modifiedDate(savedMessage.getModifiedDate())
                                                 .build();
-        messagingTemplate.convertAndSend(groupChatMessage.getGroupRoom().getId()+"/queue/group-messages" , groupChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(groupChatMessage.getGroupRoom().getId()),"/queue/group-messages" , groupChatMessageDto);
     }
 
 }
