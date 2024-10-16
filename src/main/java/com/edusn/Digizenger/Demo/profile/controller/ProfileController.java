@@ -42,15 +42,19 @@ public class ProfileController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Response> getProfile(HttpServletRequest request) throws IOException {
-        return profileService.showUserProfile(request);
+    public ResponseEntity<Response> getProfile(HttpServletRequest request,
+                                               @RequestParam("_page") int _page,
+                                               @RequestParam("_limit") int _limit) throws IOException {
+        return profileService.showUserProfile(request, _page, _limit);
     }
 
 
     @GetMapping("/{username}")
     public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit,
                                                     HttpServletRequest request) throws IOException {
-        return profileService.getProfileByProfileUrlLink(username,request);
+        return profileService.getProfileByProfileUrlLink(username,request,_page, _limit);
     }
 
     /** Profile Image **/
@@ -238,6 +242,13 @@ public class ProfileController {
     }
 
 
+    @GetMapping("/education-history/{id}")
+    public ResponseEntity<Response> educationHistoryGetById(HttpServletRequest request,
+                                                            @PathVariable("id") Long id){
+        return educationHistoryService.EducationHistoryGetById(request, id);
+    }
+
+
     /** Career History **/
     @PostMapping("/career-history")
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
@@ -277,8 +288,6 @@ public class ProfileController {
                                                          @PathVariable("id") Long id){
         return careerHistoryService.careerHistoryGetById(request, id);
     }
-
-
 
 
 

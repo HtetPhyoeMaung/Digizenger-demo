@@ -30,8 +30,6 @@ public class Post implements Serializable {
     private LocalDateTime modifiedDate;
     private PostType postType;
 
-
-
     private String imageName;
 
 
