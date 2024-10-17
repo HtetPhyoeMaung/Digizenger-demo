@@ -35,6 +35,7 @@ public class ProfileController {
     private final AboutEducationHistoryService educationHistoryService;
     private final SchoolService schoolService;
     private final CompanyService companyService;
+    private final ImagesService imagesService;
 
     @GetMapping("/test")
     public String test(){
@@ -280,6 +281,36 @@ public class ProfileController {
                                                          @PathVariable("id") Long id){
         return careerHistoryService.careerHistoryGetById(request, id);
     }
+
+    /* My Profile Image **/
+    @GetMapping("/images/9images")
+    public ResponseEntity<Response> getProfileImages(HttpServletRequest request){
+        return imagesService.getProfileImages(request);
+    }
+
+    @GetMapping("/images")
+    public ResponseEntity<Response> getAllImages(HttpServletRequest request,
+                                                 @RequestParam("_page") int _page,
+                                                 @RequestParam("_limit") int _limit){
+        return imagesService.getAllImages(request, _page, _limit);
+    }
+
+    /* Other Profile Images **/
+    @GetMapping("/other-images/9images/{profileId}")
+    public ResponseEntity<Response> getOtherProfileImages(HttpServletRequest request,
+                                                          @PathVariable("profileId") Long profileId){
+        return imagesService.getOtherProfileImages(request, profileId);
+    }
+
+    @GetMapping("/other-images/{profileId}")
+    public ResponseEntity<Response> getOtherAllImages(HttpServletRequest request,
+                                                      @PathVariable("profileId") Long profileId,
+                                                      @RequestParam("_page") int _page,
+                                                      @RequestParam("_limit") int _limit){
+        return imagesService.getOtherAllImages(request, profileId, _page, _limit);
+
+    }
+
 
 
 

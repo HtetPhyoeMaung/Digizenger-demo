@@ -10,9 +10,9 @@ spring:
       port: 8080
 
   datasource:
-    url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
-    username: edusn
-    password: AVNS_fDr_E9j3sI3DBiZfpHO
+    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
+    username: zues
+    password: hello
 
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -41,4 +41,4 @@ spring:
             enable: true
 
 app:
-  profileUrl: https://digizenger.info/api/v1/profile/
+  profileUrl: http//localhost:8080/api/v1/profile/

@@ -25,4 +25,5 @@ public interface ProfileRepository extends JpaRepository<Profile,Long> {
     Page<Profile> findNeighborsByProfileId(Long profileId, Pageable pageable);
 
 
+
 }

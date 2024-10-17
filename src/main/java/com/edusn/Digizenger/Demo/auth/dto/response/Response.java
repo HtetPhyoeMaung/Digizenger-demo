@@ -8,10 +8,7 @@ import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -66,5 +63,7 @@ public class Response {
     private List<String> schoolNameList;
 
     private List<String> companyNameList;
+
+    private ImageDto imageDto;
 
 }
