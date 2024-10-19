@@ -1,35 +1,35 @@
-package com.edusn.Digizenger.Demo.post.entity;
+package com.edusn.Digizenger.Demo.notification.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.post.entity.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
-@Table(name = "likes")
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Like implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+@NoArgsConstructor
+@Table(name = "notification")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private boolean isLiked;
-
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private String message;
+    private LocalDateTime createDate;
+    private boolean isRead;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
+    private String profileUrl;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

@@ -4,6 +4,7 @@ import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.GroupRoom;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.post.entity.Comment;
 import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
@@ -24,7 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-
 public class User {
 
     @Id
@@ -91,6 +91,11 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<GroupChatMessage> groupChatMessages;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    private List<Notification> notificationList;
+
+
 
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),

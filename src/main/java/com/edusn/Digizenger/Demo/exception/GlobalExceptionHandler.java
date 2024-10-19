@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.exception;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.edusn.Digizenger.Demo.auth.dto.response.CustomErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,5 +195,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<CustomErrorResponse> alreadyExistsHandler(AlreadyExistsException ex){
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.ALREADY_REPORTED.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
     }
 }

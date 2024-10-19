@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 public class EducationHistoryDto {
     private Long id;
-    private String degree;
+    private String degreeName;
     private String  fieldOfStudy;
     private LocalDate joinDate;
     private LocalDate endDate;

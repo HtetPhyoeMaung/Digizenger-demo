@@ -18,7 +18,7 @@ import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
-import com.edusn.Digizenger.Demo.auth.service.UserService;
+import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
@@ -43,7 +43,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
@@ -149,8 +149,19 @@ public class UserServiceImpl implements UserService {
             /* Create user's profile */
             profileService.createUserProfile(user);
 
+
+            // check (isActivated)
+            UserDetails userDetails;
+            if (!checkUser.isActivated()){
+                throw new UnverifiedException("Email was not verified. So please verified your email!");
+            }
+
+            userDetails = userDetailServiceForUser.loadUserByUsername(checkUser.getEmail().isEmpty()?user.getPhone():user.getEmail());
+            String token = jwtService.generateToken(userDetails);
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
+                    .token(token)
+                    .expirationDate("7days")
                     .message("Successfully Registered!")
                     .statusCode(HttpStatus.CREATED.value())
                     .build();

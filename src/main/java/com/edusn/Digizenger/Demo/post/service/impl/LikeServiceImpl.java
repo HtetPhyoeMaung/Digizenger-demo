@@ -3,12 +3,15 @@ package com.edusn.Digizenger.Demo.post.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
+import com.edusn.Digizenger.Demo.notification.service.NotificationService;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.entity.Like;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.service.LikeService;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import jakarta.persistence.Access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,12 @@ public class LikeServiceImpl implements LikeService {
 
     @Autowired
     private LikeRepository likeRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private StorageService storageService;
 
     @Override
     public ResponseEntity<Response> isLike(Long id, User user) {
@@ -50,6 +59,20 @@ public class LikeServiceImpl implements LikeService {
         } else if (alreadyLike.isPresent() && !alreadyLike.get().isLiked()) {
             alreadyLike.get().setLiked(true);
             Like like=   likeRepository.save(alreadyLike.get());
+            if(like.isLiked() && !post.getUser().equals(like.getUser())){
+                Notification notification=Notification.builder()
+                        .createDate(LocalDateTime.now())
+                        .isRead(false)
+
+                        .user(post.getUser())
+                        .post(post)
+                        .message(like.getUser().getProfile().getUsername()+" liked your post!")
+                        .build();
+                if(like.getUser().getProfile().getProfileImageName()!=null){
+                    notification.setProfileUrl(storageService.getImageByName(like.getUser().getProfile().getProfileImageName()));
+                }
+                notificationService.sendNotiMessage(notification);
+            }
             LikeDto likeDto=LikeDto.builder()
                     .isLike(like.isLiked())
                     .createdDate(alreadyLike.get().getCreatedDate())
@@ -68,6 +91,19 @@ public class LikeServiceImpl implements LikeService {
                             .isLiked(true)
                             .user(user)
                             .build());
+            if(like.isLiked() && !post.getUser().equals(like.getUser())){
+                Notification notification=Notification.builder()
+                        .createDate(LocalDateTime.now())
+                        .isRead(false)
+                        .user(post.getUser())
+                        .post(post)
+                        .message(like.getUser().getProfile().getUsername()+"liked your post!")
+                        .build();
+                if(like.getUser().getProfile().getProfileImageName()!=null){
+                    notification.setProfileUrl(storageService.getImageByName(like.getUser().getProfile().getProfileImageName()));
+                }
+                notificationService.sendNotiMessage(notification);
+            }
             LikeDto likeDto=LikeDto.builder()
                     .isLike(like.isLiked())
                     .createdDate(like.getCreatedDate())
