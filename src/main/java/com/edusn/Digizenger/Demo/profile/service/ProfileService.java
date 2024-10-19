@@ -14,8 +14,8 @@ public interface ProfileService {
     void createUserProfile(User user);
 
     /* To see the user's profile data */
-    ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException;
+    ResponseEntity<Response> showUserProfile(HttpServletRequest request , int _page, int _limit) throws IOException;
 
     /* To get the profile by profile url link */
-    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException;
+    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request, int _page, int _limit) throws IOException;
 }

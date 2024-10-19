@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser;
+package com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import lombok.AllArgsConstructor;
