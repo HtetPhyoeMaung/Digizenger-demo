@@ -140,7 +140,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .modifiedDate(updateMessage.getModifiedDate())
                 .recipientId(updateMessage.getRecipientId())
                 .build();
-        messagingTemplate.convertAndSend("/topic/"+singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Message update success")
