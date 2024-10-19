@@ -128,8 +128,8 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         }
 
         /* Career Histories **/
-        if (!otherProfile.getCareerHistoryList().isEmpty()) {
-            List<CareerHistoryDto> careerHistoryDtoList = otherProfile.getCareerHistoryList().stream().map(
+        if (!otherProfile.getCareerHistories().isEmpty()) {
+            List<CareerHistoryDto> careerHistoryDtoList = otherProfile.getCareerHistories().stream().map(
                     careerHistory -> {
                         CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
 

@@ -132,7 +132,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
 
         /* careerHistory */
-        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistoryList()
+        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistories()
                 .stream().map(
                         careerHistory -> modelMapper.map(careerHistory, CareerHistoryDto.class)
                 ).collect(Collectors.toList());

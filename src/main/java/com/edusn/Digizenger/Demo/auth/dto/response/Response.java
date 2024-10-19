@@ -66,4 +66,10 @@ public class Response {
 
     private ImageDto imageDto;
 
+    private String coverImageUrl;
+
+    private String profileImageUrl;
+
+    private ServiceProvidedDto serviceProvidedDto;
+
 }
