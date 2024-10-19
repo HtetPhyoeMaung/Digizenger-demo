@@ -152,11 +152,11 @@ public class AuthServiceImpl implements AuthService {
 
             // check (isActivated)
             UserDetails userDetails;
-            if (!checkUser.isActivated()){
+            if (!user.isActivated()){
                 throw new UnverifiedException("Email was not verified. So please verified your email!");
             }
 
-            userDetails = userDetailServiceForUser.loadUserByUsername(checkUser.getEmail().isEmpty()?user.getPhone():user.getEmail());
+            userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
             String token = jwtService.generateToken(userDetails);
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
