@@ -18,6 +18,9 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final String info = "https://digizenger.info";
+    private final String org = "https://digizenger.org";
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -30,7 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-            registry.addEndpoint("/ws").setAllowedOrigins("*")
+            registry.addEndpoint("/ws").setAllowedOrigins(info)
                 .withSockJS();
     }
 
