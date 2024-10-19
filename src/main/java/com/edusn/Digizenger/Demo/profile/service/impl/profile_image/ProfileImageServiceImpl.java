@@ -32,11 +32,13 @@ public class ProfileImageServiceImpl implements ProfileImageService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         profile.setProfileImageName(profileImageName);
-        profileRepository.save(profile);
+        profile = profileRepository.save(profile);
+        String profileImageUrl = storageService.getImageByName(profile.getProfileImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully uploaded profile image.")
+                .profileImageUrl(profileImageUrl)
                 .build();
 
         return new  ResponseEntity<>(response, HttpStatus.OK);
@@ -71,11 +73,13 @@ public class ProfileImageServiceImpl implements ProfileImageService {
             throw new ProfileImageNotFoundException("can't update the cover because image is null");
         String updateFilename = storageService.updateImage(file, profile.getProfileImageName());
         profile.setProfileImageName(updateFilename);
-        profileRepository.save(profile);
+        profile = profileRepository.save(profile);
+        String profileImageUrl = storageService.getImageByName(profile.getProfileImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated profile image.")
+                .profileImageUrl(profileImageUrl)
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

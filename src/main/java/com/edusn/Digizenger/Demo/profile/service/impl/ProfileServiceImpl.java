@@ -150,8 +150,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         /* Career Histories **/
-        if(!profile.getCareerHistoryList().isEmpty()){
-            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistoryList().stream().map(
+        if(!profile.getCareerHistories().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistories().stream().map(
                     careerHistory -> {
                         CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
 

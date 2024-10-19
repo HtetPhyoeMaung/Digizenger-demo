@@ -149,9 +149,9 @@ public class ProfileController {
         return aboutProvidedService.uploadServiceProvided(request, service);
     }
 
-    @PutMapping("/service-provided")
+    @PutMapping("/service-provided/{id}")
     public ResponseEntity<Response> updateServiceProvided(HttpServletRequest request,
-                                                          @RequestParam("id") Long id,
+                                                          @PathVariable("id") Long id,
                                                           @RequestParam("service") String service){
         return aboutProvidedService.updateServiceProvided(request, id, service);
     }
@@ -245,12 +245,12 @@ public class ProfileController {
     /** Career History **/
     @PostMapping("/career-history")
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
-                                                           @RequestParam("companyName") String companyNmae,
+                                                           @RequestParam("companyName") String companyName,
                                                            @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
                                                            @Nullable @RequestParam(value = "designation",required = false) String designation,
                                                            @RequestParam("joinDate") LocalDate joinDate,
                                                            @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
-        return careerHistoryService.uploadCareerHistory(request, companyNmae, logoImage, designation, joinDate, endDate);
+        return careerHistoryService.uploadCareerHistory(request, companyName, logoImage, designation, joinDate, endDate);
     }
 
     @PutMapping("/career-history/{id}")

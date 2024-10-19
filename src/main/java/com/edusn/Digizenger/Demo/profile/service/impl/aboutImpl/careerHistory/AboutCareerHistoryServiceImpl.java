@@ -85,7 +85,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         companies.add(company);
 
         company.setCareerHistories(careerHistories);
-        profile.setCareerHistoryList(careerHistories);
+        profile.setCareerHistories(careerHistories);
         profile.setCompanies(companies);
 
         CareerHistory createdCareerHistory = careerHistoryRepository.save(careerHistory);
@@ -105,7 +105,13 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
     }
 
     @Override
-    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request, Long careerHistoryId, String companyName, String designation, MultipartFile logoImage, LocalDate joinDate, LocalDate endDate) throws IOException {
+    public ResponseEntity<Response> updateCareerHistory(HttpServletRequest request,
+                                                        Long careerHistoryId,
+                                                        String companyName,
+                                                        String designation,
+                                                        MultipartFile logoImage,
+                                                        LocalDate joinDate,
+                                                        LocalDate endDate) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
@@ -113,8 +119,8 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         profiles.add(profile);
 
         CareerHistoryDto careerHistoryDto = null;
-        for(CareerHistory careerHistory : profile.getCareerHistoryList()){
-            if(careerHistory.getId() == careerHistoryId){
+        for(CareerHistory careerHistory : profile.getCareerHistories()){
+            if(careerHistory.getId().equals(careerHistoryId)){
 
                 careerHistory.setId(careerHistoryId);
 
@@ -126,7 +132,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
 
                 Company company;
 
-                if(!companyRepository.existsByCompanyName(companyName) && companyName != null){
+                if(!companyRepository.existsByCompanyName(companyName)){
                     company = Company.builder()
                             .companyName(companyName)
                             .logoImageName(logoImageName)
@@ -136,12 +142,13 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                     company = companyRepository.findByCompanyName(companyName);
                 }
 
-                careerHistory.setCompany(company);
 
-                if(designation != null) careerHistory.setDesignation(designation);
-                if(joinDate != null) careerHistory.setJoinDate(joinDate);
-                careerHistory.setProfile(profile);
-
+                careerHistory = CareerHistory.builder()
+                        .company(company)
+                        .designation(designation)
+                        .joinDate(joinDate)
+                        .profile(profile)
+                        .build();
 
                 if(endDate != null){
                     careerHistory.setEndDate(endDate);
@@ -157,7 +164,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 companies.add(company);
 
                 company.setCareerHistories(careerHistories);
-                profile.setCareerHistoryList(careerHistories);
+                profile.setCareerHistories(careerHistories);
                 profile.setCompanies(companies);
 
                 CareerHistory updatedCareerHistory = careerHistoryRepository.save(careerHistory);
@@ -167,10 +174,8 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                     careerHistoryDto.getCompanyDto().setLogoImageUrl(storageService.getImageByName(
                             updatedCareerHistory.getCompany().getLogoImageName()
                     ));
-
             }
         }
-
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated career history")
@@ -212,9 +217,9 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         Profile profile = profileRepository.findByUser(user);
 
         CareerHistoryDto careerHistoryDto = null;
-        if(profile.getCareerHistoryList().isEmpty())
+        if(profile.getCareerHistories().isEmpty())
             throw new CustomNotFoundException("career history list cannot found.");
-        for(CareerHistory careerHistory: profile.getCareerHistoryList()){
+        for(CareerHistory careerHistory: profile.getCareerHistories()){
             if(careerHistory.getId().equals(careerHistoryId)){
                 careerHistoryDto = MapperUtil.convertToCareerHistoryDto(careerHistory);
                 careerHistoryDto.getCompanyDto().setLogoImageUrl(
