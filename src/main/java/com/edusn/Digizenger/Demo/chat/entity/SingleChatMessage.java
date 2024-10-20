@@ -28,7 +28,7 @@ public class SingleChatMessage {
         private Type type;
 //        @Transient
 //        private Long sendId;
-        @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+        @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "user_id")
         private User user;
         public enum Type{

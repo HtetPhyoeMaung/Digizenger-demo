@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.chat.service.SingleChatRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         List<SingleChatMessage> singleChatMessages = chatId.map(singleChatMessageRepository::findByChatId).orElse(new ArrayList<>());
         List<SingleChatMessageDto> singleChatMessageDtos = singleChatMessages.stream()
                 .map(message -> SingleChatMessageDto.builder()
+                        .id(message.getId())
                         .message(message.getMessage())
                         .createDate(message.getCreateDate())
                         .modifiedDate(message.getModifiedDate())
@@ -56,6 +58,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         return new ResponseEntity<>(singleChatMessageDtos, HttpStatus.OK);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<Response> sendMessage(SingleChatMessage singleChatMessage, User user) {
         if(singleChatMessage.getMessage()!=null && singleChatMessage.getType() != SingleChatMessage.Type.TEXT){
