@@ -122,8 +122,6 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         for(CareerHistory careerHistory : profile.getCareerHistories()){
             if(careerHistory.getId().equals(careerHistoryId)){
 
-                careerHistory.setId(careerHistoryId);
-
                 String logoImageName = null;
                 if(logoImage != null){
                     logoImageName = storageService.uploadImage(logoImage);
@@ -144,6 +142,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
 
 
                 careerHistory = CareerHistory.builder()
+                        .id(careerHistoryId)
                         .company(company)
                         .designation(designation)
                         .joinDate(joinDate)
