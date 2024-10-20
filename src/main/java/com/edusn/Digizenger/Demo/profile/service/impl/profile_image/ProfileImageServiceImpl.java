@@ -51,7 +51,7 @@ public class ProfileImageServiceImpl implements ProfileImageService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getProfileImageName() == null)
-            throw new ProfileImageNotFoundException("Image cannot found by name : "+ profile.getProfileImageName());
+            throw new ProfileImageNotFoundException("Image cannot found by name");
         storageService.deleteImage(profile.getProfileImageName());
         profile.setProfileImageName(null);
         profileRepository.save(profile);
