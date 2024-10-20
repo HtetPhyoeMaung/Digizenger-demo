@@ -51,12 +51,15 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                 .id(message.getUser().getId())
                                 .firstName(message.getUser().getFirstName())
                                 .lastName(message.getUser().getLastName())
-                                .profileImageUrl(storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
+                                .profileImageUrl(message.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
                                 .build()) // Create UserDto from senderId
+
                         .chatId(message.getChatId())
                         .type(SingleChatMessage.Type.valueOf(message.getType().name()))
                         .build())
                 .collect(Collectors.toList());
+
+
         return new ResponseEntity<>(singleChatMessageDtos, HttpStatus.OK);
     }
 
