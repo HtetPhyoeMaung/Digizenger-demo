@@ -141,13 +141,11 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 }
 
 
-                careerHistory = CareerHistory.builder()
-                        .id(careerHistoryId)
-                        .company(company)
-                        .designation(designation)
-                        .joinDate(joinDate)
-                        .profile(profile)
-                        .build();
+                careerHistory.setId(careerHistory.getId());
+                careerHistory.setCompany(company);
+                careerHistory.setProfile(profile);
+                if(designation != null) careerHistory.setDesignation(designation);
+                if(joinDate != null) careerHistory.setJoinDate(joinDate);
 
                 if(endDate != null){
                     careerHistory.setEndDate(endDate);
