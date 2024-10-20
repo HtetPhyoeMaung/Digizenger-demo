@@ -100,13 +100,14 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                             .recipientId(singleChatMessage.getRecipientId())
                                             .build());
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
-                                                     .id(savedMessage.getId())
+                                                        .id(savedMessage.getId())
                                                      .message(savedMessage.getMessage())
                                                      .type(savedMessage.getType())
                                                      .createDate(savedMessage.getCreateDate())
                                                      .recipientId(savedMessage.getRecipientId())
                                                      .build();
-        messagingTemplate.convertAndSend("/topic/"+singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
+                                                     
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Message send success")
@@ -139,7 +140,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .modifiedDate(updateMessage.getModifiedDate())
                 .recipientId(updateMessage.getRecipientId())
                 .build();
-        messagingTemplate.convertAndSend("/topic/"+singleChatMessage.getRecipientId()+"/queue/messages" , singleChatMessageDto);
+        messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Message update success")

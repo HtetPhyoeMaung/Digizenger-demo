@@ -129,7 +129,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
 
         EducationHistoryDto educationHistoryDto = null;
         for(EducationHistory educationHistory : profile.getEducationHistories()){
-            if(educationHistory.getId() == educationHistoryId){
+            if(educationHistory.getId().equals(educationHistoryId)){
 
                 educationHistory.setId(educationHistoryId);
 

@@ -72,7 +72,7 @@ public class Profile {
     private User user;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CareerHistory> careerHistoryList = new LinkedList<>();
+    private List<CareerHistory> careerHistories = new LinkedList<>();
 
     @ManyToMany
     @JoinTable(
@@ -123,7 +123,7 @@ public class Profile {
     }
 
     public void removeCareerHistory(CareerHistory careerHistory){
-        this.careerHistoryList.remove(careerHistory);
+        this.getCareerHistories().remove(careerHistory);
         careerHistory.setProfile(null);
     }
 }

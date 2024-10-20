@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto;
+package com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

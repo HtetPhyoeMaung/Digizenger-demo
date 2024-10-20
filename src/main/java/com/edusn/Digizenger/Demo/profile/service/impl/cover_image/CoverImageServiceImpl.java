@@ -34,12 +34,14 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         Profile profile = profileRepository.findByUser(user);
 
-            profile.setCoverImageName(fileName);
-            profileRepository.save(profile);
+        profile.setCoverImageName(fileName);
+        profile = profileRepository.save(profile);
+        String coverImageUrl = storageService.getImageByName(profile.getCoverImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully uploaded profile image.")
+                .coverImageUrl(coverImageUrl)
                 .build();
 
         return new  ResponseEntity<>(response, HttpStatus.OK);
@@ -78,10 +80,13 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         String updateFilename = storageService.updateImage(file, profile.getCoverImageName());
         profile.setCoverImageName(updateFilename);
+        profile = profileRepository.save(profile);
+        String coverImageUrl = storageService.getImageByName(profile.getCoverImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated cover image.")
+                .coverImageUrl(coverImageUrl)
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

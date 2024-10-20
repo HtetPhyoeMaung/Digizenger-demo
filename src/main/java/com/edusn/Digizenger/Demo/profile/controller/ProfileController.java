@@ -35,6 +35,7 @@ public class ProfileController {
     private final AboutEducationHistoryService educationHistoryService;
     private final SchoolService schoolService;
     private final CompanyService companyService;
+    private final ImagesService imagesService;
 
     @GetMapping("/test")
     public String test(){
@@ -42,15 +43,19 @@ public class ProfileController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Response> getProfile(HttpServletRequest request) throws IOException {
-        return profileService.showUserProfile(request);
+    public ResponseEntity<Response> getProfile(HttpServletRequest request,
+                                               @RequestParam("_page") int _page,
+                                               @RequestParam("_limit") int _limit) throws IOException {
+        return profileService.showUserProfile(request, _page, _limit);
     }
 
 
     @GetMapping("/{username}")
     public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit,
                                                     HttpServletRequest request) throws IOException {
-        return profileService.getProfileByProfileUrlLink(username,request);
+        return profileService.getProfileByProfileUrlLink(username,request,_page, _limit);
     }
 
     /** Profile Image **/
@@ -144,9 +149,9 @@ public class ProfileController {
         return aboutProvidedService.uploadServiceProvided(request, service);
     }
 
-    @PutMapping("/service-provided")
+    @PutMapping("/service-provided/{id}")
     public ResponseEntity<Response> updateServiceProvided(HttpServletRequest request,
-                                                          @RequestParam("id") Long id,
+                                                          @PathVariable("id") Long id,
                                                           @RequestParam("service") String service){
         return aboutProvidedService.updateServiceProvided(request, id, service);
     }
@@ -237,16 +242,15 @@ public class ProfileController {
         return educationHistoryService.EducationHistoryGetById(request, id);
     }
 
-
     /** Career History **/
     @PostMapping("/career-history")
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
-                                                           @RequestParam("companyName") String companyNmae,
+                                                           @RequestParam("companyName") String companyName,
                                                            @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
                                                            @Nullable @RequestParam(value = "designation",required = false) String designation,
                                                            @RequestParam("joinDate") LocalDate joinDate,
                                                            @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
-        return careerHistoryService.uploadCareerHistory(request, companyNmae, logoImage, designation, joinDate, endDate);
+        return careerHistoryService.uploadCareerHistory(request, companyName, logoImage, designation, joinDate, endDate);
     }
 
     @PutMapping("/career-history/{id}")
@@ -278,6 +282,34 @@ public class ProfileController {
         return careerHistoryService.careerHistoryGetById(request, id);
     }
 
+    /* My Profile Image **/
+    @GetMapping("/images/9images")
+    public ResponseEntity<Response> getProfileImages(HttpServletRequest request){
+        return imagesService.getProfileImages(request);
+    }
+
+    @GetMapping("/images")
+    public ResponseEntity<Response> getAllImages(HttpServletRequest request,
+                                                 @RequestParam("_page") int _page,
+                                                 @RequestParam("_limit") int _limit){
+        return imagesService.getAllImages(request, _page, _limit);
+    }
+
+    /* Other Profile Images **/
+    @GetMapping("/other-images/9images/{profileId}")
+    public ResponseEntity<Response> getOtherProfileImages(HttpServletRequest request,
+                                                          @PathVariable("profileId") Long profileId){
+        return imagesService.getOtherProfileImages(request, profileId);
+    }
+
+    @GetMapping("/other-images/{profileId}")
+    public ResponseEntity<Response> getOtherAllImages(HttpServletRequest request,
+                                                      @PathVariable("profileId") Long profileId,
+                                                      @RequestParam("_page") int _page,
+                                                      @RequestParam("_limit") int _limit){
+        return imagesService.getOtherAllImages(request, profileId, _page, _limit);
+
+    }
 
 
 

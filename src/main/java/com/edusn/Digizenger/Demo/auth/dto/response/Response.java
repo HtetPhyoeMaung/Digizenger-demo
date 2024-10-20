@@ -2,15 +2,13 @@ package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
 import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.AdminDashBoardDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.post.dto.LikeDto;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,7 +16,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -33,8 +30,9 @@ public class Response {
     private String token;
 
     private String  role;
-
+//hello
     private String otp;
+    private Long unreadNotificationCount;
     private List<PostDto> postDtoList;
     private List<UserDto> userDtoList;
     private Long viewCount;
@@ -45,7 +43,7 @@ public class Response {
     private GroupRoomDto groupRoomDto;
     private List<GroupRoomDto>groupRoomDtoList;
     private String expirationDate;
-
+    private List<NotificationDto> notificationDtoList;
     private ProfileDto profileDto;
 
     private OtherProfileDto otherProfileDto;
@@ -65,5 +63,13 @@ public class Response {
     private List<String> schoolNameList;
 
     private List<String> companyNameList;
+
+    private ImageDto imageDto;
+
+    private String coverImageUrl;
+
+    private String profileImageUrl;
+
+    private ServiceProvidedDto serviceProvidedDto;
 
 }

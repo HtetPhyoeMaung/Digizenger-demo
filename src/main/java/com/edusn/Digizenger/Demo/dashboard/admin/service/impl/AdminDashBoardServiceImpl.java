@@ -4,11 +4,11 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.AdminDashBoardDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.ProfileDtoForDashBoard;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.UserDtoForDashBoard;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.ProfileDataDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responeDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.AdminDashBoardDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.ProfileDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.UserDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.ProfileDataDto;
+import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.service.AdminDashBoardService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
@@ -135,7 +135,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
 
         /* careerHistory */
-        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistoryList()
+        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistories()
                 .stream().map(
                         careerHistory -> modelMapper.map(careerHistory, CareerHistoryDto.class)
                 ).collect(Collectors.toList());
