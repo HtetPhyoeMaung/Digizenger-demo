@@ -3,11 +3,9 @@ package com.edusn.Digizenger.Demo.profile.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
-import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
-import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -19,8 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,7 +54,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     /** Get Logged-in user's Profile **/
     @Override
-    public ResponseEntity<Response> showUserProfile(HttpServletRequest request, int _page, int _limit) throws IOException {
+    public ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = user.getProfile();
@@ -71,28 +67,6 @@ public class ProfileServiceImpl implements ProfileService {
         ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
 
-        if(profile.getUser().getPosts() != null){
-            Pageable pageable =  PageRequest.of(_page -1, _limit);
-            List<PostDto> postDtoList = postRepository.findByUserIdOrderByCreatedDateDesc(user.getId(), pageable).stream().map(post -> {
-                Long viewCount = viewRepository.countByPost(post);
-                Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
-                boolean isLike = post.getLikes().stream()
-                        .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
-                PostDto postDto = PostServiceImpl.convertToPostDto(post);
-                if (post.getUser().getProfile().getProfileImageName() != null) {
-                    postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
-                    postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-                }
-                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-                postDto.setViewCount(viewCount);
-                postDto.setProfileDto(null);
-                postDto.setLikeCount(likeCount);
-                postDto.setLiked(isLike);
-                return postDto;
-            }).collect(Collectors.toList()); // Collect into a List
-
-            userForProfileDto.setPostDtoList(postDtoList);
-        }
 
         existProfileDto.setUserForProfileDto(userForProfileDto);
         if(existProfileDto.getProfileImageName() != null){
@@ -177,17 +151,17 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request, int _page, int _limit) throws IOException {
+    public ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
-            return showUserProfile(request, _page, _limit);
+            return showUserProfile(request);
         }
         else {
             Profile otherProfile = profileRepository.findByProfileLinkUrl(baseProfileUrl+profileUrl);
             if(otherProfile == null){throw new ProfileNotFoundException("profile cannot found by url : "+profile.getProfileLinkUrl());}
-            return otherProfileService.showOtherUserProfile(otherProfile, profile, _page, _limit);
+            return otherProfileService.showOtherUserProfile(otherProfile, profile);
         }
     }
 }
