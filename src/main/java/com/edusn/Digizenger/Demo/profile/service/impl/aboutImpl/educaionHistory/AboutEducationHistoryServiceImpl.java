@@ -58,7 +58,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
             logoImageName = storageService.uploadImage(logoImage);
         }
 
-
         School school;
 
         if(!schoolRepository.existsBySchoolName(schoolName)){
@@ -70,7 +69,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         }else{
             school = schoolRepository.findBySchoolName(schoolName);
         }
-
 
         EducationHistory educationHistory = EducationHistory.builder()
                 .school(school)
