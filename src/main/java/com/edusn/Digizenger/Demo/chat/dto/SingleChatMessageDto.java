@@ -27,7 +27,6 @@ public class SingleChatMessageDto {
     private String chatId;
     private Long recipientId;
     private SingleChatMessage.Type type;
-    @JsonIgnore
     private UserDto userDto;
 
 
