@@ -35,6 +35,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
 
+
     @Override
     public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId) {
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
@@ -50,6 +51,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                 .id(message.getUser().getId())
                                 .firstName(message.getUser().getFirstName())
                                 .lastName(message.getUser().getLastName())
+                                .profileImageUrl(storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
                                 .build()) // Create UserDto from senderId
                         .chatId(message.getChatId())
                         .type(SingleChatMessage.Type.valueOf(message.getType().name()))
