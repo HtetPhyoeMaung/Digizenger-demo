@@ -30,7 +30,6 @@ public class SingleChatMessage {
 //        private Long sendId;
         @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
         @JoinColumn(name = "user_id")
-        @JsonIgnore
         private User user;
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT

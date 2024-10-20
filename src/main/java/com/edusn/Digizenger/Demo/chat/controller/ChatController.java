@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.chat.controller;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/chat")
 public class ChatController {
 
     @Autowired
@@ -35,6 +37,8 @@ public class ChatController {
 
     @Autowired
     private GroupChatMessageService groupChatMessageService;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/messages/{selectedUserId}")
     public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request) {
@@ -47,11 +51,12 @@ public class ChatController {
     }
 
     @MessageMapping("/message")
-    public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage, HttpServletRequest request) throws IOException {
-        User sender= getUserByRequest.getUser(request);
+    public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
+        User sender= userRepository.findById(singleChatMessage.getUser().getId()).orElseThrow();
         return singleChatMessageService.sendMessage(singleChatMessage,sender);
 
     }
+
     @MessageMapping("/message-delete")
     @SendTo("/topic/public")
     public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
