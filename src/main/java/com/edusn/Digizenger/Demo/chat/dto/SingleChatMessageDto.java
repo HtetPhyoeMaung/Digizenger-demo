@@ -26,6 +26,7 @@ public class SingleChatMessageDto {
     private LocalDateTime  modifiedDate;
     private String chatId;
     private Long recipientId;
+    private boolean isRead;
     private SingleChatMessage.Type type;
     private UserDto userDto;
 

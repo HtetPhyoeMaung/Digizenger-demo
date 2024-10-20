@@ -41,9 +41,11 @@ public class ChatController {
     private UserRepository userRepository;
 
     @GetMapping("/messages/{selectedUserId}")
-    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request) {
+    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request,
+                                                                       @RequestParam(value = "_page",defaultValue = "1") int _page,
+                                                                       @RequestParam(value = "_limit",defaultValue = "10") int _limit) {
         User sender= getUserByRequest.getUser(request);
-        return singleChatMessageService.findChatMessages(sender,selectedUserId);
+        return singleChatMessageService.findChatMessages(sender,selectedUserId, _page, _limit);
     }
     @GetMapping("/friend-list")
     public ResponseEntity<List<UserDto>> getFriendList(){
