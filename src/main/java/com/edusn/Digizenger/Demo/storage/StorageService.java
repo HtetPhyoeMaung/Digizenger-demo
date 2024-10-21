@@ -57,24 +57,23 @@ public class StorageService {
     public String uploadImage(MultipartFile file) throws IOException {
         // Generate unique file name
         String filename = UUIDUtil.generateUUID() + file.getOriginalFilename();
-        // Convert MultipartFile to BufferedImage
-        BufferedImage inputImage = ImageIO.read(file.getInputStream());
-        // Resize image (you can specify target width and height here)
-        int targetWidth = 500;
-        int targetHeight = 300;
-        BufferedImage resizedImage = resizeImage(inputImage, targetWidth, targetHeight);
-        // Convert resized BufferedImage back to InputStream
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(resizedImage, "jpg", baos);
-        byte[] resizedBytes = baos.toByteArray();
-        ByteArrayInputStream resizedInputStream = new ByteArrayInputStream(resizedBytes);
-        // Create object metadata
+//        BufferedImage inputImage = ImageIO.read(file.getInputStream());
+//        int targetWidth = 500;
+//        int targetHeight = 300;
+//        BufferedImage resizedImage = resizeImage(inputImage, targetWidth, targetHeight);
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(resizedImage, "jpg", baos);
+//        byte[] resizedBytes = baos.toByteArray();
+//        ByteArrayInputStream resizedInputStream = new ByteArrayInputStream(resizedBytes);
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
-        objectMetadata.setContentLength(resizedBytes.length);
+//        objectMetadata.setContentLength(resizedBytes.length);
         // Upload to DigitalOcean Spaces
-        space.putObject(new PutObjectRequest(BUCKET_NAME, filename, resizedInputStream, objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        space.putObject(new PutObjectRequest(BUCKET_NAME, filename, file.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+
+//        space.putObject(new PutObjectRequest(BUCKET_NAME, filename, resizedInputStream, objectMetadata)
+//                .withCannedAcl(CannedAccessControlList.PublicRead));
 
         return filename;
     }
