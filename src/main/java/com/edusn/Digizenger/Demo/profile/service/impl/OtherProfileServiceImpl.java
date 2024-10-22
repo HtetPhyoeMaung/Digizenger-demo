@@ -2,12 +2,6 @@ package com.edusn.Digizenger.Demo.profile.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.post.dto.PostDto;
-import com.edusn.Digizenger.Demo.post.entity.Post;
-import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
-import com.edusn.Digizenger.Demo.post.repo.PostRepository;
-import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
-import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
@@ -16,9 +10,6 @@ import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,47 +23,13 @@ public class OtherProfileServiceImpl implements OtherProfileService {
 
     private final ModelMapper modelMapper;
     private final StorageService storageService;
-    private final ViewRepository viewRepository;
-    private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
 
     @Override
-    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile ,Profile loggedProfile, int _page, int _limit) {
+    public ResponseEntity<Response> showOtherUserProfile(Profile otherProfile ,Profile loggedProfile) {
 
         User otherUser = otherProfile.getUser();
         OtherUserForProfileDto otherUserForProfileDto = modelMapper.map(otherUser, OtherUserForProfileDto.class);
-        if (otherUser.getPosts() != null) {
-            Pageable pageable = PageRequest.of(_page -1, _limit);
-            Page<Post> postList = null;
 
-            if(otherProfile.getNeighbors().contains(loggedProfile)){
-                postList = postRepository.findByUserIdOrderByCreatedDateDesc(otherProfile.getId(), pageable);
-            }else if(otherProfile.getFollowers().contains(loggedProfile)){
-                postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBOURS, pageable);
-            }else{
-                postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS,pageable);
-        }
-
-            List<PostDto> postDtoList = postList.stream().map(post -> {
-                Long viewCount = viewRepository.countByPost(post);
-                Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
-                boolean isLike = post.getLikes().stream()
-                        .anyMatch(like -> like.getUser().equals(otherUser) && like.isLiked());
-                PostDto postDto = PostServiceImpl.convertToPostDto(post);
-                if (post.getUser().getProfile().getProfileImageName() != null) {
-                    postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
-                    postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-                }
-                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-                postDto.setProfileDto(null);
-                postDto.setViewCount(viewCount);
-                postDto.setLikeCount(likeCount);
-                postDto.setLiked(isLike);
-                return postDto;
-            }).collect(Collectors.toList()); // Collect into a List
-
-            otherUserForProfileDto.setPostDtoList(postDtoList);
-        }
         OtherProfileDto otherProfileDto = modelMapper.map(otherProfile, OtherProfileDto.class);
         otherProfileDto.setOtherUserForProfileDto(otherUserForProfileDto);
 

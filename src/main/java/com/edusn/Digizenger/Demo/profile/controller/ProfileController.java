@@ -6,7 +6,6 @@ import com.edusn.Digizenger.Demo.profile.service.about.*;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +35,7 @@ public class ProfileController {
     private final SchoolService schoolService;
     private final CompanyService companyService;
     private final ImagesService imagesService;
+    private final ProfilePostService profilePostService;
 
     @GetMapping("/test")
     public String test(){
@@ -43,19 +43,15 @@ public class ProfileController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Response> getProfile(HttpServletRequest request,
-                                               @RequestParam("_page") int _page,
-                                               @RequestParam("_limit") int _limit) throws IOException {
-        return profileService.showUserProfile(request, _page, _limit);
+    public ResponseEntity<Response> getProfile(HttpServletRequest request) throws IOException {
+        return profileService.showUserProfile(request);
     }
 
 
     @GetMapping("/{username}")
     public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
-                                                    @RequestParam("_page") int _page,
-                                                    @RequestParam("_limit") int _limit,
                                                     HttpServletRequest request) throws IOException {
-        return profileService.getProfileByProfileUrlLink(username,request,_page, _limit);
+        return profileService.getProfileByProfileUrlLink(username,request);
     }
 
     /** Profile Image **/
@@ -311,6 +307,24 @@ public class ProfileController {
 
     }
 
+
+    /* Profile's posts **/
+    @GetMapping("/posts")
+    public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit){
+        return profilePostService.getProfilePosts(request, _page, _limit);
+    }
+
+    /* Other Profile's posts **/
+
+    @GetMapping("/other-posts")
+    public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
+                                                    @RequestParam("profileLinkUrl") String profileUrlLink,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit){
+        return profilePostService.getOtherProfilePosts(request, profileUrlLink , _page, _limit);
+    }
 
 
 

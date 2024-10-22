@@ -10,7 +10,7 @@ spring:
       port: 8080
 
   datasource:
-    url: jdbc:mysql://localhost:8080/digizenger?sessionVariables=sql_require_primary_key=0
+    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
     username: zues
     password: hello
 

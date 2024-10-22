@@ -25,5 +25,4 @@ public class OtherUserForProfileDto {
     private LocalDate dateOfBirth;
     private LocalDateTime createdDate;
     private Address address;
-    private List<PostDto> postDtoList;
 }
