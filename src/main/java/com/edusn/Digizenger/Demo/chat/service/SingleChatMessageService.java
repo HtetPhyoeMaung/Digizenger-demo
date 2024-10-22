@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface SingleChatMessageService {
-    ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long selectedUserId) ;
+    ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long selectedUserId, int _page, int _limit) ;
      ResponseEntity<Response> sendMessage(SingleChatMessage singleChatMessage, User user);
 
     ResponseEntity<Response> deleteMessage(SingleChatMessage singleChatMessage);

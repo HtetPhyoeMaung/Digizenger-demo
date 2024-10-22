@@ -18,13 +18,10 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final String info = "https://digizenger.info";
-    private final String org = "https://digizenger.org";
-
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/user");
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
     }
@@ -33,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-            registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:8081","http://localhost:3000",info,"http://localhost:5173")
+            registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000","http://localhost:8080")
                 .withSockJS();
     }
 

@@ -9,6 +9,10 @@ import com.edusn.Digizenger.Demo.chat.service.SingleChatRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,28 +38,38 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
 
+
     @Override
-    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId) {
+    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId, int _page, int _limit) {
+        Pageable pageable = PageRequest.of(_page - 1, _limit);
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
-        List<SingleChatMessage> singleChatMessages = chatId.map(singleChatMessageRepository::findByChatId).orElse(new ArrayList<>());
+        Page<SingleChatMessage> singleChatMessages = chatId.map(id->singleChatMessageRepository.findByChatId(id,pageable)).orElse(Page.empty());
+        singleChatMessages.forEach(singleChatMessage -> {singleChatMessage.setRead(true);});
+        singleChatMessageRepository.saveAll(singleChatMessages);
         List<SingleChatMessageDto> singleChatMessageDtos = singleChatMessages.stream()
                 .map(message -> SingleChatMessageDto.builder()
+                        .id(message.getId())
                         .message(message.getMessage())
                         .createDate(message.getCreateDate())
                         .modifiedDate(message.getModifiedDate())
                         .recipientId(message.getRecipientId())
+                        .isRead(message.isRead())
                         .userDto(UserDto.builder()
                                 .id(message.getUser().getId())
                                 .firstName(message.getUser().getFirstName())
                                 .lastName(message.getUser().getLastName())
+                                .profileImageUrl(message.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
                                 .build()) // Create UserDto from senderId
                         .chatId(message.getChatId())
                         .type(SingleChatMessage.Type.valueOf(message.getType().name()))
                         .build())
                 .collect(Collectors.toList());
+
+
         return new ResponseEntity<>(singleChatMessageDtos, HttpStatus.OK);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<Response> sendMessage(SingleChatMessage singleChatMessage, User user) {
         if(singleChatMessage.getMessage()!=null && singleChatMessage.getType() != SingleChatMessage.Type.TEXT){
