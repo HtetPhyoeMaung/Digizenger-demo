@@ -6,6 +6,7 @@ import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +102,14 @@ public class OtherProfileServiceImpl implements OtherProfileService {
             ).collect(Collectors.toList());
 
             otherProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+        }
+
+        if(otherProfile.getNeighbors().contains(loggedProfile)){
+            otherProfileDto.setRelationshipStatus(RelationshipStatus.NEIGHBOURS);
+        } else if (otherProfile.getFollowers().contains(loggedProfile)) {
+            otherProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWERS);
+        }else {
+            otherProfileDto.setRelationshipStatus(RelationshipStatus.NULL);
         }
 
 

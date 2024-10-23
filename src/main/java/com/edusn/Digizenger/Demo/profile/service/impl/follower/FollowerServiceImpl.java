@@ -7,7 +7,6 @@ import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
 import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.notification.service.NotificationService;
-import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -45,6 +44,9 @@ public class FollowerServiceImpl implements FollowerService {
         Profile toFollowUserProfile = profileRepository.findByProfileLinkUrl(toFollowUserProfileUrl);
         if(toFollowUserProfile == null)
             throw  new ProfileNotFoundException("user profile can't found by id : "+toFollowUserProfileUrl);
+
+        if(toFollowUserProfile.getFollowers().contains(profile))
+            throw new CannotFollowException("your already followed this user.");
 
         if(toFollowUserProfile.equals(profile))
             throw new CannotFollowException("You can't follow to your profile.");
@@ -88,6 +90,10 @@ public class FollowerServiceImpl implements FollowerService {
 
         if(toUnFollowUserProfile == null)
             throw  new ProfileNotFoundException("profile can't found by url : "+toUnFollowUserProfileUrl);
+
+        if(!toUnFollowUserProfile.getFollowers().contains(profile))
+            throw new CannotUnfollowException("you cannot unfollowed this user because you are  not relationship.");
+
         if(toUnFollowUserProfile.equals(profile))
             throw new CannotUnfollowException("you can't unfollow your profile.");
 
