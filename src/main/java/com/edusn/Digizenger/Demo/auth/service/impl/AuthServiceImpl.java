@@ -218,10 +218,16 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtService.generateToken(userDetails);
 
         /** To gave profile with login token **/
+        User user;
+        String emailOrPhone = jwtService.extractUsername(token);
+        if (emailOrPhone.matches(".*@.*")) {
+             user = userRepository.findByEmail(emailOrPhone)
+                    .orElseThrow(() -> new UserNotFoundException("User can't found by "+emailOrPhone));
+        }else {
+            user = userRepository.findByPhone(emailOrPhone)
+                    .orElseThrow(() -> new UserNotFoundException("User can't found by "+emailOrPhone));
+        }
 
-        String email = jwtService.extractUsername(token);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User can't found by "+email));
         Profile profile = profileRepository.findByUser(user);
 
         /* Last Login Time */
