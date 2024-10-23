@@ -21,9 +21,10 @@ public class NotificationController {
     @Autowired
     private GetUserByRequest getUserByRequest;
     @GetMapping
-    public ResponseEntity<Response> getAllNotification(HttpServletRequest request) throws MessagingException {
+    public ResponseEntity<Response> getAllNotification(HttpServletRequest request,@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size) throws MessagingException {
         User user=getUserByRequest.getUser(request);
-        return notificationService.getAllNotification(user);
+        return notificationService.getAllNotification(user,page, size);
     }
 
     @DeleteMapping("/{id}")

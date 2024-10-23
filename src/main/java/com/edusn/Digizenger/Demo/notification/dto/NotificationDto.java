@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.notification.dto;
 
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,8 @@ public class NotificationDto {
     private String message;
     private LocalDateTime createDate;
     private boolean isRead;
-    private String profileUrl;
+    private String profileImageUrl;
     private Long postId;
     private Long userId;
+    private ProfileDto profileDto;
 }
