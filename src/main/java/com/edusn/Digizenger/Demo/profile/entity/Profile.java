@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
@@ -104,7 +105,8 @@ public class Profile {
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories = new LinkedList<>();
-
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notification> notificationList = new LinkedList<>();
 
     public void addServiceProvided(ServiceProvided serviceProvided){
         this.serviceProvidedList.add(serviceProvided);
