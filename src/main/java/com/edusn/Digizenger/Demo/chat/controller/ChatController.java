@@ -60,7 +60,7 @@ public class ChatController {
     }
 
     @MessageMapping("/message-delete")
-    @SendTo("/topic/public")
+    @SendTo("/user/public")
     public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         return singleChatMessageService.deleteMessage(singleChatMessage);
 
@@ -78,7 +78,7 @@ public class ChatController {
     }
 
     @MessageMapping("/group-message-delete")
-    @SendTo("/topic/public")
+    @SendTo("/user/public")
     public ResponseEntity<Response> deleteGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
         return groupChatMessageService.deleteMessage(groupChatMessage);
     }

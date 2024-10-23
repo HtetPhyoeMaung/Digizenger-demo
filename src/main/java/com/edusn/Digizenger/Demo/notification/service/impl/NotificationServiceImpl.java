@@ -2,6 +2,8 @@ package com.edusn.Digizenger.Demo.notification.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.notification.entity.Notification;
@@ -20,14 +22,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private NotificationRepository notificationRepository;
 
@@ -143,5 +149,21 @@ public class NotificationServiceImpl implements NotificationService {
 
             sendNotiMessage(notificationNeighbors2);
         }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?") // Run every day at 12 AM
+    public void sendBirthdayNotifications(){
+        LocalDate today = LocalDate.now();
+        List<User> usersWithBirthDay = userRepository.findByDateOfBirth(today);
+        usersWithBirthDay.forEach(user -> {
+            String message = "Happy Birthday "+user.getFirstName()+" "+user.getLastName()+"!";
+            Notification notification = Notification.builder()
+                    .message(message)
+                    .isRead(false)
+                    .createDate(LocalDateTime.now())
+                    .build();
+
+            messagingTemplate.convertAndSend("/topic/public",notification);
+        });
     }
 }
