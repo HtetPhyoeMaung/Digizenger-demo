@@ -63,14 +63,12 @@ public class LikeServiceImpl implements LikeService {
                 Notification notification=Notification.builder()
                         .createDate(LocalDateTime.now())
                         .isRead(false)
-
                         .user(post.getUser())
                         .post(post)
+                        .profile(user.getProfile())
                         .message(like.getUser().getProfile().getUsername()+" liked your post!")
                         .build();
-                if(like.getUser().getProfile().getProfileImageName()!=null){
-                    notification.setProfileUrl(storageService.getImageByName(like.getUser().getProfile().getProfileImageName()));
-                }
+
                 notificationService.sendNotiMessage(notification);
             }
             LikeDto likeDto=LikeDto.builder()
@@ -97,11 +95,10 @@ public class LikeServiceImpl implements LikeService {
                         .isRead(false)
                         .user(post.getUser())
                         .post(post)
+                        .profile(user.getProfile())
                         .message(like.getUser().getProfile().getUsername()+"liked your post!")
                         .build();
-                if(like.getUser().getProfile().getProfileImageName()!=null){
-                    notification.setProfileUrl(storageService.getImageByName(like.getUser().getProfile().getProfileImageName()));
-                }
+
                 notificationService.sendNotiMessage(notification);
             }
             LikeDto likeDto=LikeDto.builder()

@@ -6,6 +6,7 @@ import com.edusn.Digizenger.Demo.exception.CannotFollowException;
 import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
 import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.notification.service.NotificationService;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -34,6 +35,7 @@ public class FollowerServiceImpl implements FollowerService {
     private final ProfileRepository profileRepository;
     private final ModelMapper modelMapper;
     private final ProfileMapperUtils profileMapperUtils;
+    private final NotificationService notificationService;
 
     @Override
     public ResponseEntity<Response> followToProfile(HttpServletRequest request, String toFollowUserProfileUrl) {
@@ -42,7 +44,7 @@ public class FollowerServiceImpl implements FollowerService {
 
         Profile toFollowUserProfile = profileRepository.findByProfileLinkUrl(toFollowUserProfileUrl);
         if(toFollowUserProfile == null)
-             throw  new ProfileNotFoundException("user profile can't found by id : "+toFollowUserProfileUrl);
+            throw  new ProfileNotFoundException("user profile can't found by id : "+toFollowUserProfileUrl);
 
         if(toFollowUserProfile.equals(profile))
             throw new CannotFollowException("You can't follow to your profile.");
@@ -53,13 +55,19 @@ public class FollowerServiceImpl implements FollowerService {
         String message = "You following to "
                 +toFollowUserProfile.getUser().getFirstName()
                 + " "+toFollowUserProfile.getUser().getLastName();
-        if(toFollowUserProfile.getFollowing().contains(profile)){
+        if(!toFollowUserProfile.getFollowing().contains(profile)) {
+            notificationService.sendFollowNotification(profile,toFollowUserProfile);
+
+        }
+
+        else{
             profile.getNeighbors().add(toFollowUserProfile);
             toFollowUserProfile.getNeighbors().add(profile);
             message = "You following to "
                     +toFollowUserProfile.getUser().getFirstName()
                     + " "+toFollowUserProfile.getUser().getLastName()
                     + ".And now  You are neighbors.";
+            notificationService.sendFollowNotification(profile,toFollowUserProfile);
         }
         profileRepository.save(profile);
         profileRepository.save(toFollowUserProfile);
