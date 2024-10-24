@@ -185,21 +185,21 @@ public class ProfileController {
     }
 
     /** Following **/
-    @GetMapping("/following")
+    @GetMapping("/following/{profileId}")
     public ResponseEntity<Response> profileFollowing(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return followingService.getProfileFollowingByPage(_page, _limit, profileUrl, request);
+        return followingService.getProfileFollowingByPage(_page, _limit, profileId, request);
     }
 
     /** Neighbor **/
-    @GetMapping("/neighbors")
+    @GetMapping("/neighbors/{profileId}")
     public ResponseEntity<Response> profileNeighbors(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return neighborService.getProfileNeighborsByPage(_page, _limit, profileUrl, request);
+        return neighborService.getProfileNeighborsByPage(_page, _limit, profileId, request);
     }
 
     /** Education History **/

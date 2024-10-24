@@ -145,15 +145,17 @@ public class FollowerServiceImpl implements FollowerService {
 
         Profile otherUserProfile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id "+ profileId));
-        if(otherUserProfile.getFollowers() == null)
-            throw new FollowerNotFoundException("Followers are not found in "
-                    +otherUserProfile.getUser().getFirstName()
-                    +" "+otherUserProfile.getUser().getLastName()
-                    +"'s profile.");
+
         Page<Profile> followers = profileRepository.findFollowersByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> otherProfileFollowers = followers.stream().map(
                 profileMapperUtils::convertToRelationShipDto
         ).collect(Collectors.toList());
+
+        if(otherProfileFollowers.isEmpty())
+            throw new FollowerNotFoundException("Followers are not found in "
+                    +otherUserProfile.getUser().getFirstName()
+                    +" "+otherUserProfile.getUser().getLastName()
+                    +"'s profile.");
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

@@ -7,6 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface NeighborService {
     ResponseEntity<Response> getProfileNeighborsByPage(int _page,
                                                        int _limit,
-                                                       String profileUrl,
+                                                       Long profileId,
                                                        HttpServletRequest request);
 }
