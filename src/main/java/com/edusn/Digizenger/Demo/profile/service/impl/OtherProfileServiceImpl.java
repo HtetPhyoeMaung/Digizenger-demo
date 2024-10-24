@@ -107,9 +107,9 @@ public class OtherProfileServiceImpl implements OtherProfileService {
         if(otherProfile.getNeighbors().contains(loggedProfile)){
             otherProfileDto.setRelationshipStatus(RelationshipStatus.NEIGHBOURS);
         } else if (otherProfile.getFollowers().contains(loggedProfile)) {
-            otherProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWERS);
+            otherProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWING);
         }else {
-            otherProfileDto.setRelationshipStatus(RelationshipStatus.NULL);
+            otherProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW);
         }
 
 

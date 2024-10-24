@@ -164,4 +164,13 @@ public class ProfileServiceImpl implements ProfileService {
             return otherProfileService.showOtherUserProfile(otherProfile, profile);
         }
     }
+
+    @Override
+    public ResponseEntity<Response> getProfileById(HttpServletRequest request, Long id) throws IOException {
+        User user = getUserByRequest.getUser(request);
+        Profile profile = profileRepository.findByUser(user);
+        Profile toFindProfile = profileRepository.findById(id)
+                .orElseThrow(() -> new ProfileNotFoundException("profile is not exists by id : "+id));
+        return otherProfileService.showOtherUserProfile(toFindProfile, profile);
+    }
 }
