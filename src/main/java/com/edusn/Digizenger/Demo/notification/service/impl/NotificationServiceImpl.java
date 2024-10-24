@@ -3,13 +3,11 @@ package com.edusn.Digizenger.Demo.notification.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
-import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.notification.repo.NotificationRepository;
 import com.edusn.Digizenger.Demo.notification.service.NotificationService;
-import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.storage.StorageService;
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -156,14 +153,46 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDate today = LocalDate.now();
         List<User> usersWithBirthDay = userRepository.findByDateOfBirth(today);
         usersWithBirthDay.forEach(user -> {
-            String message = "Happy Birthday "+user.getFirstName()+" "+user.getLastName()+"!";
-            Notification notification = Notification.builder()
-                    .message(message)
+            String messageForBDUser = "Happy Birthday "+user.getFirstName()+" "+user.getLastName()+"!";
+            String messageForNeighbors = "Happy Birthday "+user.getFirstName()+" "+user.getLastName()+"!";
+
+            Notification notificationforNeighbor = Notification.builder()
+                    .message(messageForNeighbors)
                     .isRead(false)
+                    .profile(user.getProfile())
                     .createDate(LocalDateTime.now())
                     .build();
 
-            messagingTemplate.convertAndSend("/topic/public",notification);
+            Notification notificationforBDUser = Notification.builder()
+                    .message(messageForBDUser)
+                    .isRead(false)
+                    .createDate(LocalDateTime.now())
+                    .user(user)
+                    .build();
+
+            NotificationDto notificationDtoForBDUser = NotificationDto.builder()
+                                    .message(messageForBDUser)
+                                            .isRead(notificationforBDUser.isRead())
+                                                    .createDate(notificationforBDUser.getCreateDate())
+                                                            .build();
+            NotificationDto notificationDtoForNeighbors = NotificationDto.builder()
+                    .message(messageForNeighbors)
+                    .isRead(notificationforNeighbor.isRead())
+                    .createDate(notificationforNeighbor.getCreateDate())
+                    .build();
+
+
+
+           user.getProfile().getNeighbors().forEach(neighbors->{
+               notificationforNeighbor.setUser(neighbors.getUser());
+               notificationRepository.save(notificationforNeighbor);
+               notificationDtoForNeighbors.setId(notificationforNeighbor.getId());
+                messagingTemplate.convertAndSendToUser(String.valueOf(neighbors.getId()),"/queue/private-notification",notificationDtoForNeighbors);
+            });
+             notificationRepository.save(notificationforBDUser);
+             notificationDtoForBDUser.setId(notificationforBDUser.getId());
+            messagingTemplate.convertAndSendToUser(String.valueOf(user.getId()),"/queue/private-notification", notificationDtoForBDUser);
         });
+        
     }
 }
