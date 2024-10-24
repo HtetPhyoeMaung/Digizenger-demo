@@ -54,6 +54,12 @@ public class ProfileController {
         return profileService.getProfileByProfileUrlLink(username,request);
     }
 
+    @GetMapping("/go-user/{id}")
+    public ResponseEntity<Response> getProfileById(@PathVariable("id") Long id,
+                                                   HttpServletRequest request) throws IOException{
+        return profileService.getProfileById(request, id);
+    }
+
     /** Profile Image **/
 
     @PostMapping("/p-image")
@@ -158,24 +164,24 @@ public class ProfileController {
         return aboutProvidedService.removeServiceProvided(request, id);
     }
     /** Follower **/
-    @GetMapping("/followers")
+    @GetMapping("/followers/{profileId}")
     public ResponseEntity<Response> profileFollowers(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return followerService.getProfileFollowersByPage(_page, _limit, profileUrl, request);
+        return followerService.getProfileFollowersByPage(_page, _limit, profileId, request);
     }
 
-    @PostMapping("/followers")
+    @PostMapping("/followers/follow/{toFollowId}")
     public ResponseEntity<Response> followUserProfile(HttpServletRequest request,
-                                                      @RequestParam("toFollowUserProfileUrl") String url){
-        return followerService.followToProfile(request, url);
+                                                      @PathVariable("toFollowId") Long id){
+        return followerService.followToProfile(request, id);
     }
 
-    @DeleteMapping("/followers")
+    @PutMapping("/followers/unfollow/{toUnfollowId}")
     public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
-                                                          @RequestParam("toUnfollowUserProfileUrl") String url){
-        return followerService.unFollowToProfile(request, url);
+                                                          @PathVariable("toUnfollowId") Long id){
+        return followerService.unFollowToProfile(request, id);
     }
 
     /** Following **/
