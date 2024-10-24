@@ -19,7 +19,6 @@ public class ProfileMapperUtils {
         relationShipDto.setLastName(profile.getUser().getLastName());
         relationShipDto.setProfileCareer(profile.getProfileCareer());
         relationShipDto.setUsername(profile.getUsername());
-        relationShipDto.setProfileLinkUrl(profile.getProfileLinkUrl());
 
         if(profile.getProfileImageName() != null){
             relationShipDto.setProfileImageName(profile.getProfileImageName());

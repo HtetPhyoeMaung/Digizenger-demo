@@ -25,7 +25,6 @@ public class OtherProfileDto {
     private String coverImageUrl;
     private String coverImageName;
     private String username;
-    private String profileLinkUrl;
     private String bio;
     private Long followerCount = 0L;
     private Long followingCount = 0L;

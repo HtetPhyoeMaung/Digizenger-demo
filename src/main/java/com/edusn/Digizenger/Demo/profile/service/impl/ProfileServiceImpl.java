@@ -34,11 +34,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final OtherProfileService otherProfileService;
     private final StorageService storageService;
     private final GetUserByRequest getUserByRequest;
-    private final ViewRepository viewRepository;
-    private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    @Value("${app.profileUrl}")
-    private String baseProfileUrl;
+
 
     /** Create profile **/
     @Override
@@ -47,7 +43,7 @@ public class ProfileServiceImpl implements ProfileService {
         /* Create profile object */
         Profile profile = new Profile();
         String randomString = UrlGenerator.generateRandomString();
-        profile.setProfileLinkUrl(baseProfileUrl+randomString);
+        profile.setUsername(randomString + "RD");
         profile.setUser(user);
         profileRepository.save(profile);
     }
@@ -59,10 +55,6 @@ public class ProfileServiceImpl implements ProfileService {
         User user = getUserByRequest.getUser(request);
         Profile profile = user.getProfile();
 
-        if(profile.getUsername() != null){
-            profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
-            profileRepository.save(profile);
-        }
 
         ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
@@ -151,16 +143,16 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Response> getProfileByProfileUrlLink(String username, HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileLinkUrl().equals(baseProfileUrl+profileUrl)){
+        if(profile.getUsername().equals(username)){
             return showUserProfile(request);
         }
         else {
-            Profile otherProfile = profileRepository.findByProfileLinkUrl(baseProfileUrl+profileUrl);
-            if(otherProfile == null){throw new ProfileNotFoundException("profile cannot found by url : "+profile.getProfileLinkUrl());}
+            Profile otherProfile = profileRepository.findByUsername(username)
+                    .orElseThrow(()-> new ProfileNotFoundException("profile not found by url which have username : "+username));
             return otherProfileService.showOtherUserProfile(otherProfile, profile);
         }
     }

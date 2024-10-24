@@ -43,7 +43,6 @@ public class MapperUtil {
 
     public static ProfileDto convertToProfileDto(Profile profile){
         ProfileDto profileDto = new ProfileDto();
-        profileDto.setProfileLinkUrl(profile.getProfileLinkUrl());
         profileDto.setFollowersCount((long) profile.getFollowers().size());
         return profileDto;
     }

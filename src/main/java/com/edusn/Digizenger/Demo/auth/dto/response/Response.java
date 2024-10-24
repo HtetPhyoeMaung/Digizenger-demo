@@ -75,4 +75,6 @@ public class Response {
 
     private RelationshipStatus relationshipStatus;
 
+    private String username;
+
 }

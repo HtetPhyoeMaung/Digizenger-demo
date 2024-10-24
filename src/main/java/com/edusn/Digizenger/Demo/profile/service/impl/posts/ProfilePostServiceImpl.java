@@ -80,15 +80,15 @@ public class ProfilePostServiceImpl implements ProfilePostService {
 
     @Override
     public ResponseEntity<Response> getOtherProfilePosts(HttpServletRequest request,
-                                                         String profileLinkUrl,
+                                                         Long profileId,
                                                          int _page,
                                                          int _limit) {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
 
-        Profile otherProfile = profileRepository.findByProfileLinkUrl(profileLinkUrl);
-        if(otherProfile == null) throw new ProfileNotFoundException("other profile not found.");
+        Profile otherProfile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id : "+profileId));
         User otherUser = otherProfile.getUser();
 
         Response response = null;

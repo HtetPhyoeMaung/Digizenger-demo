@@ -323,13 +323,12 @@ public class ProfileController {
     }
 
     /* Other Profile's posts **/
-
-    @GetMapping("/other-posts")
+    @GetMapping("/other-posts/{profileId}")
     public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
-                                                    @RequestParam("profileLinkUrl") String profileUrlLink,
+                                                    @PathVariable("profileId") Long profileId,
                                                     @RequestParam("_page") int _page,
                                                     @RequestParam("_limit") int _limit){
-        return profilePostService.getOtherProfilePosts(request, profileUrlLink , _page, _limit);
+        return profilePostService.getOtherProfilePosts(request, profileId , _page, _limit);
     }
 
 

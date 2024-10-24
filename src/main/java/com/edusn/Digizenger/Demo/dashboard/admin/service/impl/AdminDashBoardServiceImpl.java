@@ -64,7 +64,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
             Profile profile = profileRepository.findByUser(u);
             ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
                     .id(profile.getId())
-                    .profileLinkUrl(profile.getProfileLinkUrl())
+                    .username(profile.getUsername())
                     .build();
             if(profile.getProfileImageName() != null) {
                 profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));

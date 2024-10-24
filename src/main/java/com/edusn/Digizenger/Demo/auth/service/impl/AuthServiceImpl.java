@@ -77,8 +77,6 @@ public class AuthServiceImpl implements AuthService {
     private ViewRepository viewRepository;
     @Autowired
     private LikeRepository likeRepository;
-    @Value("${app.profileUrl}")
-    private String baseProfileUrl;
 
     private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
 
@@ -234,10 +232,6 @@ public class AuthServiceImpl implements AuthService {
         user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
 
-        if(profile.getUsername() != null){
-            profile.setProfileLinkUrl(baseProfileUrl+profile.getUsername());
-            profileRepository.save(profile);
-        }
 
         ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
         UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);

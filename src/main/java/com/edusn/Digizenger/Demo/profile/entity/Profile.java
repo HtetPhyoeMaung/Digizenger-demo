@@ -36,10 +36,8 @@ public class Profile {
     @Column(name = "cover_image_name")
     private String coverImageName;
 
+    @Column(nullable = false, unique = true)
     private String username;
-
-    @Column(name = "profile_link_url", unique = true)
-    private String profileLinkUrl;
 
     private String bio;
 
