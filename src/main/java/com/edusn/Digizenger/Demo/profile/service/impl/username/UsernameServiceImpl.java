@@ -23,8 +23,7 @@ public class UsernameServiceImpl implements UsernameService {
 
     private final GetUserByRequest getUserByRequest;
     private final ProfileRepository profileRepository;
-    @Value("${app.profileUrl}")
-    private String profileUrl;
+
 
     @Override
     public ResponseEntity<Response> uploadUsername(String username, HttpServletRequest request) {
@@ -33,8 +32,7 @@ public class UsernameServiceImpl implements UsernameService {
         Profile profile = profileRepository.findByUser(user);
         if(profileRepository.existsByUsername(username))
             throw new CustomNotFoundException("username is already exists.Please enter another name.");
-        profile.setUsername(username.trim().toLowerCase());
-        profile.setProfileLinkUrl(profileUrl+username);
+        profile.setUsername(username.trim());
         profileRepository.save(profile);
 
         Response response = Response.builder()
@@ -51,14 +49,14 @@ public class UsernameServiceImpl implements UsernameService {
         Profile profile = profileRepository.findByUser(user);
         if(profile.getUsername() == null)
             throw new UsernameNotFoundException("username not found!" );
-        profile.setUsername(null);
         String randomString = UrlGenerator.generateRandomString();
-        profile.setProfileLinkUrl(profileUrl+randomString);
+        profile.setUsername(randomString + "RD");
         profileRepository.save(profile);
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully removed username.")
+                .username(randomString)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

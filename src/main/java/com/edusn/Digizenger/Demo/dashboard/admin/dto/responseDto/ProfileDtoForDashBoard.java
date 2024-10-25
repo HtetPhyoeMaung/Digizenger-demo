@@ -15,6 +15,5 @@ public class ProfileDtoForDashBoard {
 
     private  String  profileImageUrl;
 
-    private String profileLinkUrl;
-
+    private String username;
 }

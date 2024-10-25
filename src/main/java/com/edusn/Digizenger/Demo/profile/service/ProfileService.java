@@ -16,7 +16,7 @@ public interface ProfileService {
     ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException;
 
     /* To get the profile by profile url link */
-    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request) throws IOException;
+    ResponseEntity<Response> getProfileByProfileUrlLink(String username, HttpServletRequest request) throws IOException;
 
     ResponseEntity<Response> getProfileById(HttpServletRequest request, Long id) throws IOException;
 }

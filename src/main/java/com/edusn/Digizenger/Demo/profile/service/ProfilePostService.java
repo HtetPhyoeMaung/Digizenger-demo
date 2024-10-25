@@ -10,7 +10,7 @@ public interface ProfilePostService {
                                             int _limit);
 
     ResponseEntity<Response> getOtherProfilePosts(HttpServletRequest request,
-                                                  String profileLinkUrl,
+                                                  Long profileId,
                                                   int _page,
                                                   int _limit);
 }
