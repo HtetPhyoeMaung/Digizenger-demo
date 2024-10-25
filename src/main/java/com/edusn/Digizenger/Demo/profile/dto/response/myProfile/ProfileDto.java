@@ -13,6 +13,7 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileDto {
     private Long id;
     private String profileCareer;
