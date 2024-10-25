@@ -12,14 +12,15 @@ import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
+import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Slf4j
 public class MapperUtil {
-
 
     public static PostDto convertToPostDto(Post post) {
         PostDto postDto = new PostDto();
@@ -43,6 +44,7 @@ public class MapperUtil {
 
     public static ProfileDto convertToProfileDto(Profile profile){
         ProfileDto profileDto = new ProfileDto();
+        profileDto.setId(profile.getId());
         profileDto.setFollowersCount((long) profile.getFollowers().size());
         return profileDto;
     }
