@@ -1,7 +1,9 @@
 package com.edusn.Digizenger.Demo.auth.controller;
+import org.springframework.validation.annotation.Validated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.edusn.Digizenger.Demo.auth.dto.request.LoginRequest;
 import com.edusn.Digizenger.Demo.auth.dto.request.RegisterRequest;
@@ -19,7 +21,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Response> register(@RequestBody RegisterRequest request) throws MessagingException {
+    public ResponseEntity<Response> register(@RequestBody @Validated RegisterRequest request,BindingResult result) throws MessagingException {
         log.info("Reach Register");
         return authService.register(request);
     }
