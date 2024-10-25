@@ -12,6 +12,8 @@ import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
+import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -145,7 +147,13 @@ public  class PostServiceImpl implements PostService {
             boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
             // Convert post to PostDto and set additional fields
             PostDto postDto = PostServiceImpl.convertToPostDto(post);
-
+            Profile profile = post.getUser().getProfile();
+            ProfileDto profileDto = ProfileDto.builder()
+                    .id(profile.getId())
+                    .username(profile.getUsername())
+                    .bio(profile.getBio())
+                    .profileImageUrl(profile.getProfileImageName())
+                    .build();
             if(post.getUser().getProfile().getProfileImageName()!=null){
                 postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
                 postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
@@ -154,6 +162,7 @@ public  class PostServiceImpl implements PostService {
                 postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
 
             }
+            postDto.setProfileDto(profileDto);
             postDto.setUserDto(userDto);
             postDto.setViewCount(viewCount);
             postDto.setLikeCount(likeCount);
