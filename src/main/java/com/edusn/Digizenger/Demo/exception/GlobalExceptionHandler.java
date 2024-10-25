@@ -6,10 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(LoginNameExistException.class)
     public ResponseEntity<CustomErrorResponse> emailExistHandler(LoginNameExistException ex){
@@ -206,4 +209,15 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
     }
+    @ExceptionHandler(ApiValidationException.class)
+    public ResponseEntity<CustomErrorResponse> handleApiValidationException(ApiValidationException ex) {
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("Validation failed")
+                .errors(ex.getValidationMessages())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }

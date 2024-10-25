@@ -25,6 +25,6 @@ public class GetUserByRequest {
         String emailOrPhone = jwtService.extractUsername(token);
         /* Get user find by email */
 
-        return checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);;
+        return checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
     }
 }

@@ -12,6 +12,8 @@ import com.edusn.Digizenger.Demo.post.entity.Reply;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -33,7 +35,6 @@ public class User {
     private String firstName;
 
     private String lastName;
-
     private String email;
     private String phone;
     @Column(nullable = false)
