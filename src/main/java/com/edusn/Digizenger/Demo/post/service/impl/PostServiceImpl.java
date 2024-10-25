@@ -70,21 +70,26 @@ public  class PostServiceImpl implements PostService {
         }
         postRepository.save(post);
         PostDto postDto=convertToPostDto(post);
-
-        if(post.getUser().getProfile().getProfileImageName()!=null){
-            postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
-            postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-        }
         Profile profile = post.getUser().getProfile();
         ProfileDto profileDto = ProfileDto.builder()
                 .id(profile.getId())
                 .username(profile.getUsername())
                 .followersCount((long) profile.getFollowers().size())
                 .build();
+        if(post.getUser().getProfile().getProfileImageName()!=null){
+          profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+           profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+        }else {
+            profileDto.setProfileImageUrl("");
+        }
+
         if(post.getImageName()!=null){
             postDto.setImageName(post.getImageName());
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        }else {
+            postDto.setImageUrl("");
         }
+
         postDto.setUserDto(convertToUserDto(user));
         postDto.setProfileDto(profileDto);
         Long likeCount = likeRepository.findByPost(post).stream().count();
@@ -170,12 +175,16 @@ public  class PostServiceImpl implements PostService {
                     .followersCount((long) profile.getFollowers().size())
                     .build();
             if(post.getUser().getProfile().getProfileImageName()!=null){
-                postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
-                postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+                profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+                profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+            }else {
+                profileDto.setProfileImageUrl("");
             }
             if(post.getImageName() !=null){
                 postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
 
+            }else {
+                postDto.setImageUrl("");
             }
             postDto.setProfileDto(profileDto);
             postDto.setUserDto(userDto);
