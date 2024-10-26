@@ -6,7 +6,6 @@ import com.edusn.Digizenger.Demo.profile.service.about.*;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +35,7 @@ public class ProfileController {
     private final SchoolService schoolService;
     private final CompanyService companyService;
     private final ImagesService imagesService;
+    private final ProfilePostService profilePostService;
 
     @GetMapping("/test")
     public String test(){
@@ -43,19 +43,21 @@ public class ProfileController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Response> getProfile(HttpServletRequest request,
-                                               @RequestParam("_page") int _page,
-                                               @RequestParam("_limit") int _limit) throws IOException {
-        return profileService.showUserProfile(request, _page, _limit);
+    public ResponseEntity<Response> getProfile(HttpServletRequest request) throws IOException {
+        return profileService.showUserProfile(request);
     }
 
 
     @GetMapping("/{username}")
     public ResponseEntity<Response> getProfileByUrl(@PathVariable("username") String username,
-                                                    @RequestParam("_page") int _page,
-                                                    @RequestParam("_limit") int _limit,
                                                     HttpServletRequest request) throws IOException {
-        return profileService.getProfileByProfileUrlLink(username,request,_page, _limit);
+        return profileService.getProfileByProfileUrlLink(username,request);
+    }
+
+    @GetMapping("/go-user/{id}")
+    public ResponseEntity<Response> getProfileById(@PathVariable("id") Long id,
+                                                   HttpServletRequest request) throws IOException{
+        return profileService.getProfileById(request, id);
     }
 
     /** Profile Image **/
@@ -149,9 +151,9 @@ public class ProfileController {
         return aboutProvidedService.uploadServiceProvided(request, service);
     }
 
-    @PutMapping("/service-provided")
+    @PutMapping("/service-provided/{id}")
     public ResponseEntity<Response> updateServiceProvided(HttpServletRequest request,
-                                                          @RequestParam("id") Long id,
+                                                          @PathVariable("id") Long id,
                                                           @RequestParam("service") String service){
         return aboutProvidedService.updateServiceProvided(request, id, service);
     }
@@ -162,42 +164,42 @@ public class ProfileController {
         return aboutProvidedService.removeServiceProvided(request, id);
     }
     /** Follower **/
-    @GetMapping("/followers")
+    @GetMapping("/followers/{profileId}")
     public ResponseEntity<Response> profileFollowers(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return followerService.getProfileFollowersByPage(_page, _limit, profileUrl, request);
+        return followerService.getProfileFollowersByPage(_page, _limit, profileId, request);
     }
 
-    @PostMapping("/followers")
+    @PostMapping("/followers/follow/{toFollowId}")
     public ResponseEntity<Response> followUserProfile(HttpServletRequest request,
-                                                      @RequestParam("toFollowUserProfileUrl") String url){
-        return followerService.followToProfile(request, url);
+                                                      @PathVariable("toFollowId") Long id){
+        return followerService.followToProfile(request, id);
     }
 
-    @DeleteMapping("/followers")
+    @PutMapping("/followers/unfollow/{toUnfollowId}")
     public ResponseEntity<Response> toUnFollowUserProfile(HttpServletRequest request,
-                                                          @RequestParam("toUnfollowUserProfileUrl") String url){
-        return followerService.unFollowToProfile(request, url);
+                                                          @PathVariable("toUnfollowId") Long id){
+        return followerService.unFollowToProfile(request, id);
     }
 
     /** Following **/
-    @GetMapping("/following")
+    @GetMapping("/following/{profileId}")
     public ResponseEntity<Response> profileFollowing(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return followingService.getProfileFollowingByPage(_page, _limit, profileUrl, request);
+        return followingService.getProfileFollowingByPage(_page, _limit, profileId, request);
     }
 
     /** Neighbor **/
-    @GetMapping("/neighbors")
+    @GetMapping("/neighbors/{profileId}")
     public ResponseEntity<Response> profileNeighbors(@RequestParam("_page") int _page,
                                                      @RequestParam("_limit") int _limit,
-                                                     @RequestParam("profileUrl") String profileUrl,
+                                                     @PathVariable("profileId") Long profileId,
                                                      HttpServletRequest request){
-        return neighborService.getProfileNeighborsByPage(_page, _limit, profileUrl, request);
+        return neighborService.getProfileNeighborsByPage(_page, _limit, profileId, request);
     }
 
     /** Education History **/
@@ -245,12 +247,12 @@ public class ProfileController {
     /** Career History **/
     @PostMapping("/career-history")
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request,
-                                                           @RequestParam("companyName") String companyNmae,
+                                                           @RequestParam("companyName") String companyName,
                                                            @Nullable @RequestParam(value = "logoImage",required = false) MultipartFile logoImage,
                                                            @Nullable @RequestParam(value = "designation",required = false) String designation,
                                                            @RequestParam("joinDate") LocalDate joinDate,
                                                            @Nullable @RequestParam(value = "endDate",required = false) LocalDate endDate) throws IOException {
-        return careerHistoryService.uploadCareerHistory(request, companyNmae, logoImage, designation, joinDate, endDate);
+        return careerHistoryService.uploadCareerHistory(request, companyName, logoImage, designation, joinDate, endDate);
     }
 
     @PutMapping("/career-history/{id}")
@@ -311,6 +313,23 @@ public class ProfileController {
 
     }
 
+
+    /* Profile's posts **/
+    @GetMapping("/posts")
+    public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit){
+        return profilePostService.getProfilePosts(request, _page, _limit);
+    }
+
+    /* Other Profile's posts **/
+    @GetMapping("/other-posts/{profileId}")
+    public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
+                                                    @PathVariable("profileId") Long profileId,
+                                                    @RequestParam("_page") int _page,
+                                                    @RequestParam("_limit") int _limit){
+        return profilePostService.getOtherProfilePosts(request, profileId , _page, _limit);
+    }
 
 
 

@@ -66,7 +66,7 @@ public class LikeServiceImpl implements LikeService {
                         .user(post.getUser())
                         .post(post)
                         .profile(user.getProfile())
-                        .message(like.getUser().getProfile().getUsername()+" liked your post!")
+                        .message(like.getUser().getFirstName()+" "+like.getUser().getLastName() +" loved your post!")
                         .build();
 
                 notificationService.sendNotiMessage(notification);

@@ -3,7 +3,6 @@ package com.edusn.Digizenger.Demo.profile.service;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
@@ -14,8 +13,10 @@ public interface ProfileService {
     void createUserProfile(User user);
 
     /* To see the user's profile data */
-    ResponseEntity<Response> showUserProfile(HttpServletRequest request , int _page, int _limit) throws IOException;
+    ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException;
 
     /* To get the profile by profile url link */
-    ResponseEntity<Response> getProfileByProfileUrlLink(String profileUrl, HttpServletRequest request, int _page, int _limit) throws IOException;
+    ResponseEntity<Response> getProfileByProfileUrlLink(String username, HttpServletRequest request) throws IOException;
+
+    ResponseEntity<Response> getProfileById(HttpServletRequest request, Long id) throws IOException;
 }

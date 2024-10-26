@@ -58,7 +58,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
             logoImageName = storageService.uploadImage(logoImage);
         }
 
-
         School school;
 
         if(!schoolRepository.existsBySchoolName(schoolName)){
@@ -70,7 +69,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         }else{
             school = schoolRepository.findBySchoolName(schoolName);
         }
-
 
         EducationHistory educationHistory = EducationHistory.builder()
                 .school(school)
@@ -129,7 +127,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
 
         EducationHistoryDto educationHistoryDto = null;
         for(EducationHistory educationHistory : profile.getEducationHistories()){
-            if(educationHistory.getId() == educationHistoryId){
+            if(educationHistory.getId().equals(educationHistoryId)){
 
                 educationHistory.setId(educationHistoryId);
 

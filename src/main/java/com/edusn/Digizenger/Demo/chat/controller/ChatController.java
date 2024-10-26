@@ -41,9 +41,11 @@ public class ChatController {
     private UserRepository userRepository;
 
     @GetMapping("/messages/{selectedUserId}")
-    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request) {
+    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request,
+                                                                       @RequestParam(value = "_page",defaultValue = "1") int _page,
+                                                                       @RequestParam(value = "_limit",defaultValue = "10") int _limit) {
         User sender= getUserByRequest.getUser(request);
-        return singleChatMessageService.findChatMessages(sender,selectedUserId);
+        return singleChatMessageService.findChatMessages(sender,selectedUserId, _page, _limit);
     }
 
 
@@ -55,7 +57,7 @@ public class ChatController {
     }
 
     @MessageMapping("/message-delete")
-    @SendTo("/topic/public")
+    @SendTo("/user/public")
     public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         return singleChatMessageService.deleteMessage(singleChatMessage);
 
@@ -73,7 +75,7 @@ public class ChatController {
     }
 
     @MessageMapping("/group-message-delete")
-    @SendTo("/topic/public")
+    @SendTo("/user/public")
     public ResponseEntity<Response> deleteGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
         return groupChatMessageService.deleteMessage(groupChatMessage);
     }

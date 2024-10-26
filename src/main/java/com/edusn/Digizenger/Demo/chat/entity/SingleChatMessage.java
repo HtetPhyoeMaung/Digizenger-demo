@@ -26,6 +26,7 @@ public class SingleChatMessage {
         private String chatId;
         private Long recipientId;
         private Type type;
+        private boolean isRead;
 //        @Transient
 //        private Long sendId;
         @ManyToOne(fetch = FetchType.EAGER)

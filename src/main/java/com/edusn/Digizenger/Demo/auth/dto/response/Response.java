@@ -11,6 +11,7 @@ import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
+import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -65,5 +66,15 @@ public class Response {
     private List<String> companyNameList;
 
     private ImageDto imageDto;
+
+    private String coverImageUrl;
+
+    private String profileImageUrl;
+
+    private ServiceProvidedDto serviceProvidedDto;
+
+    private RelationshipStatus relationshipStatus;
+
+    private String username;
 
 }

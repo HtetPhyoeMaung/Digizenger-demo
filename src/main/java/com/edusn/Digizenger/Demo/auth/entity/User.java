@@ -106,7 +106,8 @@ public class User {
     public enum Gender{
         MALE,
         FEMALE,
-        OTHER
+        OTHER,
+        PEFERNOTSAY
     }
     public enum Status{
         ONLINE,OFFLINE

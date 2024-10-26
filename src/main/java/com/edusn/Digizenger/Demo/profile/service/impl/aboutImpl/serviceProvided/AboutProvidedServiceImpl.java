@@ -64,13 +64,19 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
                 .service(service)
                 .profileList(profileList)
                 .build();
-        serviceProvidedRepository.save(serviceProvided);
+        serviceProvided = serviceProvidedRepository.save(serviceProvided);
+
         profile.addServiceProvided(serviceProvided);
         profileRepository.save(profile);
+        ServiceProvidedDto serviceProvidedDto = ServiceProvidedDto.builder()
+                .id(serviceProvided.getId())
+                .service(serviceProvided.getService())
+                .build();
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully uploaded provided service.")
+                .serviceProvidedDto(serviceProvidedDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -102,18 +108,25 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
 
+        ServiceProvidedDto serviceProvidedDto = null;
         for(ServiceProvided serviceProvided : profile.getServiceProvidedList()){
             if(serviceProvided.getId() == id){
                 serviceProvided.setId(id);
                 serviceProvided.setService(service);
-                serviceProvidedRepository.save(serviceProvided);
+                serviceProvided = serviceProvidedRepository.save(serviceProvided);
                 profileRepository.save(profile);
+
+                serviceProvidedDto = ServiceProvidedDto.builder()
+                        .id(serviceProvided.getId())
+                        .service(serviceProvided.getService())
+                        .build();
             }
         }
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated provided service.")
+                .serviceProvidedDto(serviceProvidedDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

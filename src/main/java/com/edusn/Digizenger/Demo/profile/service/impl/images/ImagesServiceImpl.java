@@ -1,6 +1,5 @@
 package com.edusn.Digizenger.Demo.profile.service.impl.images;
 
-import com.amazonaws.Request;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;

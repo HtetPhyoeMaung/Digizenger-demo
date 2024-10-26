@@ -20,6 +20,7 @@ import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
     private final UserRepository userRepository;
@@ -53,6 +55,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Page<User> userList = userRepository.findAll(pageable);
         List<UserDtoForDashBoard> userDtoForDashBoardList = new LinkedList<>();
 
+
         userList.forEach(u->{
             UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(u,UserDtoForDashBoard.class);
             userDtoForDashBoard.setCountry(u.getAddress().getCountry());
@@ -61,7 +64,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
             Profile profile = profileRepository.findByUser(u);
             ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
                     .id(profile.getId())
-                    .profileLinkUrl(profile.getProfileLinkUrl())
+                    .username(profile.getUsername())
                     .build();
             if(profile.getProfileImageName() != null) {
                 profileDtoForDashBoard.setProfileImageUrl(storageService.getImageByName(profile.getProfileImageName()));
@@ -132,7 +135,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
 
         /* careerHistory */
-        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistoryList()
+        List<CareerHistoryDto> careerHistoryDtoList = showUser.getProfile().getCareerHistories()
                 .stream().map(
                         careerHistory -> modelMapper.map(careerHistory, CareerHistoryDto.class)
                 ).collect(Collectors.toList());

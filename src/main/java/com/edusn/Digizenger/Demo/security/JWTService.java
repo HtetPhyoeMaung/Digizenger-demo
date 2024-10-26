@@ -18,7 +18,8 @@ import java.util.function.Function;
 @Component
 @Slf4j
 public class JWTService {
-    public static final long EXPIRATION_DATE = 1000 * 60 * 24 * 7 ;
+    public static final long EXPIRATION_DATE = 1000 * 60 * 60 * 24 * 7; // 7 days in milliseconds
+
 
     private final SecretKey key;
 

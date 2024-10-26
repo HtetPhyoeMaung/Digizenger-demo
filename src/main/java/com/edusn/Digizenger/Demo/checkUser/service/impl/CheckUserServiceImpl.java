@@ -25,7 +25,7 @@ public class CheckUserServiceImpl implements CheckUserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
-                .profileLink(user.getProfile().getProfileLinkUrl())
+                .username(user.getProfile().getUsername())
                 .verified(user.getVerified())
                 .build();
 

@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.profile.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
@@ -35,10 +36,8 @@ public class Profile {
     @Column(name = "cover_image_name")
     private String coverImageName;
 
+    @Column(nullable = false, unique = true)
     private String username;
-
-    @Column(name = "profile_link_url", unique = true)
-    private String profileLinkUrl;
 
     private String bio;
 
@@ -72,7 +71,7 @@ public class Profile {
     private User user;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CareerHistory> careerHistoryList = new LinkedList<>();
+    private List<CareerHistory> careerHistories = new LinkedList<>();
 
     @ManyToMany
     @JoinTable(
@@ -104,7 +103,8 @@ public class Profile {
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories = new LinkedList<>();
-
+    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notification> notificationList = new LinkedList<>();
 
     public void addServiceProvided(ServiceProvided serviceProvided){
         this.serviceProvidedList.add(serviceProvided);
@@ -123,7 +123,7 @@ public class Profile {
     }
 
     public void removeCareerHistory(CareerHistory careerHistory){
-        this.careerHistoryList.remove(careerHistory);
+        this.getCareerHistories().remove(careerHistory);
         careerHistory.setProfile(null);
     }
 }

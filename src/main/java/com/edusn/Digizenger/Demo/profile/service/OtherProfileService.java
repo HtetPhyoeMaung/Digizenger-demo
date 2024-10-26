@@ -8,5 +8,5 @@ import java.io.IOException;
 
 public interface OtherProfileService {
     /* To get other user's profile */
-    ResponseEntity<Response> showOtherUserProfile(Profile OtherProfile,Profile loggedProfile, int _page, int _limit) throws IOException;
+    ResponseEntity<Response> showOtherUserProfile(Profile OtherProfile,Profile loggedProfile) throws IOException;
 }
