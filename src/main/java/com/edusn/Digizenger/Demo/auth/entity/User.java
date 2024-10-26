@@ -58,7 +58,7 @@ public class User {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
-
+    private Status status;
     private Gender gender;
 //    @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -108,7 +108,9 @@ public class User {
         FEMALE,
         OTHER
     }
-
+    public enum Status{
+        ONLINE,OFFLINE
+    }
 
 
 

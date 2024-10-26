@@ -45,10 +45,7 @@ public class ChatController {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.findChatMessages(sender,selectedUserId);
     }
-    @GetMapping("/friend-list")
-    public ResponseEntity<List<UserDto>> getFriendList(){
-        return null;
-    }
+
 
     @MessageMapping("/message")
     public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
