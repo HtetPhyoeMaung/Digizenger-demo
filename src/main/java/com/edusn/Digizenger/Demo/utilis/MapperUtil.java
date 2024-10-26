@@ -45,7 +45,7 @@ public class MapperUtil {
     public static ProfileDto convertToProfileDto(Profile profile){
         ProfileDto profileDto = new ProfileDto();
         profileDto.setId(profile.getId());
-        profileDto.setFollowersCount((long) profile.getFollowers().size());
+        profileDto.setFollowerCount((long) profile.getFollowers().size());
         return profileDto;
     }
 

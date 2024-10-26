@@ -83,7 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         /** Service **/
         if(!profile.getFollowers().isEmpty()){
-            existProfileDto.setFollowersCount(Long.valueOf(profile.getFollowers().size()));
+            existProfileDto.setFollowerCount(Long.valueOf(profile.getFollowers().size()));
         }
 
         /** Following **/

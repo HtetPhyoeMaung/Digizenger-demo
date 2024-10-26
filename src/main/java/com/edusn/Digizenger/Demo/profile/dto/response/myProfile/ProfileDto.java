@@ -23,7 +23,7 @@ public class ProfileDto {
     private String coverImageUrl;
     private String username;
     private String bio;
-    private Long followersCount = 0L;
+    private Long followerCount = 0L;
     private Long followingCount = 0L;
     private Long neighborCount = 0L;
     private UserForProfileDto userForProfileDto;
