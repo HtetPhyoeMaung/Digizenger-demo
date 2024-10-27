@@ -115,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
                 user.setDateOfBirth(request.getDateOfBirth());
                 user.setOtp(otp);
+                user.setCreatedDate(LocalDateTime.now());
                 user.setPhone(request.getPhone());
                 user.setOtpGeneratedTime(LocalDateTime.now());
                 user.setAddress(address);

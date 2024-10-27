@@ -26,7 +26,7 @@ public class Notification {
     private String message;
     private LocalDateTime createDate;
     private boolean isRead;
-
+    private Type type;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -39,4 +39,7 @@ public class Notification {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
+    public enum Type{
+        FOLLOW,NEIGHBORS,LIKE,FLICK,BIRTHDAY
+    }
 }
