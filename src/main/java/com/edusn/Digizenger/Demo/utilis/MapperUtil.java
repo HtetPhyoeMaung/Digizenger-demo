@@ -52,9 +52,10 @@ public class MapperUtil {
         notificationDto.setId(notification.getId());
         notificationDto.setRead(notification.isRead());
         notificationDto.setMessage(notification.getMessage());
-        notificationDto.setCreateDate(notification.getCreateDate());
+        notificationDto.setType(notification.getType());
         if(notification.getPost()!=null){
-            notificationDto.setPostId(notification.getPost().getId());
+            PostDto postDto=MapperUtil.convertToPostDto(notification.getPost());
+            notificationDto.setPostDto(postDto);
 
         }
         ProfileDto profileDto=MapperUtil.convertToProfileDto(notification.getProfile());

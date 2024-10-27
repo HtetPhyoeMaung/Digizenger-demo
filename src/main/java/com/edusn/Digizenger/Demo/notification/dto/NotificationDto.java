@@ -1,5 +1,7 @@
 package com.edusn.Digizenger.Demo.notification.dto;
 
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
+import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +17,10 @@ import java.time.LocalDateTime;
 public class NotificationDto {
     private Long id;
     private String message;
-    private LocalDateTime createDate;
+    private String createDate;
     private boolean isRead;
-    private String profileImageUrl;
-    private Long postId;
+    private Notification.Type type;
+    private PostDto postDto;
     private Long userId;
     private ProfileDto profileDto;
 }
