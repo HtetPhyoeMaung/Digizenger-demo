@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -151,7 +150,7 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
-        Pageable pageable = PageRequest.of(_page, _limit, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Pageable pageable = PageRequest.of(_page - 1, _limit);
         Page<Post> postPage = postRepository.findAll(pageable);
         if (postPage.isEmpty()) {
             Response response = Response.builder()
