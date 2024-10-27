@@ -12,21 +12,27 @@ import lombok.Data;
 public class RegisterRequest {
     @NotBlank(message = "First Name is required!")
     private String firstName;
-    @NotBlank(message = "First Name is required!")
+
+    @NotBlank(message = "Last Name is required!")
     private String lastName;
+
     private String email;
+
     private String phone;
+
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-
+    @NotBlank(message = "Last Name is required!")
     private String gender;
 
+    @NotBlank(message = "Last Name is required!")
     private String country;
 
+    @NotBlank(message = "Last Name is required!")
     private String city;
 
     private String role;

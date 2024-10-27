@@ -12,6 +12,7 @@ import com.edusn.Digizenger.Demo.storage.StorageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
 
     @Override
     public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId, int _page, int _limit) {
-        Pageable pageable = PageRequest.of(_page - 1, _limit);
+        Pageable pageable = PageRequest.of(_page, _limit, Sort.by(Sort.Direction.DESC, "createDate"));
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
         Page<SingleChatMessage> singleChatMessages = chatId.map(id->singleChatMessageRepository.findByChatId(id,pageable)).orElse(Page.empty());
         singleChatMessages.forEach(singleChatMessage -> {singleChatMessage.setRead(true);});

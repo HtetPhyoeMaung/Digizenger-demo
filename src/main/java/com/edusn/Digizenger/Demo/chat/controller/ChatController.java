@@ -30,9 +30,6 @@ public class ChatController {
     private GetUserByRequest getUserByRequest;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private SingleChatMessageService singleChatMessageService;
 
     @Autowired
@@ -47,7 +44,6 @@ public class ChatController {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.findChatMessages(sender,selectedUserId, _page, _limit);
     }
-
 
     @MessageMapping("/message")
     public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
