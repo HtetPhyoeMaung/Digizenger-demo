@@ -18,6 +18,8 @@ import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProfilePostServiceImpl implements ProfilePostService {
 
     private final PostRepository postRepository;
@@ -94,7 +97,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
         Response response = null;
         if (otherUser.getPosts() != null) {
             Pageable pageable = PageRequest.of(_page -1, _limit);
-            Page<Post> postList = null;
+            Page<Post> postList;
 
             if(otherProfile.getNeighbors().contains(profile)){
                 postList = postRepository.findByUserIdOrderByCreatedDateDesc(otherProfile.getId(), pageable);
@@ -121,6 +124,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                 postDto.setLiked(isLike);
                 return postDto;
             }).collect(Collectors.toList());// Collect into a List
+
 
             response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
