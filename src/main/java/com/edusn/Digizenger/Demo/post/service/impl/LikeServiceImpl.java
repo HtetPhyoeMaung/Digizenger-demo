@@ -67,6 +67,7 @@ public class LikeServiceImpl implements LikeService {
                         .post(post)
                         .profile(user.getProfile())
                         .message(like.getUser().getFirstName()+" "+like.getUser().getLastName() +" loved your post!")
+                        .type(Notification.Type.LIKE)
                         .build();
 
                 notificationService.sendNotiMessage(notification);
@@ -96,7 +97,8 @@ public class LikeServiceImpl implements LikeService {
                         .user(post.getUser())
                         .post(post)
                         .profile(user.getProfile())
-                        .message(like.getUser().getProfile().getUsername()+"liked your post!")
+                        .type(Notification.Type.LIKE)
+                        .message(like.getUser().getFirstName()+" "+like.getUser().getLastName()+" loved your post!")
                         .build();
 
                 notificationService.sendNotiMessage(notification);
