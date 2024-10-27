@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
@@ -21,6 +22,7 @@ import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
 import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
+import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.OtpUtil;
 import jakarta.mail.MessagingException;
@@ -58,7 +60,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private OtpUtil otpUtil;
-
+    @Autowired
+    private DateUtil dateUtil;
     @Autowired
     private UserDetailServiceForUser userDetailServiceForUser;
     @Autowired
@@ -230,6 +233,7 @@ public class AuthServiceImpl implements AuthService {
 
         /* Last Login Time */
         user.setLastLoginTime(LocalDateTime.now());
+        user.setStatus(User.Status.ONLINE);
         userRepository.save(user);
 
 
@@ -254,6 +258,10 @@ public class AuthServiceImpl implements AuthService {
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
                .message("Login Success!")
+               .userDto(UserDto.builder()
+                       .lastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()))
+                       .status(user.getStatus())
+                       .build())
                .token(token)
                .profileDto(existProfileDto)
                .expirationDate("7days")
@@ -267,7 +275,21 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findById(recipientId);
     }
 
-
+    @Override
+    public ResponseEntity<Response> disconnect(User user) {
+        user.setStatus(User.Status.OFFLINE);
+        user.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(user);
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("disconnect success!")
+                .userDto(UserDto.builder()
+                        .lastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()))
+                        .status(user.getStatus())
+                        .build())
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 
 
 }

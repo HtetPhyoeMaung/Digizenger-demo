@@ -30,9 +30,6 @@ public class ChatController {
     private GetUserByRequest getUserByRequest;
 
     @Autowired
-    private AuthService authService;
-
-    @Autowired
     private SingleChatMessageService singleChatMessageService;
 
     @Autowired
@@ -46,10 +43,6 @@ public class ChatController {
                                                                        @RequestParam(value = "_limit",defaultValue = "10") int _limit) {
         User sender= getUserByRequest.getUser(request);
         return singleChatMessageService.findChatMessages(sender,selectedUserId, _page, _limit);
-    }
-    @GetMapping("/friend-list")
-    public ResponseEntity<List<UserDto>> getFriendList(){
-        return null;
     }
 
     @MessageMapping("/message")
