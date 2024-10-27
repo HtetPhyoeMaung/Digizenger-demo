@@ -26,13 +26,13 @@ public class RegisterRequest {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
-    @NotBlank(message = "Last Name is required!")
+    @NotBlank(message = "Gender is required!")
     private String gender;
 
-    @NotBlank(message = "Last Name is required!")
+    @NotBlank(message = "Country is required!")
     private String country;
 
-    @NotBlank(message = "Last Name is required!")
+    @NotBlank(message = "City is required!")
     private String city;
 
     private String role;
