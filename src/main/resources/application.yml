@@ -40,5 +40,3 @@ spring:
           starttls:
             enable: true
 
-app:
-  profileUrl: https://digizenger.online/api/v1/profile/
