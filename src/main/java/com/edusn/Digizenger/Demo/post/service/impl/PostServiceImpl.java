@@ -74,7 +74,7 @@ public  class PostServiceImpl implements PostService {
         ProfileDto profileDto = ProfileDto.builder()
                 .id(profile.getId())
                 .username(profile.getUsername())
-                .followersCount((long) profile.getFollowers().size())
+                .followerCount((long) profile.getFollowers().size())
                 .build();
         if(post.getUser().getProfile().getProfileImageName()!=null){
           profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
@@ -131,6 +131,7 @@ public  class PostServiceImpl implements PostService {
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
         }
 
+
         postDto.setUserDto(convertToUserDto(user));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -172,7 +173,7 @@ public  class PostServiceImpl implements PostService {
                     .username(profile.getUsername())
                     .bio(profile.getBio())
                     .profileImageUrl(profile.getProfileImageName())
-                    .followersCount((long) profile.getFollowers().size())
+                    .followerCount((long) profile.getFollowers().size())
                     .build();
             if(post.getUser().getProfile().getProfileImageName()!=null){
                 profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
@@ -202,8 +203,6 @@ public  class PostServiceImpl implements PostService {
     }
 
 
-
-
     @Override
     public ResponseEntity<Response> increaseView(Long id,User user) {
      Post  post = postRepository.findById(id).orElseThrow(()->new CustomNotFoundException("Post not found by"+id));
@@ -228,17 +227,11 @@ public  class PostServiceImpl implements PostService {
     }
 
 
-
-
-
     public static PostDto convertToPostDto(Post post) {
         return MapperUtil.convertToPostDto(post);
     }
     public static UserDto convertToUserDto(User user) {
         return MapperUtil.convertToUserDto(user);
     }
-
-
-
 
 }
