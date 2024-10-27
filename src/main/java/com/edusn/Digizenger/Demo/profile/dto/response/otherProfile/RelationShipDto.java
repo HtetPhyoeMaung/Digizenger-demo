@@ -13,6 +13,7 @@ import java.net.URL;
 @Builder
 public class RelationShipDto {
     private Long id;
+    private Long userId;
     private String firstName;
     private String lastName;
     private String profileCareer;

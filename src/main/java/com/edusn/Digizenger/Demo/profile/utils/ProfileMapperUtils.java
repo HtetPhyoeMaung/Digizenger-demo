@@ -15,6 +15,7 @@ public class ProfileMapperUtils {
     public  RelationShipDto convertToRelationShipDto(Profile profile){
         RelationShipDto relationShipDto = new RelationShipDto();
         relationShipDto.setId(profile.getId());
+        relationShipDto.setUserId(profile.getUser().getId());
         relationShipDto.setFirstName(profile.getUser().getFirstName());
         relationShipDto.setLastName(profile.getUser().getLastName());
         relationShipDto.setProfileCareer(profile.getProfileCareer());
