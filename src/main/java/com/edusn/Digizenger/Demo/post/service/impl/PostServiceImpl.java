@@ -148,7 +148,7 @@ public  class PostServiceImpl implements PostService {
         postRepository.delete(post);
         return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+//
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page-1, _limit, Sort.by(Sort.Direction.DESC, "createdDate"));
