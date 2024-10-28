@@ -22,5 +22,6 @@ public interface PostService  {
 
     ResponseEntity<Response> increaseView(Long id,User user);
 
+    ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user);
 
 }

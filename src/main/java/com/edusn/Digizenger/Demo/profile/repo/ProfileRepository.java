@@ -26,6 +26,23 @@ public interface ProfileRepository extends JpaRepository<Profile,Long> {
     @Query("SELECT p.neighbors FROM Profile p WHERE p.id = :profileId")
     Page<Profile> findNeighborsByProfileId(Long profileId, Pageable pageable);
 
+    @Query("""
+    SELECT u 
+    FROM Profile u
+    LEFT JOIN u.neighbors n ON n.id = :currentUserId
+    LEFT JOIN u.followers f ON f.id = :currentUserId
+    LEFT JOIN u.following fl ON fl.id = :currentUserId
+    WHERE u.id != :currentUserId
+    ORDER BY CASE 
+                WHEN n.id IS NOT NULL THEN 1
+                WHEN fl.id IS NOT NULL THEN 2
+                WHEN f.id IS NOT NULL THEN 3
+                ELSE 3
+             END
+    """)
+    Page<Profile> findPrioritizedProfile(Long currentUserId, Pageable pageable);
 
+
+//
 
 }

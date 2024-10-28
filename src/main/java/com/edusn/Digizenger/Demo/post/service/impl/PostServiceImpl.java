@@ -14,6 +14,7 @@ import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -30,8 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +49,8 @@ public  class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     @Autowired
     private ViewRepository viewRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
 
 
 
@@ -201,6 +206,77 @@ public  class PostServiceImpl implements PostService {
                 .statusCode(HttpStatus.OK.value())
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<Response> getNewFeeds(int _page,
+                                               int _limit,
+                                               User user){
+        Profile profile = profileRepository.findByUser(user);
+        Pageable pageable = PageRequest.of(_page -1,_limit);
+
+        Page<Profile> profilePages = profileRepository.findPrioritizedProfile(profile.getId(), pageable);
+        List<PostDto> postDtoList = new LinkedList<>();
+
+            profilePages.forEach(profilePage -> {
+                if(!profilePage.getUser().getPosts().isEmpty()){
+                    Post post;
+                    if(profilePage.getNeighbors().contains(profile)){
+                        int postSize = profilePage.getUser().getPosts().size();
+                        post = profilePage.getUser().getPosts().get(postSize - _page);
+                    } else if (profile.getFollowers().contains(profile)) {
+                        post = profilePage.getUser().getPosts()
+                                .stream().filter(posts -> posts.getPostType() != Post.PostType.NEIGHBORS)
+                                .toList().get(_page - 1);
+                    }else{
+                        post = profilePage.getUser().getPosts()
+                                .stream().filter(posts -> posts.getPostType() == Post.PostType.EVERYONE)
+                                .toList().get(_page - 1);
+                    }
+                    UserDto userDto = convertToUserDto(post.getUser());
+                    Long viewCount = viewRepository.countByPost(post);
+                    Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+                    boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
+                    // Convert post to PostDto and set additional fields
+                    PostDto postDto = PostServiceImpl.convertToPostDto(post);
+                    ProfileDto profileDto = ProfileDto.builder()
+                            .id(profilePage.getId())
+                            .username(profilePage.getUsername())
+                            .profileImageUrl(profilePage.getProfileImageName())
+                            .followerCount((long) profilePage.getFollowers().size())
+                            .build();
+                    if(post.getUser().getProfile().getProfileImageName()!=null){
+                        profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+                        profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+                    }else {
+                        profileDto.setProfileImageUrl("");
+                    }
+                    if(post.getImageName() !=null){
+                        postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+
+                    }else {
+                        postDto.setImageUrl("");
+                    }
+                    postDto.setProfileDto(profileDto);
+                    postDto.setUserDto(userDto);
+                    postDto.setViewCount(viewCount);
+                    postDto.setLikeCount(likeCount);
+                    postDto.setLiked(isLike);
+                    postDtoList.add(postDto);
+                }
+            });
+
+
+//        List<PostDto> sortedPostDtoList = postDtoList.stream()
+//                .sorted((post1, post2) -> post2.getCreatedDate().compareTo(post1.getCreatedDate()))
+//                .toList();
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got new feed")
+                .postDtoList(postDtoList)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
