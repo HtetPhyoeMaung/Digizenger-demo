@@ -102,9 +102,9 @@ public class ProfilePostServiceImpl implements ProfilePostService {
             if(otherProfile.getNeighbors().contains(profile)){
                 postList = postRepository.findByUserIdOrderByCreatedDateDesc(otherProfile.getId(), pageable);
             }else if(otherProfile.getFollowers().contains(profile)){
-                postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBOURS, pageable);
+                postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBORS, pageable);
             }else{
-                postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS,pageable);
+                postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS,pageable);
             }
 
             List<PostDto> postDtoList = postList.stream().map(post -> {

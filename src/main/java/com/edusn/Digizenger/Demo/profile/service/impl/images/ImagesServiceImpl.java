@@ -106,14 +106,14 @@ public class ImagesServiceImpl implements ImagesService{
             otherPostList = postRepository.findTop9ByUserIdAndImageNameIsNotNull(otherUser.getId());
             totalImage = postRepository.countByUserIdAndImageNameIsNotNull(otherUser.getId());
         }else if(otherProfile.getFollowers().contains(loggedProfile)){
-            otherPostList = postRepository.findTop9ByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBOURS);
-            totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBOURS);
+            otherPostList = postRepository.findTop9ByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
+            totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
         }else{
             otherPostList = postRepository.findTop9ByUserIdAndPostTypeNotAndPostTypeNotAndImageNameIsNotNull(
-                    otherUser.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS
+                    otherUser.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS
             );
             totalImage = postRepository.countByUserIdAndPostTypeNotAndPostTypeNotAndImageNameIsNotNull(
-                    otherUser.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS
+                    otherUser.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS
             );
         }
 
@@ -153,14 +153,14 @@ public class ImagesServiceImpl implements ImagesService{
             otherPostPages = postRepository.findByUserIdAndImageNameIsNotNull(otherUser.getId(), pageable);
             totalImage = postRepository.countByUserIdAndImageNameIsNotNull(otherUser.getId());
         }else if(otherProfile.getFollowers().contains(loggedProfile)){
-            otherPostPages = postRepository.findByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBOURS, pageable);
-            totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBOURS);
+            otherPostPages = postRepository.findByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS, pageable);
+            totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
         }else{
             otherPostPages = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotAndImageNameIsNotNull(
-                    otherUser.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS, pageable
+                    otherUser.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS, pageable
             );
             totalImage = postRepository.countByUserIdAndPostTypeNotAndPostTypeNotAndImageNameIsNotNull(
-                    otherUser.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS
+                    otherUser.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS
             );
         }
 

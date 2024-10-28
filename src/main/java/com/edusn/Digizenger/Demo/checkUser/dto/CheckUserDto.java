@@ -15,6 +15,5 @@ public class CheckUserDto {
     private String lastName;
     private String username;
     private String role;
-    private String profileLink;
     private boolean verified ;
 }

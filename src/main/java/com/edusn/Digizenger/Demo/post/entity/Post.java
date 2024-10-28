@@ -54,7 +54,7 @@ public class Post implements Serializable {
 
    public enum PostType{
        EVERYONE,
-       NEIGHBOURS,
+       NEIGHBORS,
        FOLLOWERS,
 
    }
