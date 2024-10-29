@@ -217,6 +217,15 @@ public  class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(_page -1,_limit, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Post> postPage = postRepository.findAll(pageable);
 
+        if (postPage.isEmpty()) {
+            Response response = Response.builder()
+                    .message("No more posts available.")
+                    .statusCode(HttpStatus.NO_CONTENT.value())
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+
         List<PostDto> postDtoList = new LinkedList<>();
 
         postPage.forEach(post -> {
