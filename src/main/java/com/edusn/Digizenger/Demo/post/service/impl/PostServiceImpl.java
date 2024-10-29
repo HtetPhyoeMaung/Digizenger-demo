@@ -13,7 +13,10 @@ import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
@@ -231,16 +234,16 @@ public  class PostServiceImpl implements PostService {
         postPage.forEach(post -> {
             PostDto postDto;
             if(post.getUser().getProfile().getNeighbors().contains(profile)){
-                postDto = commonForEachPost(post , user);
+                postDto = commonForEachPost(post , user , profile);
                 postDtoList.add(postDto);
             } else if (post.getUser().getProfile().getFollowers().contains(profile)) {
                 if(post.getPostType() != Post.PostType.NEIGHBORS){
-                    postDto = commonForEachPost(post , user);
+                    postDto = commonForEachPost(post , user, profile);
                     postDtoList.add(postDto);
                 }
             } else  {
                 if(post.getPostType() == Post.PostType.EVERYONE){
-                    postDto = commonForEachPost(post, user);
+                    postDto = commonForEachPost(post, user , profile);
                     postDtoList.add(postDto);
                 }
             }
@@ -288,26 +291,34 @@ public  class PostServiceImpl implements PostService {
     }
 
 
-    private PostDto commonForEachPost(Post post, User user){
+    private PostDto commonForEachPost(Post post, User user , Profile loggedProfile){
         UserDto userDto = convertToUserDto(post.getUser());
         Long viewCount = viewRepository.countByPost(post);
         Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
         boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
         // Convert post to PostDto and set additional fields
         PostDto postDto = PostServiceImpl.convertToPostDto(post);
-        Profile profile = post.getUser().getProfile();
-        ProfileDto profileDto = ProfileDto.builder()
-                .id(profile.getId())
-                .username(profile.getUsername())
-                .bio(profile.getBio())
-                .profileImageUrl(profile.getProfileImageName())
-                .followerCount((long) profile.getFollowers().size())
+        Profile postOwnerProfile = post.getUser().getProfile();
+        OtherProfileDto postOwnerProfileDto = OtherProfileDto.builder()
+                .id(postOwnerProfile.getId())
+                .username(postOwnerProfile.getUsername())
+                .profileImageUrl(postOwnerProfile.getProfileImageName())
+                .followerCount((long) postOwnerProfile.getFollowers().size())
                 .build();
-        if(post.getUser().getProfile().getProfileImageName()!=null){
-            profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
-            profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+
+        if(postOwnerProfile.getNeighbors().contains(loggedProfile)){
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.NEIGHBOURS);
+        } else if (postOwnerProfile.getFollowers().contains(loggedProfile)) {
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWING);
         }else {
-            profileDto.setProfileImageUrl("");
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW);
+        }
+
+        if(post.getUser().getProfile().getProfileImageName()!=null){
+            postOwnerProfileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+            postOwnerProfileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+        }else {
+            postOwnerProfileDto.setProfileImageUrl("");
         }
         if(post.getImageName() !=null){
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
@@ -315,7 +326,8 @@ public  class PostServiceImpl implements PostService {
         }else {
             postDto.setImageUrl("");
         }
-        postDto.setProfileDto(profileDto);
+
+        postDto.setOtherProfileDto(postOwnerProfileDto);
         postDto.setUserDto(userDto);
         postDto.setViewCount(viewCount);
         postDto.setLikeCount(likeCount);
