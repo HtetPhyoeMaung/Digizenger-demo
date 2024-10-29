@@ -310,7 +310,9 @@ public  class PostServiceImpl implements PostService {
             postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.NEIGHBOURS);
         } else if (postOwnerProfile.getFollowers().contains(loggedProfile)) {
             postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWING);
-        }else {
+        } else if (postOwnerProfile.getFollowing().contains(loggedProfile)) {
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW_BACK);
+        } else {
             postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW);
         }
 
