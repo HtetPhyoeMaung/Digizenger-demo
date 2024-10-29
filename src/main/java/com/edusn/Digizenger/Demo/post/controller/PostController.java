@@ -62,21 +62,14 @@ public class PostController {
         return postService.deletePost(id);
     }
     @GetMapping("/getPosts")
-    public ResponseEntity<Response> getPosts(
+    public ResponseEntity<Response> getNewFeeds(
             @RequestParam(defaultValue = "1") int _page,
             @RequestParam(defaultValue = "10") int _limit,HttpServletRequest request) {
+
         User user= getUserByRequest.getUser(request);
-
-        return postService.getPostByPage(_page,_limit,user);
+        return postService.getNewFeeds(_page,_limit,user);
     }
 
-    @GetMapping("/newFeeds")
-    public ResponseEntity<Response> getNewFeeds(@RequestParam(defaultValue = "1") int _page,
-                                                @RequestParam(defaultValue = "10") int _limit,
-                                                HttpServletRequest request){
-        User user = getUserByRequest.getUser(request);
-        return postService.getNewFeeds(_page, _limit , user);
-    }
 
     @PostMapping("/increase-view/{postId}")
     public ResponseEntity<Response>  increaseView(@PathVariable("postId") Long id, HttpServletRequest request) {

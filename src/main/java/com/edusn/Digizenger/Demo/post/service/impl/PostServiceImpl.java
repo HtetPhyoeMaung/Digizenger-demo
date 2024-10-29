@@ -153,7 +153,8 @@ public  class PostServiceImpl implements PostService {
         postRepository.delete(post);
         return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-//
+
+    //I can't delete this method for now because of can need for admin role to get all post//
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page-1, _limit, Sort.by(Sort.Direction.DESC, "createdDate"));
@@ -209,67 +210,33 @@ public  class PostServiceImpl implements PostService {
     }
 
 
-    public ResponseEntity<Response> getNewFeeds(int _page,
-                                               int _limit,
-                                               User user){
-        Profile profile = profileRepository.findByUser(user);
-        Pageable pageable = PageRequest.of(_page -1,_limit);
 
-        Page<Profile> profilePages = profileRepository.findPrioritizedProfile(profile.getId(), pageable);
+    public ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user){
+
+        Profile profile = profileRepository.findByUser(user);
+        Pageable pageable = PageRequest.of(_page -1,_limit, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<Post> postPage = postRepository.findAll(pageable);
+
         List<PostDto> postDtoList = new LinkedList<>();
 
-            profilePages.forEach(profilePage -> {
-                if(!profilePage.getUser().getPosts().isEmpty()){
-                    Post post;
-                    if(profilePage.getNeighbors().contains(profile)){
-                        int postSize = profilePage.getUser().getPosts().size();
-                        post = profilePage.getUser().getPosts().get(postSize - _page);
-                    } else if (profile.getFollowers().contains(profile)) {
-                        post = profilePage.getUser().getPosts()
-                                .stream().filter(posts -> posts.getPostType() != Post.PostType.NEIGHBORS)
-                                .toList().get(_page - 1);
-                    }else{
-                        post = profilePage.getUser().getPosts()
-                                .stream().filter(posts -> posts.getPostType() == Post.PostType.EVERYONE)
-                                .toList().get(_page - 1);
-                    }
-                    UserDto userDto = convertToUserDto(post.getUser());
-                    Long viewCount = viewRepository.countByPost(post);
-                    Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
-                    boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
-                    // Convert post to PostDto and set additional fields
-                    PostDto postDto = PostServiceImpl.convertToPostDto(post);
-                    ProfileDto profileDto = ProfileDto.builder()
-                            .id(profilePage.getId())
-                            .username(profilePage.getUsername())
-                            .profileImageUrl(profilePage.getProfileImageName())
-                            .followerCount((long) profilePage.getFollowers().size())
-                            .build();
-                    if(post.getUser().getProfile().getProfileImageName()!=null){
-                        profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
-                        profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-                    }else {
-                        profileDto.setProfileImageUrl("");
-                    }
-                    if(post.getImageName() !=null){
-                        postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-
-                    }else {
-                        postDto.setImageUrl("");
-                    }
-                    postDto.setProfileDto(profileDto);
-                    postDto.setUserDto(userDto);
-                    postDto.setViewCount(viewCount);
-                    postDto.setLikeCount(likeCount);
-                    postDto.setLiked(isLike);
+        postPage.forEach(post -> {
+            PostDto postDto;
+            if(post.getUser().getProfile().getNeighbors().contains(profile)){
+                postDto = commonForEachPost(post , user);
+                postDtoList.add(postDto);
+            } else if (post.getUser().getProfile().getFollowers().contains(profile)) {
+                if(post.getPostType() != Post.PostType.NEIGHBORS){
+                    postDto = commonForEachPost(post , user);
                     postDtoList.add(postDto);
                 }
-            });
+            } else  {
+                if(post.getPostType() == Post.PostType.EVERYONE){
+                    postDto = commonForEachPost(post, user);
+                    postDtoList.add(postDto);
+                }
+            }
 
-
-//        List<PostDto> sortedPostDtoList = postDtoList.stream()
-//                .sorted((post1, post2) -> post2.getCreatedDate().compareTo(post1.getCreatedDate()))
-//                .toList();
+        });
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -309,6 +276,42 @@ public  class PostServiceImpl implements PostService {
     }
     public static UserDto convertToUserDto(User user) {
         return MapperUtil.convertToUserDto(user);
+    }
+
+
+    private PostDto commonForEachPost(Post post, User user){
+        UserDto userDto = convertToUserDto(post.getUser());
+        Long viewCount = viewRepository.countByPost(post);
+        Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+        boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
+        // Convert post to PostDto and set additional fields
+        PostDto postDto = PostServiceImpl.convertToPostDto(post);
+        Profile profile = post.getUser().getProfile();
+        ProfileDto profileDto = ProfileDto.builder()
+                .id(profile.getId())
+                .username(profile.getUsername())
+                .bio(profile.getBio())
+                .profileImageUrl(profile.getProfileImageName())
+                .followerCount((long) profile.getFollowers().size())
+                .build();
+        if(post.getUser().getProfile().getProfileImageName()!=null){
+            profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+            profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+        }else {
+            profileDto.setProfileImageUrl("");
+        }
+        if(post.getImageName() !=null){
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+
+        }else {
+            postDto.setImageUrl("");
+        }
+        postDto.setProfileDto(profileDto);
+        postDto.setUserDto(userDto);
+        postDto.setViewCount(viewCount);
+        postDto.setLikeCount(likeCount);
+        postDto.setLiked(isLike);
+        return postDto;
     }
 
 }
