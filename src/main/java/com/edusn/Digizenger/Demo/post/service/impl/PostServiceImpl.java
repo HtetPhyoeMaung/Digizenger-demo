@@ -13,7 +13,11 @@ import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
+import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
+import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
+import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -30,8 +34,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,6 +52,8 @@ public  class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     @Autowired
     private ViewRepository viewRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
 
 
 
@@ -148,7 +156,8 @@ public  class PostServiceImpl implements PostService {
         postRepository.delete(post);
         return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-//
+
+    //I can't delete this method for now because of can need for admin role to get all post//
     @Override
     public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
         Pageable pageable = PageRequest.of(_page-1, _limit, Sort.by(Sort.Direction.DESC, "createdDate"));
@@ -204,6 +213,52 @@ public  class PostServiceImpl implements PostService {
     }
 
 
+
+    public ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user){
+
+        Profile profile = profileRepository.findByUser(user);
+        Pageable pageable = PageRequest.of(_page -1,_limit, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        if (postPage.isEmpty()) {
+            Response response = Response.builder()
+                    .message("No more posts available.")
+                    .statusCode(HttpStatus.NO_CONTENT.value())
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        }
+
+
+        List<PostDto> postDtoList = new LinkedList<>();
+
+        postPage.forEach(post -> {
+            PostDto postDto;
+            if(post.getUser().getProfile().getNeighbors().contains(profile)){
+                postDto = commonForEachPost(post , user , profile);
+                postDtoList.add(postDto);
+            } else if (post.getUser().getProfile().getFollowers().contains(profile)) {
+                if(post.getPostType() != Post.PostType.NEIGHBORS){
+                    postDto = commonForEachPost(post , user, profile);
+                    postDtoList.add(postDto);
+                }
+            } else  {
+                if(post.getPostType() == Post.PostType.EVERYONE){
+                    postDto = commonForEachPost(post, user , profile);
+                    postDtoList.add(postDto);
+                }
+            }
+
+        });
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully got new feed")
+                .postDtoList(postDtoList)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
     @Override
     public ResponseEntity<Response> increaseView(Long id,User user) {
      Post  post = postRepository.findById(id).orElseThrow(()->new CustomNotFoundException("Post not found by"+id));
@@ -233,6 +288,53 @@ public  class PostServiceImpl implements PostService {
     }
     public static UserDto convertToUserDto(User user) {
         return MapperUtil.convertToUserDto(user);
+    }
+
+
+    private PostDto commonForEachPost(Post post, User user , Profile loggedProfile){
+        UserDto userDto = convertToUserDto(post.getUser());
+        Long viewCount = viewRepository.countByPost(post);
+        Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
+        boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
+        // Convert post to PostDto and set additional fields
+        PostDto postDto = PostServiceImpl.convertToPostDto(post);
+        Profile postOwnerProfile = post.getUser().getProfile();
+        OtherProfileDto postOwnerProfileDto = OtherProfileDto.builder()
+                .id(postOwnerProfile.getId())
+                .username(postOwnerProfile.getUsername())
+                .profileImageUrl(postOwnerProfile.getProfileImageName())
+                .followerCount((long) postOwnerProfile.getFollowers().size())
+                .build();
+
+        if(postOwnerProfile.getNeighbors().contains(loggedProfile)){
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.NEIGHBOURS);
+        } else if (postOwnerProfile.getFollowers().contains(loggedProfile)) {
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOWING);
+        } else if (postOwnerProfile.getFollowing().contains(loggedProfile)) {
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW_BACK);
+        } else {
+            postOwnerProfileDto.setRelationshipStatus(RelationshipStatus.FOLLOW);
+        }
+
+        if(post.getUser().getProfile().getProfileImageName()!=null){
+            postOwnerProfileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
+            postOwnerProfileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
+        }else {
+            postOwnerProfileDto.setProfileImageUrl("");
+        }
+        if(post.getImageName() !=null){
+            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+
+        }else {
+            postDto.setImageUrl("");
+        }
+
+        postDto.setOtherProfileDto(postOwnerProfileDto);
+        postDto.setUserDto(userDto);
+        postDto.setViewCount(viewCount);
+        postDto.setLikeCount(likeCount);
+        postDto.setLiked(isLike);
+        return postDto;
     }
 
 }

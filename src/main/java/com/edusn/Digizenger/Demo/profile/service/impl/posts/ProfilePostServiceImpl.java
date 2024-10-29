@@ -111,7 +111,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                 Long viewCount = viewRepository.countByPost(post);
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
-                        .anyMatch(like -> like.getUser().equals(otherUser) && like.isLiked());
+                        .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
                 PostDto postDto = PostServiceImpl.convertToPostDto(post);
                 if (post.getUser().getProfile().getProfileImageName() != null) {
                     postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());

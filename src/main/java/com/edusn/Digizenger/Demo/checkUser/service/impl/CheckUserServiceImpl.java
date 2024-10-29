@@ -22,6 +22,7 @@ public class CheckUserServiceImpl implements CheckUserService {
         User user = getUserByRequest.getUser(request);
         CheckUserDto checkUserDto = CheckUserDto.builder()
                 .id(user.getId())
+                .profileId(user.getProfile().getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())

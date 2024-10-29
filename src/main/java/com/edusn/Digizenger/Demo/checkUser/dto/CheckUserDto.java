@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CheckUserDto {
     private Long id;
+    private Long profileId;
     private String firstName;
     private String lastName;
     private String username;
