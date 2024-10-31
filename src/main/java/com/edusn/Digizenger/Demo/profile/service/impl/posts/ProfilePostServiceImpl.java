@@ -102,16 +102,16 @@ public class ProfilePostServiceImpl implements ProfilePostService {
             if(otherProfile.getNeighbors().contains(profile)){
                 postList = postRepository.findByUserIdOrderByCreatedDateDesc(otherProfile.getId(), pageable);
             }else if(otherProfile.getFollowers().contains(profile)){
-                postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBOURS, pageable);
+                postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBORS, pageable);
             }else{
-                postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBOURS, Post.PostType.FOLLOWERS,pageable);
+                postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS,pageable);
             }
 
             List<PostDto> postDtoList = postList.stream().map(post -> {
                 Long viewCount = viewRepository.countByPost(post);
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
-                        .anyMatch(like -> like.getUser().equals(otherUser) && like.isLiked());
+                        .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
                 PostDto postDto = PostServiceImpl.convertToPostDto(post);
                 if (post.getUser().getProfile().getProfileImageName() != null) {
                     postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
