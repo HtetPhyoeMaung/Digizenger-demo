@@ -10,8 +10,6 @@ import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
-import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
-import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -26,10 +24,9 @@ import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.MailUtil;
 import com.edusn.Digizenger.Demo.utilis.OtpUtil;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,44 +41,41 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private MailUtil mailUtil;
 
-    @Autowired
-    private JWTService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private OtpUtil otpUtil;
-    @Autowired
-    private DateUtil dateUtil;
-    @Autowired
-    private UserDetailServiceForUser userDetailServiceForUser;
-    @Autowired
-    private CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ProfileService profileService;
-    @Autowired
-    private ProfileRepository profileRepository;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private StorageService storageService;
-    @Autowired
-    private ViewRepository viewRepository;
-    @Autowired
-    private LikeRepository likeRepository;
 
-    private static final long OTP_VALIDITY_DURATION_SECONDS = 60;
+    private final MailUtil mailUtil;
+
+
+    private final JWTService jwtService;
+
+
+    private final OtpUtil otpUtil;
+
+    private final DateUtil dateUtil;
+
+    private final UserDetailServiceForUser userDetailServiceForUser;
+
+    private final CheckEmailOrPhoneUtil checkEmailOrPhoneUtil;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final ProfileService profileService;
+
+    private final ProfileRepository profileRepository;
+
+    private final ModelMapper modelMapper;
+
+    private final StorageService storageService;
+
+
+    private static final int OTP_VALIDITY_DURATION_SECONDS = 60;
 
 
     @Override
@@ -137,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
         }
     public ResponseEntity<Response> verifyAccount(String emailOrPhone, String otp) {
         User user=checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
-        if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(1*60)){
+        if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(60)){
             user.setActivated(true);
 
             user.setCreatedDate(LocalDateTime.now());
@@ -219,7 +213,7 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(userDetails);
 
-        /** To gave profile with login token **/
+        /* To gave profile with login token */
         User user;
         String emailOrPhone = jwtService.extractUsername(token);
         if (emailOrPhone.matches(".*@.*")) {
