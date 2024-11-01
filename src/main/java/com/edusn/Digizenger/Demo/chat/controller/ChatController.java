@@ -38,18 +38,24 @@ public class ChatController {
     private UserRepository userRepository;
 
     @GetMapping("/messages/{selectedUserId}")
-    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request,
+    public ResponseEntity<Response> findChatMessages(@PathVariable Long selectedUserId, HttpServletRequest request,
                                                                        @RequestParam(value = "_page",defaultValue = "1") int _page,
                                                                        @RequestParam(value = "_limit",defaultValue = "10") int _limit) {
         User sender= getUserByRequest.getUser(request);
-        return singleChatMessageService.findChatMessages(sender,selectedUserId, _page, _limit);
+        return singleChatMessageService.findChatMessages(sender,selectedUserId, _page-1, _limit);
     }
+
 
     @MessageMapping("/message")
     public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         User sender= userRepository.findById(singleChatMessage.getUser().getId()).orElseThrow();
         return singleChatMessageService.sendMessage(singleChatMessage,sender);
 
+    }
+    @GetMapping("/chat-list")
+    public ResponseEntity<Response> getFriendAndNonUserList(HttpServletRequest request) {
+        User user= getUserByRequest.getUser(request);
+        return singleChatMessageService.getFriendAndNonUserList(user);
     }
 
     @MessageMapping("/message-delete")

@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.chat.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatMessageRepository;
@@ -9,6 +10,8 @@ import com.edusn.Digizenger.Demo.chat.service.SingleChatRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.DateUtil;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,36 +41,42 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
 
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DateUtil dateUtil;
 
 
     @Override
-    public ResponseEntity<List<SingleChatMessageDto>> findChatMessages(User senderId, Long recipientId, int _page, int _limit) {
+    public ResponseEntity<Response> findChatMessages(User senderId, Long recipientId, int _page, int _limit) {
         Pageable pageable = PageRequest.of(_page, _limit, Sort.by(Sort.Direction.DESC, "createDate"));
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
         Page<SingleChatMessage> singleChatMessages = chatId.map(id->singleChatMessageRepository.findByChatId(id,pageable)).orElse(Page.empty());
         singleChatMessages.forEach(singleChatMessage -> {singleChatMessage.setRead(true);});
         singleChatMessageRepository.saveAll(singleChatMessages);
-        List<SingleChatMessageDto> singleChatMessageDtos = singleChatMessages.stream()
-                .map(message -> SingleChatMessageDto.builder()
-                        .id(message.getId())
-                        .message(message.getMessage())
-                        .createDate(message.getCreateDate())
-                        .modifiedDate(message.getModifiedDate())
-                        .recipientId(message.getRecipientId())
-                        .isRead(message.isRead())
-                        .userDto(UserDto.builder()
-                                .id(message.getUser().getId())
-                                .firstName(message.getUser().getFirstName())
-                                .lastName(message.getUser().getLastName())
-                                .profileImageUrl(message.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
-                                .build()) // Create UserDto from senderId
-                        .chatId(message.getChatId())
-                        .type(SingleChatMessage.Type.valueOf(message.getType().name()))
-                        .build())
-                .collect(Collectors.toList());
+       Response response= Response.builder()
+               .singleChatMessageDtoList(singleChatMessages.stream()
+                       .map(message -> SingleChatMessageDto.builder()
+                               .id(message.getId())
+                               .message(message.getMessage())
+                               .createDate(message.getCreateDate())
+                               .modifiedDate(message.getModifiedDate())
+                               .recipientId(message.getRecipientId())
+                               .isRead(message.isRead())
+                               .userDto(UserDto.builder()
+                                       .id(message.getUser().getId())
+                                       .firstName(message.getUser().getFirstName())
+                                       .lastName(message.getUser().getLastName())
+                                       .profileImageUrl(message.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
+                                       .build()) // Create UserDto from senderId
+                               .chatId(message.getChatId())
+                               .type(SingleChatMessage.Type.valueOf(message.getType().name()))
+                               .build())
+                       .collect(Collectors.toList()))
+               .statusCode(HttpStatus.OK.value())
+               .build();
 
-
-        return new ResponseEntity<>(singleChatMessageDtos, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Transactional
@@ -161,6 +170,31 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .message("Message update success")
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> getFriendAndNonUserList(User user) {
+        List<SingleChatMessage> messages = singleChatMessageRepository.findByUser(user);
+    Set<Long> uniqueUserIds=new HashSet<>(); messages.forEach(message->{ uniqueUserIds.add(message.getRecipientId()); });
+    List<User> uniqueRecipients = userRepository.findAllById(uniqueUserIds);
+    List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
+         UserDto userDto = MapperUtil.convertToUserDto(recipient);
+        userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
+        userDto.setProfileDto(MapperUtil.convertToProfileDto(recipient.getProfile()));
+        messages.stream().filter(message -> message.getRecipientId().equals(recipient.getId()))
+                .max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
+        if (recipient.getProfile().getProfileImageName() != null) {
+         userDto.getProfileDto().setProfileImageUrl( storageService.getImageByName(recipient.getProfile().getProfileImageName()) );
+         }
+         return userDto;
+        }).collect(Collectors.toList());
+            Response response=Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .userDtoList(userDtos)
+                    .message("Chat List Success")
+                    .build();
+
+          return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 }
