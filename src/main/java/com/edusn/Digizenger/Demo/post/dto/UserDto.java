@@ -21,7 +21,6 @@ public class UserDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private long followers;
     private String lastLoginTime;
     private User.Status status;
     private Role role;
