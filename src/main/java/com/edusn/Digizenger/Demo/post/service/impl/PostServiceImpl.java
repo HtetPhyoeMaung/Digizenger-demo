@@ -18,6 +18,7 @@ import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.CommonUtil;
 import com.edusn.Digizenger.Demo.utilis.GeneratePostUrl;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -55,7 +56,8 @@ public  class PostServiceImpl implements PostService {
     private ProfileRepository profileRepository;
     @Autowired
     private GeneratePostUrl generatePostUrl;
-
+    @Autowired
+    private CommonUtil commonUtil;
 
 
     @Override
@@ -191,18 +193,7 @@ public  class PostServiceImpl implements PostService {
                     postDtoList.add(postDto);
                 }
             }
-            List<ProfileDto> flickUserDtoList = new LinkedList<>();
-            post.getFlicks().forEach(flick -> {
-                Profile flickUser = flick.getUser().getProfile();
-                ProfileDto flickUserDto = new ProfileDto();
-                flickUserDto.setId(flickUser.getId());
-                flickUserDto.setProfileImageUrl( flickUser.getProfileImageName()!=null?
-                        storageService.getImageByName(flickUser.getProfileImageName()):"");
-                flickUserDto.setUsername(flickUser.getUsername());
 
-                flickUserDtoList.add(flickUserDto);
-
-            });
 
             postDto.setFlickUserDtoList(flickUserDtoList);
             postDto.setFlickAmount(flickUserDtoList.size());
@@ -215,6 +206,32 @@ public  class PostServiceImpl implements PostService {
                 .postDtoList(postDtoList)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> findByPostLinkUrl(String postLinkUrl) {
+      Post post =  postRepository.findByPostLinkUrl(postLinkUrl).orElseThrow(
+              ()-> new CustomNotFoundException("Post not found by "+postLinkUrl)
+      );
+      PostDto postDto = MapperUtil.convertToPostDto(post);
+      Profile profile = post.getUser().getProfile();
+      ProfileDto profileDto = ProfileDto.builder()
+                      .id(profile.getId())
+              .username(profile.getUsername())
+              .profileImageUrl(profile.getProfileImageName()!=null?storageService.getImageByName(profile.getProfileImageName()):"")
+                              .build();
+      postDto.setProfileDto(profileDto);
+      postDto.setPostLinkUrl(post.getPostLinkUrl());
+      postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post,true));
+      postDto.setViewCount(viewRepository.countByPost(post));
+      postDto.setFlickUserDtoList();
+      postDto.setFlickAmount(post.getFlicks().size());
+      Response response = Response.builder()
+              .statusCode(HttpStatus.OK.value())
+              .message("Success")
+              .postDto(postDto)
+              .build();
+      return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 

@@ -22,4 +22,5 @@ public interface PostService  {
 
     ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user);
 
+    ResponseEntity<Response> findByPostLinkUrl(String postLinkUrl);
 }

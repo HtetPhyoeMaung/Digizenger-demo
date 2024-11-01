@@ -78,5 +78,10 @@ public class PostController {
         return postService.increaseView(id,user);
     }
 
+    @GetMapping("/find")
+    public ResponseEntity<Response> findPostByPostLinkUrl(@RequestParam("postLinkUrl") String postLinkUrl){
+       return postService.findByPostLinkUrl(postLinkUrl);
+    }
+
 
 }
