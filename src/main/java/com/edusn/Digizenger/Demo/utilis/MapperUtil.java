@@ -29,7 +29,7 @@ public class MapperUtil {
         postDto.setCreatedDate(post.getCreatedDate());
         postDto.setModifiedDate(post.getModifiedDate());
         postDto.setPostType(post.getPostType());
-        postDto.setProfileDto(convertToProfileDto(post.getUser().getProfile()));
+        postDto.setPostLinkUrl(post.getPostLinkUrl());
         return postDto;
     }
     public static UserDto convertToUserDto(User user) {

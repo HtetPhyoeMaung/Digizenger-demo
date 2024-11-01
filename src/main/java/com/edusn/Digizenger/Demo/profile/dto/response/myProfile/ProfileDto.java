@@ -23,11 +23,11 @@ public class ProfileDto {
     private String coverImageUrl;
     private String username;
     private String bio;
-    private Long followerCount = 0L;
-    private Long followingCount = 0L;
-    private Long neighborCount = 0L;
+    private Long followerCount;
+    private Long followingCount ;
+    private Long neighborCount ;
     private UserForProfileDto userForProfileDto;
-    private List<CareerHistoryDto> careerHistoryDtoList = new LinkedList<>();
-    private List<ServiceProvidedDto> serviceProvidedDtoList = new LinkedList<>();
-    private List<EducationHistoryDto> educationHistoryDtoList = new LinkedList<>();
+    private List<CareerHistoryDto> careerHistoryDtoList;
+    private List<ServiceProvidedDto> serviceProvidedDtoList;
+    private List<EducationHistoryDto> educationHistoryDtoList;
 }

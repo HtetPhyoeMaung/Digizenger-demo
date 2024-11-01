@@ -18,8 +18,6 @@ public interface PostService  {
 
     ResponseEntity<?> deletePost(long id);
 
-    ResponseEntity<Response> getPostByPage(int _page, int _limit,User user);
-
     ResponseEntity<Response> increaseView(Long id,User user);
 
     ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user);

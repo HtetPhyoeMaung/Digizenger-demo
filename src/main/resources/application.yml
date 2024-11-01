@@ -6,21 +6,15 @@ spring:
       max-request-size: 40MB
   application:
     name: Digizenger-Demo
-    server:
-      port: 8080
+  server:
+    port: 8080
 
   datasource:
-    url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
-    username: edusn
-    password: AVNS_fDr_E9j3sI3DBiZfpHO
-
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
-#    username: zues
-#    password: hello
-
+    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
+    username: venzee
+    password: 2472004
     driver-class-name: com.mysql.cj.jdbc.Driver
-#
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -45,3 +39,5 @@ spring:
           starttls:
             enable: true
 
+app:
+  baseUrl: https://digizenger.info
