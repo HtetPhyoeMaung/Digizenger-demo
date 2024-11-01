@@ -5,6 +5,7 @@ import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Address;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
 import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
 import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
@@ -128,45 +129,88 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         return new ResponseEntity<>(response,HttpStatus.CREATED);
-        }
+    }
+
+
     public ResponseEntity<Response> verifyAccount(String emailOrPhone, String otp) {
         User user=checkEmailOrPhoneUtil.checkEmailOrPhone(emailOrPhone);
         if (user.getOtp().equals(otp)&& Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds()<(60)){
-            user.setActivated(true);
 
-            user.setCreatedDate(LocalDateTime.now());
-            if(user.getRole().equals(Role.ADMIN.name())){
-                user.setVerified(true);
-            }else{
-                user.setVerified(false);
-            }
-            userRepository.save(user);
+            //For old user,Forgot password
+            if(user.isActivated()){
+                UserDetails userDetails;
 
-            /* Create user's profile */
-            profileService.createUserProfile(user);
+                userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
+                String token = jwtService.generateToken(userDetails);
 
-
-            // check (isActivated)
-            UserDetails userDetails;
-            if (!user.isActivated()){
-                throw new UnverifiedException("Email was not verified. So please verified your email!");
+                Response response = Response.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .token(token)
+                        .expirationDate("7 days.")
+                        .message("successfully verified.")
+                        .build();
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
-            userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
-            String token = jwtService.generateToken(userDetails);
-            Response response = Response.builder()
-                    .statusCode(HttpStatus.OK.value())
-                    .token(token)
-                    .expirationDate("7days")
-                    .message("Successfully Registered!")
-                    .statusCode(HttpStatus.CREATED.value())
-                    .build();
-            return new ResponseEntity<>(response,HttpStatus.CREATED);
+            // For new user, to register.
+            else {
+                user.setActivated(true);
+
+                user.setCreatedDate(LocalDateTime.now());
+                if(user.getRole().equals(Role.ADMIN.name())){
+                    user.setVerified(true);
+                }else{
+                    user.setVerified(false);
+                }
+
+                user.setLastLoginTime(LocalDateTime.now());
+                user.setStatus(User.Status.ONLINE);
+                userRepository.save(user);
+
+                /* Create user's profile */
+                profileService.createUserProfile(user);
+
+                UserDetails userDetails;
+
+                userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
+                String token = jwtService.generateToken(userDetails);
+
+                Profile profile = profileRepository.findByUser(user);
+
+                ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
+                UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+
+
+                profileDto.setUserForProfileDto(userForProfileDto);
+                if(profileDto.getProfileImageName() != null){
+                    profileDto.setProfileImageUrl(
+                            storageService.getImageByName(profileDto.getProfileImageName())
+                    );
+                }
+                if(profileDto.getCoverImageName() != null){
+                    profileDto.setCoverImageUrl(
+                            storageService.getImageByName(profileDto.getCoverImageName())
+                    );
+                }
+
+                Response response = Response.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .token(token)
+                        .message("Successfully Registered!")
+                        .expirationDate("7days")
+                        .userDto(UserDto.builder()
+                                .status(profile.getUser().getStatus())
+                                .lastLoginTime(dateUtil.formattedDate(profile.getUser().getLastLoginTime()))
+                                .build())
+                        .profileDto(profileDto)
+                        .statusCode(HttpStatus.CREATED.value())
+                        .build();
+                return new ResponseEntity<>(response,HttpStatus.CREATED);
+            }
         }
         Response response = Response.builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("OTP was invalided! Please try again.")
                 .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                .message("OTP was invalided! Please try again.")
                 .build();
         return new ResponseEntity<>(response,HttpStatus.NOT_ACCEPTABLE);
 
@@ -203,8 +247,6 @@ public class AuthServiceImpl implements AuthService {
         if (!checkUser.isActivated()){
          throw new UnverifiedException("Email was not verified. So please verified your email!");
         }
-
-
 
         // authentication
 

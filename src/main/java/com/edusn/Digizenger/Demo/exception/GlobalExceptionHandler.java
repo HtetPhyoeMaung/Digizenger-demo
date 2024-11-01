@@ -5,15 +5,11 @@ import com.edusn.Digizenger.Demo.auth.dto.response.CustomErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -238,6 +234,16 @@ public class GlobalExceptionHandler {
 
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PasswordNotModifiedException.class)
+    public ResponseEntity<CustomErrorResponse> resetPasswordNotSameException(PasswordNotModifiedException ex) {
+        CustomErrorResponse response = CustomErrorResponse.builder()
+                .status(HttpStatus.NOT_MODIFIED.value())
+                .message(ex.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.NOT_MODIFIED);
     }
 
 }

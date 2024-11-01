@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.auth.controller;
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.service.ForgotPasswordService;
 import com.edusn.Digizenger.Demo.exception.ApiValidationException;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ public class AuthController {
     private AuthService authService;
     @Autowired
     private GetUserByRequest getUserByRequest;
+    @Autowired ForgotPasswordService forgotPasswordService;
+
     @PostMapping("/register")
     public ResponseEntity<Response> register(@RequestBody @Validated RegisterRequest request,BindingResult result) throws MessagingException {
         log.info("Reach Register");
@@ -54,5 +57,18 @@ public class AuthController {
     public ResponseEntity<Response> disconnectSocket(HttpServletRequest request) {
         User user=getUserByRequest.getUser(request);
         return authService.disconnect(user);
+    }
+
+    @GetMapping("/forgot/check-user")
+    public ResponseEntity<Response> checkUserByEmailOrPhoneOrUsername(@RequestParam @NotBlank(message = "EmailOrPhoneOrUsername should not be blank") String emailOrPhoneOrUsername){
+        return forgotPasswordService.checkUserByEmailOrPhoneOrUsername(emailOrPhoneOrUsername);
+    }
+
+    @PutMapping("/forgot/reset-password")
+    public ResponseEntity<Response> resetPassword(HttpServletRequest request,
+                                                  @RequestParam @NotBlank(message = "New password should not be blank.") String newPassword,
+                                                  @RequestParam @NotBlank(message = "Confirm password should not be blank") String confirmPassword){
+
+        return forgotPasswordService.resetPassword(request, newPassword, confirmPassword);
     }
 }
