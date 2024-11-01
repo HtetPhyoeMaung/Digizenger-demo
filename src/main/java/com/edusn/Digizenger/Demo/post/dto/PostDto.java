@@ -8,9 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.internal.bytebuddy.agent.builder.AgentBuilder;
 
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 @Data
 @Builder
@@ -33,6 +36,9 @@ public class PostDto {
     private Long likeCount ;
     private Long viewCount;
     private boolean isLiked;
+    private String postLinkUrl;
+    private List<ProfileDto> flickUserDtoList = new LinkedList<>();
+    private int flickAmount;
 
 
 

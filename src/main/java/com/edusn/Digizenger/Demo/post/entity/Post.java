@@ -30,9 +30,8 @@ public class Post implements Serializable {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private PostType postType;
-
+    private String postLinkUrl;
     private String imageName;
-
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -50,6 +49,10 @@ public class Post implements Serializable {
 
     @OneToMany( fetch = FetchType.LAZY,cascade = CascadeType.ALL ,orphanRemoval = true,mappedBy = "post")
     private List<Notification> notificationList;
+
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    private List<Flick> flicks;
+
 
 
    public enum PostType{

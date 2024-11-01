@@ -15,11 +15,12 @@ import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
 import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherProfileDto;
-import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.OtherUserForProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.CommonUtil;
+import com.edusn.Digizenger.Demo.utilis.GeneratePostUrl;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,7 +56,10 @@ public  class PostServiceImpl implements PostService {
     private ViewRepository viewRepository;
     @Autowired
     private ProfileRepository profileRepository;
-
+    @Autowired
+    private GeneratePostUrl generatePostUrl;
+    @Autowired
+    private CommonUtil commonUtil;
 
 
     @Override
@@ -79,8 +82,11 @@ public  class PostServiceImpl implements PostService {
                     .user(user)
                     .build();
         }
+        String postLinkUrl = generatePostUrl.generateSecurePostLinkUrl((int)(Math.random() * 9000) + 1000);
+
+        post.setPostLinkUrl(postLinkUrl);
         postRepository.save(post);
-        PostDto postDto=convertToPostDto(post);
+
         Profile profile = post.getUser().getProfile();
         ProfileDto profileDto = ProfileDto.builder()
                 .id(profile.getId())
@@ -93,18 +99,10 @@ public  class PostServiceImpl implements PostService {
         }else {
             profileDto.setProfileImageUrl("");
         }
-
-        if(post.getImageName()!=null){
-            postDto.setImageName(post.getImageName());
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
-        }else {
-            postDto.setImageUrl("");
-        }
-
+        PostDto postDto = convertToPostDto(post);
         postDto.setUserDto(convertToUserDto(user));
         postDto.setProfileDto(profileDto);
-        Long likeCount = likeRepository.findByPost(post).stream().count();
-        postDto.setLikeCount(likeCount);
+
         Response response = Response.builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Post created successfully")
@@ -159,60 +157,8 @@ public  class PostServiceImpl implements PostService {
         return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //I can't delete this method for now because of can need for admin role to get all post//
-    @Override
-    public ResponseEntity<Response> getPostByPage(int _page, int _limit,User user) {
-        Pageable pageable = PageRequest.of(_page-1, _limit, Sort.by(Sort.Direction.DESC, "createdDate"));
-        Page<Post> postPage = postRepository.findAll(pageable);
-        if (postPage.isEmpty()) {
-            Response response = Response.builder()
-                    .message("No more posts available.")
-                    .statusCode(HttpStatus.NO_CONTENT.value())
-                    .build();
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-        }
 
-        List<PostDto> postDtoList = postPage.getContent().stream().map(post -> {
-            UserDto userDto = convertToUserDto(post.getUser());
-            Long viewCount = viewRepository.countByPost(post);
-            Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
-            boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
-            // Convert post to PostDto and set additional fields
-            PostDto postDto = PostServiceImpl.convertToPostDto(post);
-            Profile profile = post.getUser().getProfile();
-            ProfileDto profileDto = ProfileDto.builder()
-                    .id(profile.getId())
-                    .username(profile.getUsername())
-                    .bio(profile.getBio())
-                    .profileImageUrl(profile.getProfileImageName())
-                    .followerCount((long) profile.getFollowers().size())
-                    .build();
-            if(post.getUser().getProfile().getProfileImageName()!=null){
-                profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
-                profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-            }else {
-                profileDto.setProfileImageUrl("");
-            }
-            if(post.getImageName() !=null){
-                postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
 
-            }else {
-                postDto.setImageUrl("");
-            }
-            postDto.setProfileDto(profileDto);
-            postDto.setUserDto(userDto);
-            postDto.setViewCount(viewCount);
-            postDto.setLikeCount(likeCount);
-            postDto.setLiked(isLike);
-            return postDto;
-        }).toList();
-
-        Response response=Response.builder()
-                .postDtoList(postDtoList)
-                .statusCode(HttpStatus.OK.value())
-                .build();
-        return new ResponseEntity<>(response,HttpStatus.OK);
-    }
 
 
 
@@ -234,7 +180,7 @@ public  class PostServiceImpl implements PostService {
         List<PostDto> postDtoList = new LinkedList<>();
 
         postPage.forEach(post -> {
-            PostDto postDto;
+            PostDto postDto = new PostDto();
             if(post.getUser().getProfile().getNeighbors().contains(profile)){
                 postDto = commonForEachPost(post , user , profile);
                 postDtoList.add(postDto);
@@ -250,6 +196,10 @@ public  class PostServiceImpl implements PostService {
                 }
             }
 
+
+            postDto.setFlickUserDtoList(flickUserDtoList);
+            postDto.setFlickAmount(flickUserDtoList.size());
+
         });
 
         Response response = Response.builder()
@@ -258,6 +208,32 @@ public  class PostServiceImpl implements PostService {
                 .postDtoList(postDtoList)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> findByPostLinkUrl(String postLinkUrl) {
+      Post post =  postRepository.findByPostLinkUrl(postLinkUrl).orElseThrow(
+              ()-> new CustomNotFoundException("Post not found by "+postLinkUrl)
+      );
+      PostDto postDto = MapperUtil.convertToPostDto(post);
+      Profile profile = post.getUser().getProfile();
+      ProfileDto profileDto = ProfileDto.builder()
+                      .id(profile.getId())
+              .username(profile.getUsername())
+              .profileImageUrl(profile.getProfileImageName()!=null?storageService.getImageByName(profile.getProfileImageName()):"")
+                              .build();
+      postDto.setProfileDto(profileDto);
+      postDto.setPostLinkUrl(post.getPostLinkUrl());
+      postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post,true));
+      postDto.setViewCount(viewRepository.countByPost(post));
+      postDto.setFlickUserDtoList();
+      postDto.setFlickAmount(post.getFlicks().size());
+      Response response = Response.builder()
+              .statusCode(HttpStatus.OK.value())
+              .message("Success")
+              .postDto(postDto)
+              .build();
+      return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 

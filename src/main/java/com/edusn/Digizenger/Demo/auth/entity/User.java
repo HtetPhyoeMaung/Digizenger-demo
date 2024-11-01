@@ -5,10 +5,7 @@ import com.edusn.Digizenger.Demo.chat.entity.GroupRoom;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
 import com.edusn.Digizenger.Demo.notification.entity.Notification;
-import com.edusn.Digizenger.Demo.post.entity.Comment;
-import com.edusn.Digizenger.Demo.post.entity.Like;
-import com.edusn.Digizenger.Demo.post.entity.Post;
-import com.edusn.Digizenger.Demo.post.entity.Reply;
+import com.edusn.Digizenger.Demo.post.entity.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -68,6 +65,9 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Post> posts;
+
+    @OneToMany
+    private List<Flick> flicks;
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "address_id")
