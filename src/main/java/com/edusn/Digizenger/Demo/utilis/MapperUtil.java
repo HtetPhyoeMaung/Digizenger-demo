@@ -37,7 +37,7 @@ public class MapperUtil {
         userDto.setId(user.getId());
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
-
+        userDto.setStatus(user.getStatus());
 
         return userDto;
     }
