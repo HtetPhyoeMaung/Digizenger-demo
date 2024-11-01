@@ -26,6 +26,8 @@ public class UserDto {
     private User.Status status;
     private Role role;
     private String  profileImageUrl;
+    private ProfileDto profileDto;
+    private String lastMessage;
 
 
 }
