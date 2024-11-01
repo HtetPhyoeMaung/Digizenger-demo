@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
+import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.AdminDashBoardDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
@@ -46,7 +47,7 @@ public class Response {
     private String expirationDate;
     private List<NotificationDto> notificationDtoList;
     private ProfileDto profileDto;
-
+    private List<SingleChatMessageDto>singleChatMessageDtoList;
     private OtherProfileDto otherProfileDto;
     private List<RelationShipDto> relationShipDtoList;
 
