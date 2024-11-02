@@ -1,15 +1,13 @@
 package com.edusn.Digizenger.Demo.auth.service.impl;
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.edusn.Digizenger.Demo.auth.dto.request.LoginRequest;
 import com.edusn.Digizenger.Demo.auth.dto.request.RegisterRequest;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Address;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
-import com.edusn.Digizenger.Demo.exception.LoginNameExistException;
-import com.edusn.Digizenger.Demo.exception.UnverifiedException;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.UserForProfileDto;
@@ -85,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         if(!request.getEmail().isEmpty()){
             Optional<User> checkUserEmail = userRepository.findByEmail(request.getEmail());
             if (checkUserEmail.isPresent()){
-                throw new LoginNameExistException("Email's already exist!");
+                throw new AlreadyExistsException("Email's already exist!");
             }
              otp = otpUtil.generateOtp();
             String fullName = request.getFirstName()+" "+request.getLastName();
@@ -94,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         }else{
             Optional<User> checkUserPhone = userRepository.findByPhone(request.getPhone());
             if (checkUserPhone.isPresent()){
-                throw new LoginNameExistException("Phone's already exist!");
+                throw new AlreadyExistsException("Phone's already exist!");
             }
             otp = otpUtil.generateOtp();
 
@@ -245,7 +243,7 @@ public class AuthServiceImpl implements AuthService {
        // check (isActivated)
         UserDetails userDetails;
         if (!checkUser.isActivated()){
-         throw new UnverifiedException("Email was not verified. So please verified your email!");
+         throw new CustomNotFoundException("Email was not verified. So please verified your email!");
         }
 
         // authentication
@@ -260,10 +258,10 @@ public class AuthServiceImpl implements AuthService {
         String emailOrPhone = jwtService.extractUsername(token);
         if (emailOrPhone.matches(".*@.*")) {
              user = userRepository.findByEmail(emailOrPhone)
-                    .orElseThrow(() -> new UserNotFoundException("User can't found by "+emailOrPhone));
+                    .orElseThrow(() -> new CustomNotFoundException("User can't found by "+emailOrPhone));
         }else {
             user = userRepository.findByPhone(emailOrPhone)
-                    .orElseThrow(() -> new UserNotFoundException("User can't found by "+emailOrPhone));
+                    .orElseThrow(() -> new CustomNotFoundException("User can't found by "+emailOrPhone));
         }
 
         Profile profile = profileRepository.findByUser(user);

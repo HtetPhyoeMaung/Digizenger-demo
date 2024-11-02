@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.cover_image;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.CoverImageNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.CoverImageService;
@@ -55,7 +55,7 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getCoverImageName() == null) throw new CoverImageNotFoundException("Image cannot found by name : "+ profile.getCoverImageName());
+        if(profile.getCoverImageName() == null) throw new CustomNotFoundException("Image cannot found by name : "+ profile.getCoverImageName());
 
         storageService.deleteImage(profile.getCoverImageName());
         profile.setCoverImageName(null);
@@ -76,7 +76,7 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getCoverImageName() == null) throw new CoverImageNotFoundException("can't found cover image ");
+        if(profile.getCoverImageName() == null) throw new CustomNotFoundException("can't found cover image ");
 
         String updateFilename = storageService.updateImage(file, profile.getCoverImageName());
         profile.setCoverImageName(updateFilename);

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-public interface SingleChatMessageRepository extends JpaRepository<SingleChatMessage,Long> {
+public interface SingleChatMessageRepository extends JpaRepository<SingleChatMessage,String> {
     Page<SingleChatMessage> findByChatId(String chatId, Pageable pageable);
 
     List<SingleChatMessage> findByUser(User user);

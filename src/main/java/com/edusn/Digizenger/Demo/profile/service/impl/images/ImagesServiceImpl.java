@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.images;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ImageDto;
@@ -98,7 +98,7 @@ public class ImagesServiceImpl implements ImagesService{
         Profile loggedProfile = profileRepository.findByUser(loggedUser);
 
         Profile otherProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("other profile can't found by id: " + profileId));
+                .orElseThrow(() -> new CustomNotFoundException("other profile can't found by id: " + profileId));
         User otherUser = otherProfile.getUser();
         Long totalImage;
         List<Post> otherPostList = null;
@@ -145,7 +145,7 @@ public class ImagesServiceImpl implements ImagesService{
         Pageable pageable = PageRequest.of(_page -1, _limit);
 
         Profile otherProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("other profile can't found by id: " + profileId));
+                .orElseThrow(() -> new CustomNotFoundException("other profile can't found by id: " + profileId));
         User otherUser = otherProfile.getUser();
         Long totalImage;
         Page<Post> otherPostPages = null;

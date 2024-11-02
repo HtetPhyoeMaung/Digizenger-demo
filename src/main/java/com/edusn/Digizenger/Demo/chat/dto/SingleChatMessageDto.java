@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SingleChatMessageDto {
 
-    private Long id;
+    private String id;
     private String message;
     private LocalDateTime createDate;
     private LocalDateTime  modifiedDate;

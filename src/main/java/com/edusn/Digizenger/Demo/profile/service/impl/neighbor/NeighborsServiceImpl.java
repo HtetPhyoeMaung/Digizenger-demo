@@ -3,9 +3,6 @@ package com.edusn.Digizenger.Demo.profile.service.impl.neighbor;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
-import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
-import com.edusn.Digizenger.Demo.exception.NeighborNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -41,7 +38,7 @@ public class NeighborsServiceImpl implements NeighborService {
 
         if(profile.getId().equals(profileId)){
             if(profile.getFollowers().isEmpty())
-                throw new FollowerNotFoundException("Neighbors are not have in Your profile.");
+                throw new CustomNotFoundException("Neighbors are not have in Your profile.");
 
             Page<Profile> neighborPages = profileRepository.findNeighborsByProfileId(profile.getId(),pageable);
             List<RelationShipDto> profileNeighbors = neighborPages.stream().map(
@@ -49,7 +46,7 @@ public class NeighborsServiceImpl implements NeighborService {
             ).collect(Collectors.toList());
 
             if(profileNeighbors.isEmpty())
-                throw new NeighborNotFoundException("following are not have in Your profile.");
+                throw new CustomNotFoundException("following are not have in Your profile.");
 
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
@@ -60,7 +57,7 @@ public class NeighborsServiceImpl implements NeighborService {
         }
 
         Profile otherUserProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exist by id : "+profileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exist by id : "+profileId));
 
         Page<Profile> neighborPages = profileRepository.findNeighborsByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> neighbors = neighborPages.stream().map(
@@ -68,7 +65,7 @@ public class NeighborsServiceImpl implements NeighborService {
         ).collect(Collectors.toList());
 
         if(neighbors.isEmpty())
-            throw new NeighborNotFoundException("Neighbors are not found in "
+            throw new CustomNotFoundException("Neighbors are not found in "
                     +otherUserProfile.getUser().getFirstName()
                     +" "+otherUserProfile.getUser().getLastName()
                     +"'s profile.");

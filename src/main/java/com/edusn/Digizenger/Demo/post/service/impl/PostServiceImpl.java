@@ -6,7 +6,6 @@ import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
-import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
 import com.edusn.Digizenger.Demo.post.entity.View;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
@@ -119,7 +118,7 @@ public  class PostServiceImpl implements PostService {
                     existPost.setPostType(postType);
                     return existPost;
                 })
-                .orElseThrow(() -> new PostNotFoundException("Post not found by " + id));
+                .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
         if (!multipartFile.isEmpty()) {
            String newImageName = storageService.updateImage(multipartFile,imageName);
             post.setImageName(newImageName);

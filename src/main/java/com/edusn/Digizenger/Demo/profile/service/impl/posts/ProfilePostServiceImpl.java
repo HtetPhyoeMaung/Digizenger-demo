@@ -2,8 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.posts;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.PostNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
@@ -18,7 +17,6 @@ import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -71,7 +69,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
             }).toList(); // Collect into a List
         }
 
-        if(postDtoList.isEmpty()) throw new PostNotFoundException("post can not found in your profile.");
+        if(postDtoList.isEmpty()) throw new CustomNotFoundException("post can not found in your profile.");
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -91,7 +89,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
         Profile profile = profileRepository.findByUser(user);
 
         Profile otherProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id : "+profileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+profileId));
         User otherUser = otherProfile.getUser();
 
         Response response = null;
