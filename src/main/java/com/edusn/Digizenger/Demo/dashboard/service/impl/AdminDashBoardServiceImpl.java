@@ -178,6 +178,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
             userDtoForDashBoard.setCountry(newUserIn30Days.getAddress().getCountry());
             responseDtoList.add(userDtoForDashBoard);
         });
+        //
         AdminDashBoardDto adminDashBoardDto = new AdminDashBoardDto();
         adminDashBoardDto.setNewUsers((long)responseDtoList.size());
         adminDashBoardDto.setUserDtoForDashBoard(responseDtoList);
