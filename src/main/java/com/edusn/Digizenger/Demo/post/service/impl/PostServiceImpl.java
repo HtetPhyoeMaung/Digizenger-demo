@@ -210,7 +210,7 @@ public  class PostServiceImpl implements PostService {
 
                     postDto.setFlickUserDtoList(flickUserDtoList);
                     postDto.setFlickAmount(flickUserDtoList.size());
-                    Notification notificationforNeighbor = Notification.builder()
+                    Notification notificationForNeighbor = Notification.builder()
                             .createDate(LocalDateTime.now())
                             .isRead(false)
                             .user(post.getUser())
@@ -220,21 +220,9 @@ public  class PostServiceImpl implements PostService {
                             .type(Notification.Type.FLICK)
                             .build();
 
-                    NotificationDto notificationDtoForNeighbors = NotificationDto.builder()
-                            .message(user.getProfile().getUsername() + " was flicked " + "\nPost : " + post.getPostLinkUrl())
-                            .isRead(notificationforNeighbor.isRead())
-                            .type(Notification.Type.FLICK)
-                            .createDate(dateUtil.formattedDate(notificationforNeighbor.getCreateDate()))
-                            .build();
 
 
-                    user.getProfile().getNeighbors().forEach(neighbors -> {
-                        notificationforNeighbor.setUser(neighbors.getUser());
-                        notificationRepository.save(notificationforNeighbor);
-                        notificationDtoForNeighbors.setId(notificationforNeighbor.getId());
-                        messagingTemplate.convertAndSendToUser(String.valueOf(neighbors.getId()), "/queue/private-notification", notificationDtoForNeighbors);
 
-                    });
                 });
 
 

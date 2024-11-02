@@ -1,27 +1,28 @@
 package com.edusn.Digizenger.Demo.post.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
-public class Flick {
+public class Flick implements Serializable {
+    private static final long serialVersionUID=1L;
     @Id
     private String id;
-
-    @ManyToOne(fetch = FetchType.LAZY) // Assuming a single Post can have multiple Flicks
+    private String flickedPostLinkUrl;
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    private String flickedPostLinkUrl;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // Adjust cascade type as needed
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "flickUser_id")
     private User user;
 
