@@ -2,7 +2,6 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.educaionHistory
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.EducationHistoryDto;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
@@ -18,7 +17,6 @@ import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

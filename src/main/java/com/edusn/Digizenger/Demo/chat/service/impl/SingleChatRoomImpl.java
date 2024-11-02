@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.chat.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatRoomRepository;
@@ -14,7 +15,7 @@ public class SingleChatRoomImpl implements SingleChatRoomService {
     @Autowired
     private SingleChatRoomRepository singleChatRoomRepository;
     @Autowired
-    private AuthService authService;
+    private UserRepository userRepository;
 
     @Override
     public Optional<String> getChatRoomId(User senderId, Long recipientId, boolean createNewRoomIfNotExists) {
@@ -39,7 +40,7 @@ public class SingleChatRoomImpl implements SingleChatRoomService {
                                             .user(senderId)
                                             .recipientId(recipientId)
                                             .build();
-        Optional<User> receipient= authService.findById(recipientId);
+        Optional<User> receipient= userRepository.findById(recipientId);
         SingleChatRoom recipientSender =SingleChatRoom.builder()
                                             .chatRoomId(chatId)
                                             .user(receipient.get())

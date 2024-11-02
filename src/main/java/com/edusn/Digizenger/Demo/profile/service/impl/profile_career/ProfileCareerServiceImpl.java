@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.profile_career;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.CareerNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfileCareerService;
@@ -41,7 +41,7 @@ public class ProfileCareerServiceImpl implements ProfileCareerService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getProfileCareer() == null)
-            throw new CareerNotFoundException("career is not exist.");
+            throw new CustomNotFoundException("career is not exist.");
         profile.setProfileCareer(null);
         profileRepository.save(profile);
 

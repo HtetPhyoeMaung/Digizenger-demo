@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.educaionHistory
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.repo.SchoolRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.SchoolService;
@@ -27,7 +27,7 @@ public class SchoolServiceImpl implements SchoolService {
     public ResponseEntity<Response> getExistingSchoolNameByName(HttpServletRequest request, String name) {
 
         User user = getUserByRequest.getUser(request);
-        if(user == null) throw new UserNotFoundException("User cannot found");
+        if(user == null) throw new CustomNotFoundException("User cannot found");
 
         List<School> schoolList = schoolRepository.findSchoolByDynamicName(name);
         List<String> schoolNameList = schoolList.stream().map(

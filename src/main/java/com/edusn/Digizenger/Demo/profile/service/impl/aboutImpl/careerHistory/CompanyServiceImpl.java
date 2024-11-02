@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.careerHistory;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.repo.CompanyRepository;
 import com.edusn.Digizenger.Demo.profile.service.about.CompanyService;
@@ -27,7 +27,7 @@ public class CompanyServiceImpl implements CompanyService {
     public ResponseEntity<Response> getExistingCompanyNameByName(HttpServletRequest request, String name) {
 
         User user = getUserByRequest.getUser(request);
-        if(user == null) throw new UserNotFoundException("User cannot found");
+        if(user == null) throw new CustomNotFoundException("User cannot found");
 
         List<Company> companies = companyRepository.findCompanyByDynamicName(name);
         List<String> companyNameList = companies.stream().map(

@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.bio;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.BioNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.BioProfileService;
@@ -41,7 +41,7 @@ public class BioProfileServiceImpl implements BioProfileService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getBio() == null) throw new BioNotFoundException("Bio not found in profile.");
+        if(profile.getBio() == null) throw new CustomNotFoundException("Bio not found in profile.");
 
 
         profile.setBio(null);

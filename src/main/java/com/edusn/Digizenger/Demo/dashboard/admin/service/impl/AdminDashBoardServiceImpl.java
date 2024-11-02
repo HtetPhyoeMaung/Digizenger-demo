@@ -11,7 +11,6 @@ import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.Profil
 import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
 import com.edusn.Digizenger.Demo.dashboard.admin.service.AdminDashBoardService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
-import com.edusn.Digizenger.Demo.exception.UserNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -107,7 +106,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         if(user.getRole().equals(Role.USER.name())) throw new CustomNotFoundException("Can't accepted by a user");
 
         User showUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User cannot found by id : "+id));
+                .orElseThrow(() -> new CustomNotFoundException("User cannot found by id : "+id));
 
 
         UserDataDto userDataDto = modelMapper.map(showUser, UserDataDto.class);

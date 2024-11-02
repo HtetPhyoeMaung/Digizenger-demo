@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -148,7 +148,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
         else {
             Profile otherProfile = profileRepository.findByUsername(username)
-                    .orElseThrow(()-> new ProfileNotFoundException("profile not found by url which have username : "+username));
+                    .orElseThrow(()-> new CustomNotFoundException("profile not found by url which have username : "+username));
             return otherProfileService.showOtherUserProfile(otherProfile, profile);
         }
     }
@@ -158,7 +158,7 @@ public class ProfileServiceImpl implements ProfileService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         Profile toFindProfile = profileRepository.findById(id)
-                .orElseThrow(() -> new ProfileNotFoundException("profile is not exists by id : "+id));
+                .orElseThrow(() -> new CustomNotFoundException("profile is not exists by id : "+id));
         return otherProfileService.showOtherUserProfile(toFindProfile, profile);
     }
 }
