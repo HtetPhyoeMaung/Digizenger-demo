@@ -126,10 +126,16 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
              .recipientId(singleChatMessage.getRecipientId())
              .build();
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
-                                                        .id(savedMessage.getId())
+                                                     .id(savedMessage.getId())
                                                      .message(savedMessage.getMessage())
                                                      .type(savedMessage.getType())
                                                      .createDate(savedMessage.getCreateDate())
+                                                     .userDto(UserDto.builder()
+                                                                            .id(savedMessage.getUser().getId())
+                                                                            .firstName(savedMessage.getUser().getFirstName())
+                                                                            .lastName(savedMessage.getUser().getLastName())
+                                                                            .profileImageUrl(savedMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(savedMessage.getUser().getProfile().getProfileImageName()))
+                                                                            .build())
                                                      .recipientId(savedMessage.getRecipientId())
                                                      .build();
         messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
