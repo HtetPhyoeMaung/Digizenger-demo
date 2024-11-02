@@ -37,6 +37,7 @@ public class PostController {
             , HttpServletRequest request) throws IOException {
 
         User user= getUserByRequest.getUser(request);
+
         if(multipartFile==null || multipartFile.isEmpty()){
               return postService.upload(description,postType,user,null);
 

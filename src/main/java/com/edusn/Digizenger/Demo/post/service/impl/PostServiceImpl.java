@@ -1,7 +1,6 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
-import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -22,9 +21,7 @@ import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CommonUtil;
 import com.edusn.Digizenger.Demo.utilis.GeneratePostUrl;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
-
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -44,8 +40,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public  class PostServiceImpl implements PostService {
-    @Autowired
-    private ModelMapper modelMapper;
+
     @Autowired
     private StorageService storageService;
     @Autowired
@@ -195,6 +190,7 @@ public  class PostServiceImpl implements PostService {
                     postDtoList.add(postDto);
                 }
             }
+            List<ProfileDto> flickUserDtoList =commonUtil.getFlickDtoListFromPost(post);
 
 
             postDto.setFlickUserDtoList(flickUserDtoList);
@@ -226,7 +222,8 @@ public  class PostServiceImpl implements PostService {
       postDto.setPostLinkUrl(post.getPostLinkUrl());
       postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post,true));
       postDto.setViewCount(viewRepository.countByPost(post));
-      postDto.setFlickUserDtoList();
+      List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
+      postDto.setFlickUserDtoList(flickUserDtoList);
       postDto.setFlickAmount(post.getFlicks().size());
       Response response = Response.builder()
               .statusCode(HttpStatus.OK.value())

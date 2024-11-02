@@ -1,5 +1,7 @@
 package com.edusn.Digizenger.Demo.utilis;
 
+import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.showUser.UserDataDto;
 import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ProfileDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -31,4 +33,5 @@ public class CommonUtil {
         });
         return flickUserDtoList;
     }
+
 }

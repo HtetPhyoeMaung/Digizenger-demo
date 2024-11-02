@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser;
+package com.edusn.Digizenger.Demo.dashboard.dto.responseDto.showUser;
 
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
