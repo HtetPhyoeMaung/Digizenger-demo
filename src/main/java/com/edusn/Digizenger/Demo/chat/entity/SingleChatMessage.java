@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
-
+        @Id
         private String  id;
         private String message;
         private LocalDateTime createDate;

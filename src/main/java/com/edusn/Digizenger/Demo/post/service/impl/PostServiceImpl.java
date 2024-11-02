@@ -1,6 +1,9 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
+import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
+import com.edusn.Digizenger.Demo.notification.entity.Notification;
+import com.edusn.Digizenger.Demo.notification.repo.NotificationRepository;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
@@ -18,6 +21,7 @@ import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.CommonUtil;
+import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.GeneratePostUrl;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 
@@ -30,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -37,6 +42,8 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.edusn.Digizenger.Demo.utilis.MapperUtil.convertToUserDto;
 
 @Slf4j
 @Service
@@ -57,6 +64,12 @@ public  class PostServiceImpl implements PostService {
     private GeneratePostUrl generatePostUrl;
     @Autowired
     private CommonUtil commonUtil;
+    @Autowired
+    private DateUtil dateUtil;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
 
     @Override
@@ -96,7 +109,7 @@ public  class PostServiceImpl implements PostService {
         }else {
             profileDto.setProfileImageUrl("");
         }
-        PostDto postDto = convertToPostDto(post);
+        PostDto postDto = MapperUtil.convertToPostDto(post);
         postDto.setUserDto(convertToUserDto(user));
         postDto.setProfileDto(profileDto);
 
@@ -131,7 +144,7 @@ public  class PostServiceImpl implements PostService {
         postRepository.save(post);  // Save the updated post
 
         // Convert to DTO and return response
-        PostDto postDto = convertToPostDto(post);
+        PostDto postDto = MapperUtil.convertToPostDto(post);
         if (post.getImageName()!=null) {
             postDto.setImageName(post.getImageName());
             postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
@@ -177,34 +190,62 @@ public  class PostServiceImpl implements PostService {
         List<PostDto> postDtoList = new LinkedList<>();
 
         postPage.forEach(post -> {
-            PostDto postDto = new PostDto();
-            if(post.getUser().getProfile().getNeighbors().contains(profile)){
-                postDto = commonForEachPost(post , user , profile);
-                postDtoList.add(postDto);
-            } else if (post.getUser().getProfile().getFollowers().contains(profile)) {
-                if(post.getPostType() != Post.PostType.NEIGHBORS){
-                    postDto = commonForEachPost(post , user, profile);
-                    postDtoList.add(postDto);
-                }
-            } else  {
-                if(post.getPostType() == Post.PostType.EVERYONE){
-                    postDto = commonForEachPost(post, user , profile);
-                    postDtoList.add(postDto);
-                }
-            }
+                    PostDto postDto = new PostDto();
+                    if (post.getUser().getProfile().getNeighbors().contains(profile)) {
+                        postDto = commonForEachPost(post, user, profile);
+                        postDtoList.add(postDto);
+                    } else if (post.getUser().getProfile().getFollowers().contains(profile)) {
+                        if (post.getPostType() != Post.PostType.NEIGHBORS) {
+                            postDto = commonForEachPost(post, user, profile);
+                            postDtoList.add(postDto);
+                        }
+                    } else {
+                        if (post.getPostType() == Post.PostType.EVERYONE) {
+                            postDto = commonForEachPost(post, user, profile);
+                            postDtoList.add(postDto);
+                        }
+                    }
+                    List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
 
 
-            postDto.setFlickUserDtoList(flickUserDtoList);
-            postDto.setFlickAmount(flickUserDtoList.size());
+                    postDto.setFlickUserDtoList(flickUserDtoList);
+                    postDto.setFlickAmount(flickUserDtoList.size());
+                    Notification notificationforNeighbor = Notification.builder()
+                            .createDate(LocalDateTime.now())
+                            .isRead(false)
+                            .user(post.getUser())
+                            .post(post)
+                            .profile(user.getProfile())
+                            .message(user.getProfile().getUsername() + " was flicked " + "\nPost : " + post.getPostLinkUrl())
+                            .type(Notification.Type.FLICK)
+                            .build();
 
-        });
+                    NotificationDto notificationDtoForNeighbors = NotificationDto.builder()
+                            .message(user.getProfile().getUsername() + " was flicked " + "\nPost : " + post.getPostLinkUrl())
+                            .isRead(notificationforNeighbor.isRead())
+                            .type(Notification.Type.FLICK)
+                            .createDate(dateUtil.formattedDate(notificationforNeighbor.getCreateDate()))
+                            .build();
 
-        Response response = Response.builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("successfully got new feed")
-                .postDtoList(postDtoList)
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+                    user.getProfile().getNeighbors().forEach(neighbors -> {
+                        notificationforNeighbor.setUser(neighbors.getUser());
+                        notificationRepository.save(notificationforNeighbor);
+                        notificationDtoForNeighbors.setId(notificationforNeighbor.getId());
+                        messagingTemplate.convertAndSendToUser(String.valueOf(neighbors.getId()), "/queue/private-notification", notificationDtoForNeighbors);
+
+                    });
+                });
+
+
+            Response response = Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("successfully got new feed")
+                    .postDtoList(postDtoList)
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+
     }
 
     @Override
@@ -223,7 +264,8 @@ public  class PostServiceImpl implements PostService {
       postDto.setPostLinkUrl(post.getPostLinkUrl());
       postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post,true));
       postDto.setViewCount(viewRepository.countByPost(post));
-      postDto.setFlickUserDtoList();
+      List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
+      postDto.setFlickUserDtoList(flickUserDtoList);
       postDto.setFlickAmount(post.getFlicks().size());
       Response response = Response.builder()
               .statusCode(HttpStatus.OK.value())
@@ -258,21 +300,16 @@ public  class PostServiceImpl implements PostService {
     }
 
 
-    public static PostDto convertToPostDto(Post post) {
-        return MapperUtil.convertToPostDto(post);
-    }
-    public static UserDto convertToUserDto(User user) {
-        return MapperUtil.convertToUserDto(user);
-    }
+
 
 
     private PostDto commonForEachPost(Post post, User user , Profile loggedProfile){
-        UserDto userDto = convertToUserDto(post.getUser());
+        UserDto userDto = MapperUtil.convertToUserDto(post.getUser());
         Long viewCount = viewRepository.countByPost(post);
         Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
         boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
         // Convert post to PostDto and set additional fields
-        PostDto postDto = PostServiceImpl.convertToPostDto(post);
+        PostDto postDto = MapperUtil.convertToPostDto(post);
         Profile postOwnerProfile = post.getUser().getProfile();
         OtherProfileDto postOwnerProfileDto = OtherProfileDto.builder()
                 .id(postOwnerProfile.getId())
@@ -313,3 +350,6 @@ public  class PostServiceImpl implements PostService {
     }
 
 }
+
+
+

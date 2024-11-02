@@ -8,7 +8,6 @@ import com.edusn.Digizenger.Demo.post.entity.Post;
 import com.edusn.Digizenger.Demo.post.repo.LikeRepository;
 import com.edusn.Digizenger.Demo.post.repo.PostRepository;
 import com.edusn.Digizenger.Demo.post.repo.ViewRepository;
-import com.edusn.Digizenger.Demo.post.service.impl.PostServiceImpl;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfilePostService;
@@ -69,7 +68,8 @@ public class ProfilePostServiceImpl implements ProfilePostService {
             }).toList(); // Collect into a List
         }
 
-        if(postDtoList.isEmpty()) throw new CustomNotFoundException("post can not found in your profile.");
+
+        if(postDtoList==null) throw new CustomNotFoundException("post can not found in your profile.");
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -110,7 +110,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
                         .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
-                PostDto postDto = PostServiceImpl.convertToPostDto(post);
+                PostDto postDto = MapperUtil.convertToPostDto(post);
                 if (post.getUser().getProfile().getProfileImageName() != null) {
                     postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
                     postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
