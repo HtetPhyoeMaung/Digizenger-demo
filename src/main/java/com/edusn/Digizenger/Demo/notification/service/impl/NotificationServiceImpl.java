@@ -196,12 +196,14 @@ public class NotificationServiceImpl implements NotificationService {
                     .message(messageForNeighbors)
                     .isRead(false)
                     .profile(user.getProfile())
+                    .user(user)
                     .createDate(LocalDateTime.now())
                     .build();
 
             Notification notificationforBDUser = Notification.builder()
                     .message(messageForBDUser)
                     .isRead(false)
+                    .profile(user.getProfile())
                     .createDate(LocalDateTime.now())
                     .user(user)
                     .build();
