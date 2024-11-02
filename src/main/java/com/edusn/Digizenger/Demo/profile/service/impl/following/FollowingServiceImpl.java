@@ -2,13 +2,10 @@ package com.edusn.Digizenger.Demo.profile.service.impl.following;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
-import com.edusn.Digizenger.Demo.exception.FollowingNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
-import com.edusn.Digizenger.Demo.profile.service.FollowerService;
 import com.edusn.Digizenger.Demo.profile.service.FollowingService;
 import com.edusn.Digizenger.Demo.profile.utils.ProfileMapperUtils;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
@@ -47,7 +44,7 @@ public class FollowingServiceImpl implements FollowingService {
             ).collect(Collectors.toList());
 
             if(profilefollowingList.isEmpty())
-                throw new FollowingNotFoundException("following are not have in Your profile.");
+                throw new CustomNotFoundException("following are not have in Your profile.");
 
             Response response = Response.builder()
                     .statusCode(HttpStatus.OK.value())
@@ -58,7 +55,7 @@ public class FollowingServiceImpl implements FollowingService {
         }
 
         Profile otherUserProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id: "+profileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exists by id: "+profileId));
 
         Page<Profile> followingPage = profileRepository.findFollowingByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> followingList = followingPage.stream().map(
@@ -66,7 +63,7 @@ public class FollowingServiceImpl implements FollowingService {
         ).collect(Collectors.toList());
 
         if(followingList.isEmpty())
-            throw new FollowingNotFoundException("Following are not found in "
+            throw new CustomNotFoundException("Following are not found in "
                     +otherUserProfile.getUser().getFirstName()
                     +" "+otherUserProfile.getUser().getLastName()
                     +"'s profile.");

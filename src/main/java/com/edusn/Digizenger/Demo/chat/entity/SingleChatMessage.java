@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        private String  id;
         private String message;
         private LocalDateTime createDate;
         private LocalDateTime modifiedDate;

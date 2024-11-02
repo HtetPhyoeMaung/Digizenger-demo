@@ -20,7 +20,6 @@ public interface AuthService {
 
     ResponseEntity<Response> login(LoginRequest request);
 
-    Optional<User> findById(Long recipientId);
 
     ResponseEntity<Response> disconnect(User user);
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface FlickRepository extends JpaRepository<Flick,Long> {
+public interface FlickRepository extends JpaRepository<Flick,String> {
 
     Optional<Flick> findByPostAndUser(Post existPost, User user);
 }

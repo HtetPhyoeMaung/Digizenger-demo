@@ -1,11 +1,9 @@
 package com.edusn.Digizenger.Demo.profile.service.impl.follower;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.CannotFollowException;
-import com.edusn.Digizenger.Demo.exception.CannotUnfollowException;
-import com.edusn.Digizenger.Demo.exception.FollowerNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.notification.service.NotificationService;
 import com.edusn.Digizenger.Demo.profile.dto.response.otherProfile.RelationShipDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -23,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,13 +42,13 @@ public class FollowerServiceImpl implements FollowerService {
         Profile profile = profileRepository.findByUser(user);
 
         Profile toFollowUserProfile = profileRepository.findById(toFollowProfileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id : "+toFollowProfileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+toFollowProfileId));
 
         if(toFollowUserProfile.getFollowers().contains(profile))
-            throw new CannotFollowException("your already followed this user.");
+            throw new AlreadyExistsException("your already followed this user.");
 
         if(toFollowUserProfile.equals(profile))
-            throw new CannotFollowException("You can't follow to your profile.");
+            throw new NotAcceptableStatusException("You can't follow to your profile.");
 
         profile.getFollowing().add(toFollowUserProfile);
         toFollowUserProfile.getFollowers().add(profile);
@@ -90,13 +89,13 @@ public class FollowerServiceImpl implements FollowerService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         Profile toUnFollowUserProfile = profileRepository.findById(toUnFollowProfileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id : "+toUnFollowProfileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+toUnFollowProfileId));
 
         if(!toUnFollowUserProfile.getFollowers().contains(profile))
-            throw new CannotUnfollowException("you cannot unfollowed this user because you are  not relationship.");
+            throw new NotAcceptableStatusException("you cannot unfollowed this user because you are  not relationship.");
 
         if(toUnFollowUserProfile.equals(profile))
-            throw new CannotUnfollowException("you can't unfollow your profile.");
+            throw new NotAcceptableStatusException("you can't unfollow your profile.");
 
         profile.getFollowing().remove(toUnFollowUserProfile);
         toUnFollowUserProfile.getFollowers().remove(profile);
@@ -128,7 +127,7 @@ public class FollowerServiceImpl implements FollowerService {
 
         if(profile.getId().equals(profileId)){
             if(profile.getFollowers().isEmpty())
-                throw new FollowerNotFoundException("followers are not have in Your profile.");
+                throw new CustomNotFoundException("followers are not have in Your profile.");
 
             Page<Profile> followers = profileRepository.findFollowersByProfileId(profile.getId(),pageable);
             List<RelationShipDto> profileFollowers = followers.stream().map(
@@ -144,7 +143,7 @@ public class FollowerServiceImpl implements FollowerService {
         }
 
         Profile otherUserProfile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ProfileNotFoundException("profile not exists by id "+ profileId));
+                .orElseThrow(() -> new CustomNotFoundException("profile not exists by id "+ profileId));
 
         Page<Profile> followers = profileRepository.findFollowersByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> otherProfileFollowers = followers.stream().map(
@@ -152,7 +151,7 @@ public class FollowerServiceImpl implements FollowerService {
         ).collect(Collectors.toList());
 
         if(otherProfileFollowers.isEmpty())
-            throw new FollowerNotFoundException("Followers are not found in "
+            throw new CustomNotFoundException("Followers are not found in "
                     +otherUserProfile.getUser().getFirstName()
                     +" "+otherUserProfile.getUser().getLastName()
                     +"'s profile.");

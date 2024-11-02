@@ -2,7 +2,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl.profile_image;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.exception.ProfileImageNotFoundException;
+import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
 import com.edusn.Digizenger.Demo.profile.service.ProfileImageService;
@@ -51,7 +51,7 @@ public class ProfileImageServiceImpl implements ProfileImageService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getProfileImageName() == null)
-            throw new ProfileImageNotFoundException("Image cannot found by name");
+            throw new CustomNotFoundException("Image cannot found by name");
         storageService.deleteImage(profile.getProfileImageName());
         profile.setProfileImageName(null);
         profileRepository.save(profile);
@@ -70,7 +70,7 @@ public class ProfileImageServiceImpl implements ProfileImageService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         if(profile.getProfileImageName() == null)
-            throw new ProfileImageNotFoundException("can't update the cover because image is null");
+            throw new CustomNotFoundException("can't update the cover because image is null");
         String updateFilename = storageService.updateImage(file, profile.getProfileImageName());
         profile.setProfileImageName(updateFilename);
         profile = profileRepository.save(profile);

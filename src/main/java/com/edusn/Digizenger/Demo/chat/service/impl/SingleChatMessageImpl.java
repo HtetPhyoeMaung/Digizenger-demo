@@ -12,6 +12,7 @@ import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
+import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -115,23 +116,30 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         var chatId = singleChatRoomService
                 .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
-     SingleChatMessage savedMessage= singleChatMessageRepository.save(SingleChatMessage.builder()
-                                            .user(user)
-                                            .message(singleChatMessage.getMessage())
-                                            .type(singleChatMessage.getType())
-                                            .chatId(chatId)
-                                            .createDate(LocalDateTime.now())
-                                            .recipientId(singleChatMessage.getRecipientId())
-                                            .build());
+     SingleChatMessage savedMessage= SingleChatMessage.builder()
+             .id(UUIDUtil.generateUUID())
+             .user(user)
+             .message(singleChatMessage.getMessage())
+             .type(singleChatMessage.getType())
+             .chatId(chatId)
+             .createDate(LocalDateTime.now())
+             .recipientId(singleChatMessage.getRecipientId())
+             .build();
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
-                                                        .id(savedMessage.getId())
+                                                     .id(savedMessage.getId())
                                                      .message(savedMessage.getMessage())
                                                      .type(savedMessage.getType())
                                                      .createDate(savedMessage.getCreateDate())
+                                                     .userDto(UserDto.builder()
+                                                                            .id(savedMessage.getUser().getId())
+                                                                            .firstName(savedMessage.getUser().getFirstName())
+                                                                            .lastName(savedMessage.getUser().getLastName())
+                                                                            .profileImageUrl(savedMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(savedMessage.getUser().getProfile().getProfileImageName()))
+                                                                            .build())
                                                      .recipientId(savedMessage.getRecipientId())
                                                      .build();
         messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
-                                                     
+        singleChatMessageRepository.save(savedMessage);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Message send success")

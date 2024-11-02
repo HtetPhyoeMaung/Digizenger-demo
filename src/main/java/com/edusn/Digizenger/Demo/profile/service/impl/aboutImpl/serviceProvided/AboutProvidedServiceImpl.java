@@ -3,8 +3,6 @@ package com.edusn.Digizenger.Demo.profile.service.impl.aboutImpl.serviceProvided
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ProfileNotFoundException;
-import com.edusn.Digizenger.Demo.exception.ServiceProvidedNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
@@ -37,7 +35,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
 
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
-        if(profile == null) throw  new ProfileNotFoundException("profile Not found Please login first");
+        if(profile == null) throw  new CustomNotFoundException("profile Not found Please login first");
 
         List<ServiceProvided> serviceProvidedList = serviceProvidedRepository.findByServiceNameDynamic(serviceName);
         List<ServiceProvidedDto> serviceProvidedDtoList = serviceProvidedList.stream().map(
@@ -88,7 +86,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
         Profile profile = profileRepository.findByUser(user);
 
         ServiceProvided serviceProvided = serviceProvidedRepository.findById(id)
-                .orElseThrow(() -> new ServiceProvidedNotFoundException("service provided not found by id : "+id));
+                .orElseThrow(() -> new CustomNotFoundException("service provided not found by id : "+id));
 
         profile.addServiceProvided(serviceProvided);
         profileRepository.save(profile);
@@ -137,7 +135,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
         User user = getUserByRequest.getUser(request);
         Profile profile = profileRepository.findByUser(user);
         ServiceProvided serviceProvided = serviceProvidedRepository.findById(id)
-                .orElseThrow(() -> new ServiceProvidedNotFoundException("service provided not found by id : "+ id));
+                .orElseThrow(() -> new CustomNotFoundException("service provided not found by id : "+ id));
 
         profile.removeProvided(serviceProvided);
         profileRepository.save(profile);
