@@ -15,6 +15,7 @@ spring:
     password: AVNS_fDr_E9j3sI3DBiZfpHO
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+
   jpa:
     hibernate:
       ddl-auto: update
