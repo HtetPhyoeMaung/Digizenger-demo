@@ -14,6 +14,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -29,6 +31,7 @@ public class SingleChatMessageDto {
     private boolean isRead;
     private SingleChatMessage.Type type;
     private UserDto userDto;
+    private List<ReactionDto> reactionDtoList;
 
 
 }

@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 public class ReactionDto {
 
     private String id;
-    private String singleMessageId;
-    private String groupMessageId;
     private boolean isReacted;
     private String emoji;
     private String createdDate;
     private String editedDate;
-    private UserDto userDto;
+    private UserDto reactedUser;
 }
