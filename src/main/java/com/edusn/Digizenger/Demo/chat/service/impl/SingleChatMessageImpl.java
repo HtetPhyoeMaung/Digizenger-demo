@@ -57,25 +57,38 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         singleChatMessageRepository.saveAll(singleChatMessages);
        Response response= Response.builder()
                .singleChatMessageDtoList(singleChatMessages.stream()
-                       .map(message -> SingleChatMessageDto.builder()
-                               .id(message.getId())
-                               .message(message.getMessage())
-                               .createDate(message.getCreateDate())
-                               .modifiedDate(message.getModifiedDate())
-                               .recipientId(message.getRecipientId())
-                               .isRead(message.isRead())
-                               .userDto(UserDto.builder()
-                                       .id(message.getUser().getId())
-                                       .firstName(message.getUser().getFirstName())
-                                       .lastName(message.getUser().getLastName())
-                                       .profileImageUrl(message.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
-                                       .build()) // Create UserDto from senderId
-                               .chatId(message.getChatId())
-                               .type(SingleChatMessage.Type.valueOf(message.getType().name()))
-                               .build())
+                       .map(message -> {
+                           // Build the reply message DTO if there is a reply message ID
+                           SingleChatMessage replyMessageContent = null;
+                           if (message.getReplyMessageId() != null) {
+                               replyMessageContent = singleChatMessageRepository.findById(message.getReplyMessageId())
+                                       .orElseThrow(() -> new CustomNotFoundException("ReplyMessage not found"));
+                           }
+                           return SingleChatMessageDto.builder()
+                                   .id(message.getId())
+                                   .message(message.getMessage())
+                                   .createDate(message.getCreateDate())
+                                   .modifiedDate(message.getModifiedDate())
+                                   .recipientId(message.getRecipientId())
+                                   .isRead(message.isRead())
+                                   .replyMessage(replyMessageContent==null?null:replyMessageContent.getMessage())
+                                   .replayMessageType(replyMessageContent==null?null:replyMessageContent.getType())
+                                   .userDto(UserDto.builder()
+                                           .id(message.getUser().getId())
+                                           .firstName(message.getUser().getFirstName())
+                                           .lastName(message.getUser().getLastName())
+                                           .profileImageUrl(message.getUser().getProfile().getProfileImageName() == null
+                                                   ? null
+                                                   : storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
+                                           .build())
+                                   .chatId(message.getChatId())
+                                   .type(SingleChatMessage.Type.valueOf(message.getType().name()))
+                                   .build();
+                       })
                        .collect(Collectors.toList()))
                .statusCode(HttpStatus.OK.value())
                .build();
+
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -117,7 +130,6 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
      SingleChatMessage savedMessage= SingleChatMessage.builder()
-             .id(UUIDUtil.generateUUID())
              .user(user)
              .message(singleChatMessage.getMessage())
              .type(singleChatMessage.getType())
@@ -125,6 +137,11 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
              .createDate(LocalDateTime.now())
              .recipientId(singleChatMessage.getRecipientId())
              .build();
+     SingleChatMessage replyMessage = null;
+     if(singleChatMessage.getReplyMessageId()!=null){
+         savedMessage.setReplyMessageId(singleChatMessage.getReplyMessageId());
+          replyMessage=singleChatMessageRepository.findById(singleChatMessage.getReplyMessageId()).orElseThrow(()->new CustomNotFoundException("ReplyMessage not found"));
+     }
      SingleChatMessageDto singleChatMessageDto=SingleChatMessageDto.builder()
                                                      .id(savedMessage.getId())
                                                      .message(savedMessage.getMessage())
@@ -137,6 +154,8 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                                                             .profileImageUrl(savedMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(savedMessage.getUser().getProfile().getProfileImageName()))
                                                                             .build())
                                                      .recipientId(savedMessage.getRecipientId())
+                                                     .replyMessage(replyMessage==null?null:replyMessage.getMessage())
+                                                     .replayMessageType(replyMessage==null?null:replyMessage.getType())
                                                      .build();
         messagingTemplate.convertAndSendToUser(String.valueOf(singleChatMessage.getRecipientId()),"/queue/messages" , singleChatMessageDto);
         singleChatMessageRepository.save(savedMessage);
@@ -186,14 +205,19 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     Set<Long> uniqueUserIds=new HashSet<>(); messages.forEach(message->{ uniqueUserIds.add(message.getRecipientId()); });
     List<User> uniqueRecipients = userRepository.findAllById(uniqueUserIds);
     List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
+        System.out.println("recipient id"+recipient.getId());
          UserDto userDto = MapperUtil.convertToUserDto(recipient);
         userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
         userDto.setProfileDto(MapperUtil.convertToProfileDto(recipient.getProfile()));
-        messages.stream().filter(message -> message.getRecipientId().equals(recipient.getId()))
+        messages.stream()
+                .filter(message ->
+                        (message.getUser().getId().equals(user.getId()) && message.getRecipientId().equals(recipient.getId())) ||
+                                (message.getUser().getId().equals(recipient.getId()) && message.getRecipientId().equals(user.getId()))
+                )
                 .max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
-        if (recipient.getProfile().getProfileImageName() != null) {
-         userDto.getProfileDto().setProfileImageUrl( storageService.getImageByName(recipient.getProfile().getProfileImageName()) );
-         }
+        System.out.println("lastmessage :"+userDto.getLastMessage());
+         userDto.getProfileDto().setProfileImageUrl(recipient.getProfile().getProfileImageName() != null?storageService.getImageByName(recipient.getProfile().getProfileImageName()):"");
+
          return userDto;
         }).collect(Collectors.toList());
             Response response=Response.builder()
