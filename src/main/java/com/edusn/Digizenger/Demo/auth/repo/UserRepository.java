@@ -20,5 +20,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Long countByCreatedDateAfter(LocalDateTime last30days);
     Page<User> findByCreatedDateAfter(LocalDateTime last30days, Pageable pageable);
     List<User> findByDateOfBirth(LocalDate today);
-
+    Page<User> findByVerifiedTrue(Pageable pageable);
 }
