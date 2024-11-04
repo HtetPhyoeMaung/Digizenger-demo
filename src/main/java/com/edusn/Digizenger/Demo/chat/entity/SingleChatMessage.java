@@ -9,11 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
@@ -35,4 +37,11 @@ public class SingleChatMessage {
             IMAGE,VIDEO,VOICE,TEXT
         }
 
+        @OneToMany(mappedBy = "singleChatMessage", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+        private List<Reaction> reactions = new LinkedList<>();
+
+
+        public SingleChatMessage(){
+                this.id = UUID.randomUUID().toString();
+        }
 }

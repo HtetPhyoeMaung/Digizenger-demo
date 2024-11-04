@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupChatMessageDto {
-    private Long id;
+    private String id;
     private String text;
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;

@@ -74,7 +74,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                         .message(groupChatMessage.getMessage())
                         .createDate(LocalDateTime.now())
                         .type(groupChatMessage.getType())
-                         .build());
+                        .build());
         GroupChatMessageDto groupChatMessageDto=GroupChatMessageDto.builder()
                                                 .id(savedMessage.getId())
                                                 .text(savedMessage.getMessage())
@@ -102,8 +102,9 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
 
     @Override
     public ResponseEntity<Response> updateMessage(GroupChatMessage groupChatMessage) {
+
         GroupChatMessage existGroupMessage=groupChatMessageRepository.findById(groupChatMessage.getId())
-                                                .orElseThrow(()->new CustomNotFoundException("Group Message not found with this id "+groupChatMessage.getId()));
+                .orElseThrow(()->new CustomNotFoundException("Group Message not found with this id "+groupChatMessage.getId()));;
         existGroupMessage.setMessage(groupChatMessage.getMessage());
         existGroupMessage.setModifiedDate(LocalDateTime.now());
         GroupChatMessage savedMessage=groupChatMessageRepository.save(existGroupMessage);
