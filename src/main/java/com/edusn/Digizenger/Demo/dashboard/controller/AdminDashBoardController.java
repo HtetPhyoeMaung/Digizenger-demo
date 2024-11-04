@@ -35,6 +35,13 @@ public class AdminDashBoardController {
       return   adminDashBoardService.getNewUserIn30Days(page,limit);
 
     }
+    @GetMapping("/getVerifiedUsers")
+    public ResponseEntity<Response> getVerifiedUsers (@RequestParam ("_page") int page,
+                                                      @RequestParam ("_limit") int limit){
+
+        return adminDashBoardService.getVerifiedUsers(page , limit);
+
+    }
 
 
 
