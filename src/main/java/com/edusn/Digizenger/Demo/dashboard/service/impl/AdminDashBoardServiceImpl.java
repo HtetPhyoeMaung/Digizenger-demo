@@ -1,15 +1,15 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.service.impl;
+package com.edusn.Digizenger.Demo.dashboard.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.Role;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.AdminDashBoardDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.ProfileDtoForDashBoard;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.UserDtoForDashBoard;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.ProfileDataDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto.showUser.UserDataDto;
-import com.edusn.Digizenger.Demo.dashboard.admin.service.AdminDashBoardService;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.AdminDashBoardDto;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.ProfileDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.UserDtoForDashBoard;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.showUser.ProfileDataDto;
+import com.edusn.Digizenger.Demo.dashboard.dto.responseDto.showUser.UserDataDto;
+import com.edusn.Digizenger.Demo.dashboard.service.AdminDashBoardService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
@@ -24,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,9 +59,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         userList.forEach(u->{
             UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(u,UserDtoForDashBoard.class);
             userDtoForDashBoard.setCountry(u.getAddress().getCountry());
-            userDtoForDashBoard.setVerified(u.getVerified());
             /* Profile-Dto*/
             Profile profile = profileRepository.findByUser(u);
+            if (profile==null){
+                throw new CustomNotFoundException("Profile not found by User "+u.getEmail());
+            }
             ProfileDtoForDashBoard profileDtoForDashBoard = ProfileDtoForDashBoard.builder()
                     .id(profile.getId())
                     .username(profile.getUsername())
@@ -158,5 +161,39 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .userDataDto(userDataDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> getNewUserIn30Days(int page, int limit) {
+        Pageable pageable = PageRequest.of(page -1,limit, Sort.by(Sort.Direction.ASC, "firstName"));
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        Page<User> newUserIn30DaysList = userRepository.findByCreatedDateAfter(thirtyDaysAgo,pageable);
+        if (newUserIn30DaysList ==null){
+            throw new CustomNotFoundException("newUserIn30Days haven't yet.");
+        }
+        List<UserDtoForDashBoard> responseDtoList = new LinkedList<>();
+        newUserIn30DaysList.forEach(newUserIn30Days->{
+            UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(newUserIn30Days,UserDtoForDashBoard.class);
+            userDtoForDashBoard.setCountry(newUserIn30Days.getAddress().getCountry());
+            responseDtoList.add(userDtoForDashBoard);
+        });
+        //
+        AdminDashBoardDto adminDashBoardDto = new AdminDashBoardDto();
+        adminDashBoardDto.setNewUsers((long)responseDtoList.size());
+        adminDashBoardDto.setUserDtoForDashBoard(responseDtoList);
+
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .adminDashBoardDto(adminDashBoardDto)
+                .message("Get newUserIN30Days successfully.")
+                .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> getVerifiedUsers(int page, int limit) {
+
+
+        return null;
     }
 }

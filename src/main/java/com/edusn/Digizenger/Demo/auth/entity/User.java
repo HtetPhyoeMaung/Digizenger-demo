@@ -47,6 +47,7 @@ public class User {
 
     private boolean locked;
 
+
     private LocalDateTime validPassDate;
 
     private LocalDateTime retiredDate;
@@ -112,6 +113,7 @@ public class User {
     public enum Status{
         ONLINE,OFFLINE
     }
+
 
 
 

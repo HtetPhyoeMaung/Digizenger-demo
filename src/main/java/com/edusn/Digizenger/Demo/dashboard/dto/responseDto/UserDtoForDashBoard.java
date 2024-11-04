@@ -1,4 +1,4 @@
-package com.edusn.Digizenger.Demo.dashboard.admin.dto.responseDto;
+package com.edusn.Digizenger.Demo.dashboard.dto.responseDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
