@@ -189,4 +189,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<Response> getVerifiedUsers(int page, int limit) {
+
+
+        return null;
+    }
 }

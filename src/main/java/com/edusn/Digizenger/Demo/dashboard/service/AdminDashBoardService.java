@@ -10,4 +10,7 @@ public interface AdminDashBoardService  {
     ResponseEntity<Response> showUserData(HttpServletRequest request, Long id);
 
     ResponseEntity<Response> getNewUserIn30Days(int page, int limit);
+
+    ResponseEntity<Response> getVerifiedUsers(int page, int limit);
+
 }
