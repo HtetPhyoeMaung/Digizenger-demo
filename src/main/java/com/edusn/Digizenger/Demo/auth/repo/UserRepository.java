@@ -22,9 +22,14 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Page<User> findByCreatedDateAfter(LocalDateTime last30days, Pageable pageable);
 
     List<User> findByDateOfBirth(LocalDate today);
+<<<<<<< HEAD
 
     Page<User> findByVerifiedTrue(Pageable pageable);
 
     Page<User> findBySuspensionDateBefore(LocalDate suspensionDate, Pageable pageable);
 
 }
+=======
+    Page<User> findByVerifiedTrue(Pageable pageable);
+}
+>>>>>>> 4167a3391ea55e5d0262ca67720a1cd965b54afa

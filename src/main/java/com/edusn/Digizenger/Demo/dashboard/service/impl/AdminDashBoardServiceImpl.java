@@ -197,10 +197,31 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     @Override
     public ResponseEntity<Response> getVerifiedUsers(int page, int limit) {
         Pageable pageable = PageRequest.of(page -1 , limit , Sort.by(Sort.Direction.ASC, "FirstName"));
+<<<<<<< HEAD
                  Page<User> verifiedUsersPage =  userRepository.findByVerifiedTrue(pageable);
         if (verifiedUsersPage.isEmpty()) {
             throw new CustomNotFoundException("No verified users found.");
         }
+=======
+        Page<User> verifiedUsersPage =  userRepository.findByVerifiedTrue(pageable);
+        if (verifiedUsersPage.isEmpty()) {
+            throw new CustomNotFoundException("No verified users found.");
+        }
+        List<UserDtoForDashBoard> verifiedUsersList = verifiedUsersPage.stream().map(u -> {
+            UserDtoForDashBoard userDtoForDashBoard = modelMapper.map(u, UserDtoForDashBoard.class);
+            userDtoForDashBoard.setCountry(u.getAddress().getCountry());
+            return userDtoForDashBoard;
+        }).collect(Collectors.toList());
+        AdminDashBoardDto adminDashBoardDto = new AdminDashBoardDto();
+        adminDashBoardDto.setVerifiedUsers((long) verifiedUsersList.size());
+        adminDashBoardDto.setUserDtoForDashBoard(verifiedUsersList);
+        Response response = Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .adminDashBoardDto(adminDashBoardDto)
+                .message("Successfully fetched verified users.")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);}
+>>>>>>> 4167a3391ea55e5d0262ca67720a1cd965b54afa
 
         List<UserDtoForDashBoard> verifiedUsersList = verifiedUsersPage.stream()
                 .map(u -> {
@@ -210,6 +231,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 })
                 .collect(Collectors.toList());
 
+<<<<<<< HEAD
         AdminDashBoardDto adminDashBoardDto = new AdminDashBoardDto();
         adminDashBoardDto.setVerifiedUsers((long) verifiedUsersList.size());
         adminDashBoardDto.setUserDtoForDashBoard(verifiedUsersList);
@@ -246,3 +268,6 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     }
 
 }
+=======
+}
+>>>>>>> 4167a3391ea55e5d0262ca67720a1cd965b54afa

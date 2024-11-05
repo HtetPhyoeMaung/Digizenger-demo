@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.chat.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
@@ -26,13 +26,15 @@ public class SingleChatMessage {
         private Long recipientId;
         private Type type;
         private boolean isRead;
-//        @Transient
-//        private Long sendId;
+        private String replyMessageId;
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "user_id")
         private User user;
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT
+        }
+        public SingleChatMessage(){
+                id= UUIDUtil.generateUUID();
         }
 
 }

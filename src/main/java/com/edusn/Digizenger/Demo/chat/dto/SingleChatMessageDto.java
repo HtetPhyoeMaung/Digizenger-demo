@@ -29,6 +29,8 @@ public class SingleChatMessageDto {
     private boolean isRead;
     private SingleChatMessage.Type type;
     private UserDto userDto;
+    private String replyMessage;
+    private SingleChatMessage.Type replayMessageType;
 
 
 }
