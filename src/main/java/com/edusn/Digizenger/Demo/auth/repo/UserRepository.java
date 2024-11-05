@@ -1,6 +1,7 @@
 package com.edusn.Digizenger.Demo.auth.repo;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
+import jakarta.persistence.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
