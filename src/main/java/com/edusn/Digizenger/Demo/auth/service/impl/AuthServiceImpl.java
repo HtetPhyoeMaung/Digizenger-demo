@@ -286,6 +286,4 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
-
-
 }

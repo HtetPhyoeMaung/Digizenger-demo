@@ -10,6 +10,10 @@ spring:
     port: 8080
 
   datasource:
+
+  #    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
+#    username: root
+#    password: helloworld
     url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
     username: edusn
     password: AVNS_fDr_E9j3sI3DBiZfpHO
