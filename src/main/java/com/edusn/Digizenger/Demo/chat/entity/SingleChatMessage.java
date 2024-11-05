@@ -33,8 +33,6 @@ public class SingleChatMessage {
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT
         }
-        public SingleChatMessage(){
-                id= UUIDUtil.generateUUID();
-        }
+
 
 }
