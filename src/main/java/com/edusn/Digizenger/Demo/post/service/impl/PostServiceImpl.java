@@ -32,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -124,30 +125,34 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
-        Post  post = postRepository.findById(id)
-                .map(existPost -> {
-                    existPost.setDescription(description);
-                    existPost.setModifiedDate(LocalDateTime.now());
-                    existPost.setPostType(postType);
-                    return existPost;
-                })
+        System.out.println("Reach 1");
+        Post existPost = postRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
-        if (!multipartFile.isEmpty()) {
+        log.info("Reach 2");
+         existPost.setDescription(description);
+         existPost.setPostType(postType);
+
+
+        log.info("Reach Before update Image");
+        if (multipartFile !=null) {
            String newImageName = storageService.updateImage(multipartFile,imageName);
-            post.setImageName(newImageName);
+            existPost.setImageName(newImageName);
         }
+        log.info("Reach After update Image");
 
         // Update media if present in request
 
 
-        post.setUser(user);
-        postRepository.save(post);  // Save the updated post
-
+        existPost.setUser(user);
+        log.info("Reach Before save");
+        postRepository.save(existPost);  // Save the updated post
+         log.info("Reach After Save");
         // Convert to DTO and return response
-        PostDto postDto = MapperUtil.convertToPostDto(post);
-        if (post.getImageName()!=null) {
-            postDto.setImageName(post.getImageName());
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        PostDto postDto = MapperUtil.convertToPostDto(existPost);
+        log.info("Reach 3");
+        if (existPost.getImageName()!=null) {
+            postDto.setImageName(existPost.getImageName());
+            postDto.setImageUrl(storageService.getImageByName(existPost.getImageName()));
         }
 
 
@@ -157,6 +162,7 @@ public  class PostServiceImpl implements PostService {
                 .message("Post updated successfully")
                 .postDto(postDto)
                 .build();
+        log.info("Reach 4");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

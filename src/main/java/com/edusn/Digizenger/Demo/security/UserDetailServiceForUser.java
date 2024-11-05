@@ -24,7 +24,7 @@ public class UserDetailServiceForUser implements UserDetailsService {
 
                     .map(customer ->
                             User.withUsername(username)
-                                    .authorities(Role.USER.name())
+                                    .authorities(customer.getRole())
                                     .password(customer.getPassword())
                                     .accountExpired(isExpired(customer))
                                     .accountLocked(customer.isLocked())
@@ -36,7 +36,7 @@ public class UserDetailServiceForUser implements UserDetailsService {
 
                     .map(customer ->
                             User.withUsername(username)
-                                    .authorities(Role.USER.name())
+                                    .authorities(customer.getRole())
                                     .password(customer.getPassword())
                                     .accountExpired(isExpired(customer))
                                     .accountLocked(customer.isLocked())

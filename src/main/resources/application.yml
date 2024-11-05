@@ -11,12 +11,10 @@ spring:
 
   datasource:
 
-  #    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
-#    username: root
-#    password: helloworld
-    url: jdbc:mysql://digizenger-uat-do-user-14478497-0.d.db.ondigitalocean.com:25060/digizenger?sessionVariables=sql_require_primary_key=0
-    username: edusn
-    password: AVNS_fDr_E9j3sI3DBiZfpHO
+
+    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
+    username: venzee
+    password: 2472004
     driver-class-name: com.mysql.cj.jdbc.Driver
 #      url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
 #      username: venzee

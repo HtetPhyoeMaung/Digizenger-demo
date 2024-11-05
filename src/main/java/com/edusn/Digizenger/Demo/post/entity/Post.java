@@ -25,7 +25,7 @@ public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 20000)
+    @Column(length = 10000)
     private String description;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

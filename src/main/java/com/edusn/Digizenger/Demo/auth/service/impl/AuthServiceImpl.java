@@ -18,13 +18,11 @@ import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
 import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
-import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
-import com.edusn.Digizenger.Demo.utilis.DateUtil;
-import com.edusn.Digizenger.Demo.utilis.MailUtil;
-import com.edusn.Digizenger.Demo.utilis.OtpUtil;
+import com.edusn.Digizenger.Demo.utilis.*;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final JWTService jwtService;
 
+    private final ModelMapper modelMapper;
 
     private final OtpUtil otpUtil;
 
@@ -69,7 +68,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final ProfileRepository profileRepository;
 
-    private final ModelMapper modelMapper;
 
     private final StorageService storageService;
 
@@ -152,8 +150,8 @@ public class AuthServiceImpl implements AuthService {
                 UserDetails userDetails;
                 userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
                 String token = jwtService.generateToken(userDetails);
-                Profile profile = profileRepository.findByUser(user);
-                ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
+                Profile profile = user.getProfile();
+                ProfileDto profileDto = MapperUtil.convertToProfileDto(profile);
                 UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
                 profileDto.setUserForProfileDto(userForProfileDto);
                 profileDto.setProfileImageUrl(profileDto.getProfileImageName()!=null?storageService.getImageByName(profileDto.getProfileImageName()):"");

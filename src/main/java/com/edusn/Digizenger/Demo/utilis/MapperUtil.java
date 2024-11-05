@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class MapperUtil {
 
     public static PostDto convertToPostDto(Post post) {
+        log.info("Reach convert TO Post Dto");
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
         postDto.setDescription(post.getDescription());
@@ -30,6 +31,7 @@ public class MapperUtil {
         postDto.setModifiedDate(post.getModifiedDate());
         postDto.setPostType(post.getPostType());
         postDto.setPostLinkUrl(post.getPostLinkUrl());
+        log.info("Reach 1");
         return postDto;
     }
     public static UserDto convertToUserDto(User user) {
