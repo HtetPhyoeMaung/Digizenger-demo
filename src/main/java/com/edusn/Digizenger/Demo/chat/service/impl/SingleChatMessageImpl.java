@@ -130,6 +130,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
      SingleChatMessage savedMessage= SingleChatMessage.builder()
+             .id(UUIDUtil.generateUUID())
              .user(user)
              .message(singleChatMessage.getMessage())
              .type(singleChatMessage.getType())
