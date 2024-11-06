@@ -96,21 +96,8 @@ public  class PostServiceImpl implements PostService {
         post.setPostLinkUrl(postLinkUrl);
         postRepository.save(post);
 
-        Profile profile = post.getUser().getProfile();
-        ProfileDto profileDto = ProfileDto.builder()
-                .id(profile.getId())
-                .username(profile.getUsername())
-                .followerCount((long) profile.getFollowers().size())
-                .build();
-        if(post.getUser().getProfile().getProfileImageName()!=null){
-          profileDto.setProfileImageName(post.getUser().getProfile().getProfileImageName());
-           profileDto.setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
-        }else {
-            profileDto.setProfileImageUrl("");
-        }
         PostDto postDto = mapperUtil.convertToPostDto(post);
         postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
-        postDto.setProfileDto(profileDto);
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.CREATED.value())
@@ -210,8 +197,6 @@ public  class PostServiceImpl implements PostService {
                         }
                     }
                     List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
-
-
                     postDto.setFlickUserDtoList(flickUserDtoList);
                     postDto.setFlickAmount(flickUserDtoList.size());
                     Notification notificationForNeighbor = Notification.builder()
@@ -223,10 +208,6 @@ public  class PostServiceImpl implements PostService {
                             .message(user.getProfile().getUsername() + " was flicked " + "\nPost : " + post.getPostLinkUrl())
                             .type(Notification.Type.FLICK)
                             .build();
-
-
-
-
                 });
 
 

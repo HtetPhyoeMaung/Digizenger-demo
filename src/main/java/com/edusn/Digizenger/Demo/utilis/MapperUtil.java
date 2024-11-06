@@ -58,6 +58,7 @@ public class MapperUtil {
     public  ProfileDto convertToProfileDto(Profile profile){
         ProfileDto profileDto = new ProfileDto();
         profileDto.setId(profile.getId());
+        profileDto.setUsername(profile.getUsername());
         profileDto.setFollowerCount((long) profile.getFollowers().size());
         profileDto.setProfileImageUrl(profileDto.getProfileImageName()!=null?storageService.getImageByName(profileDto.getProfileImageName()):"");
         profileDto.setCoverImageUrl(profileDto.getCoverImageName()!=null?storageService.getImageByName(profileDto.getCoverImageName()):"");
