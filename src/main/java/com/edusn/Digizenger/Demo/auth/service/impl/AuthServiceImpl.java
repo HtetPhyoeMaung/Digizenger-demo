@@ -146,13 +146,12 @@ public class AuthServiceImpl implements AuthService {
                 UserDetails userDetails;
                 userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
                 String token = jwtService.generateToken(userDetails);
-                Profile profile = user.getProfile();
                 Response response = Response.builder()
                         .statusCode(HttpStatus.OK.value())
                         .token(token)
                         .message("Successfully Registered!")
                         .expirationDate("7days")
-                        .userDto(mapperUtil.convertToUserDto(profile.getUser(),true))
+                        .userDto(mapperUtil.convertToUserDto(user,true))
                         .statusCode(HttpStatus.CREATED.value())
                         .build();
                 return new ResponseEntity<>(response,HttpStatus.CREATED);
