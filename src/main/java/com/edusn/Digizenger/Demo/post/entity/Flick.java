@@ -19,11 +19,11 @@ public class Flick implements Serializable {
     @Id
     private String id;
     private String flickedPostLinkUrl;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "flickUser_id")
     private User user;
 

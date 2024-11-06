@@ -28,7 +28,7 @@ public class SingleChatMessage {
         private Type type;
         private boolean isRead;
         private String replyMessageId;
-        @ManyToOne(fetch = FetchType.EAGER)
+        @ManyToOne()
         @JoinColumn(name = "user_id")
         private User user;
         public enum Type{

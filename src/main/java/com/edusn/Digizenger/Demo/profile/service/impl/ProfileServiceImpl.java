@@ -118,7 +118,6 @@ public class ProfileServiceImpl implements ProfileService {
 
                     }
             ).collect(Collectors.toList());
-
             userDto.getProfileDto().setCareerHistoryDtoList(careerHistoryDtoList);
         }
 

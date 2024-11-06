@@ -34,22 +34,22 @@ public class Post implements Serializable {
     private String imageName;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
 
 
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<Like> likes;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<View> viewList;
 
-    @OneToMany( fetch = FetchType.LAZY,cascade = CascadeType.ALL ,orphanRemoval = true,mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL ,orphanRemoval = true,mappedBy = "post")
     private List<Notification> notificationList;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "post")
     private List<Flick> flicks;
 
 

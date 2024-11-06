@@ -67,11 +67,11 @@ public class Profile {
     )
     private List<Profile> neighbors = new LinkedList<>();
 
-    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne( cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<CareerHistory> careerHistories = new LinkedList<>();
 
     @ManyToMany
@@ -102,9 +102,9 @@ public class Profile {
     @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories = new LinkedList<>();
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<Notification> notificationList = new LinkedList<>();
 
     public void addServiceProvided(ServiceProvided serviceProvided){
