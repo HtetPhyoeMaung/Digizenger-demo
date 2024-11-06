@@ -1,11 +1,14 @@
 package com.edusn.Digizenger.Demo.dashboard.dto.responseDto;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -14,8 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Component
+@JsonInclude(content = JsonInclude.Include.NON_NULL)
 public class UserDtoForDashBoard {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +35,13 @@ public class UserDtoForDashBoard {
 
     private String role;
 
-    private Boolean verified;
+    private boolean verified;
+
+    private boolean inactive;
+
+    private boolean suspended;
+
+    private boolean banned;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;

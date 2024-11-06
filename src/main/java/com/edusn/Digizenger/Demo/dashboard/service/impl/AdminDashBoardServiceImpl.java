@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +29,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +48,6 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     private final GetUserByRequest getUserByRequest;
     private final StorageService storageService;
     private final ModelMapper modelMapper;
-
 
     @Override
     public ResponseEntity<Response> showAdminDashBoard(HttpServletRequest request,int _page, int _limit) {
@@ -193,6 +197,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
     @Override
     public ResponseEntity<Response> getVerifiedUsers(int page, int limit) {
         Pageable pageable = PageRequest.of(page -1 , limit , Sort.by(Sort.Direction.ASC, "FirstName"));
+
         Page<User> verifiedUsersPage =  userRepository.findByVerifiedTrue(pageable);
         if (verifiedUsersPage.isEmpty()) {
             throw new CustomNotFoundException("No verified users found.");
@@ -212,5 +217,32 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);}
 
+    @Override
+    public Map<String, Object> getSuspendedUsers(int page, int limit, int days) {
+        // Create a pageable instance
+        Pageable pageable = PageRequest.of(page, limit);
+
+        // Calculate the suspension date based on the days parameter
+        LocalDate suspensionDate = LocalDate.now().minusDays(days);
+
+        // Fetch suspended users who were suspended since the calculated suspensionDate
+        Page<User> suspendedUsersPage = userRepository.findBySuspensionDateBefore(suspensionDate, pageable);
+
+        // Prepare response map
+        Map<String, Object> response = new HashMap<>();
+        response.put("suspendedUsers", suspendedUsersPage.getContent());
+        response.put("currentPage", suspendedUsersPage.getNumber());
+        response.put("pageSize", suspendedUsersPage.getSize());
+        response.put("totalItems", suspendedUsersPage.getTotalElements());
+        response.put("totalPages", suspendedUsersPage.getTotalPages());
+        response.put("message", "Suspended users retrieved successfully.");
+
+        return response;
+    }
 
 }
+
+
+
+
+

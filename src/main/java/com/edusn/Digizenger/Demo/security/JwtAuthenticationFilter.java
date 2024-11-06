@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -20,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JWTService jwtService;
@@ -28,10 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserRepository userRepository;
 
     @Autowired
-    private UserDetailServiceForUser userDetailServiceForUser;
+    private UserDetailsService userDetailsService;
 
-    @Autowired
-    private UserDetailServiceForAdmin userDetailServiceForAdmin;
 
     public JwtAuthenticationFilter(){
 
@@ -55,23 +54,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         email = jwtService.extractUsername(jwtToken);
 
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+            log.info("Reach State 1");
            User user = userRepository.findByEmail(email).orElseThrow(
                    ()-> new CustomNotFoundException("User not found by "+email));
+           log.info("Reach State 2");
            if (user.getRole().equals(Role.USER.name())){
-               UserDetails userDetails = userDetailServiceForUser.loadUserByUsername(email);
+               UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                SecurityContext context = SecurityContextHolder.createEmptyContext();
                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                context.setAuthentication(token);
                SecurityContextHolder.setContext(context);
-           }else if (user.getRole().equals(Role.ADMIN.name())){
-               UserDetails userDetails = userDetailServiceForAdmin.loadUserByUsername(email);
-               SecurityContext context = SecurityContextHolder.createEmptyContext();
-               UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-               token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-               context.setAuthentication(token);
-               SecurityContextHolder.setContext(context);
+             log.info("Reach State 3");
            }
+           log.info("Reach State 4");
 
             }
         filterChain.doFilter(request,response);

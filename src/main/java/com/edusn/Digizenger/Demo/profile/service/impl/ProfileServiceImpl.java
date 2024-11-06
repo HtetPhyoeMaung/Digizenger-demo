@@ -3,6 +3,7 @@ package com.edusn.Digizenger.Demo.profile.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
+import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.repo.ProfileRepository;
@@ -10,6 +11,7 @@ import com.edusn.Digizenger.Demo.profile.service.OtherProfileService;
 import com.edusn.Digizenger.Demo.profile.service.ProfileService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,7 +32,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final OtherProfileService otherProfileService;
     private final StorageService storageService;
     private final GetUserByRequest getUserByRequest;
-
+    private final MapperUtil mapperUtil;
 
     /** Create profile **/
     @Override
@@ -52,21 +54,11 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = user.getProfile();
 
 
-        ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
-        UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+//        ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
+//        UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
+        UserDto userDto=mapperUtil.convertToUserDto(user,true);
 
 
-        existProfileDto.setUserForProfileDto(userForProfileDto);
-        if(existProfileDto.getProfileImageName() != null){
-            existProfileDto.setProfileImageUrl(
-                    storageService.getImageByName(existProfileDto.getProfileImageName())
-            );
-        }
-        if(existProfileDto.getCoverImageName() != null){
-            existProfileDto.setCoverImageUrl(
-                    storageService.getImageByName(existProfileDto.getCoverImageName())
-            );
-        }
 
 
         /** Service Provided **/
@@ -74,22 +66,22 @@ public class ProfileServiceImpl implements ProfileService {
             List<ServiceProvidedDto> serviceProvidedDtoList = profile.getServiceProvidedList().stream().map(
                     serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
             ).collect(Collectors.toList());
-            existProfileDto.setServiceProvidedDtoList(serviceProvidedDtoList);
+            userDto.getProfileDto().setServiceProvidedDtoList(serviceProvidedDtoList);
         }
 
         /** Service **/
         if(!profile.getFollowers().isEmpty()){
-            existProfileDto.setFollowerCount(Long.valueOf(profile.getFollowers().size()));
+            userDto.getProfileDto().setFollowerCount(Long.valueOf(profile.getFollowers().size()));
         }
 
         /** Following **/
         if(!profile.getFollowing().isEmpty()){
-            existProfileDto.setFollowingCount(Long.valueOf(profile.getFollowing().size()));
+            userDto.getProfileDto().setFollowingCount(Long.valueOf(profile.getFollowing().size()));
         }
 
         /** Neighbors **/
         if(!profile.getNeighbors().isEmpty()){
-            existProfileDto.setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
+            userDto.getProfileDto().setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
         }
 
         /* Education Histories **/
@@ -108,7 +100,7 @@ public class ProfileServiceImpl implements ProfileService {
                     }
             ).collect(Collectors.toList());
 
-            existProfileDto.setEducationHistoryDtoList(educationHistoryDtoList);
+            userDto.getProfileDto().setEducationHistoryDtoList(educationHistoryDtoList);
         }
 
         /* Career Histories **/
@@ -127,13 +119,13 @@ public class ProfileServiceImpl implements ProfileService {
                     }
             ).collect(Collectors.toList());
 
-            existProfileDto.setCareerHistoryDtoList(careerHistoryDtoList);
+            userDto.getProfileDto().setCareerHistoryDtoList(careerHistoryDtoList);
         }
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully showed existed profile data..")
-                .profileDto(existProfileDto)
+                .profileDto(userDto.getProfileDto())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

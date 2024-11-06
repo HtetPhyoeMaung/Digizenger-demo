@@ -14,6 +14,8 @@ import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class SingleChatMessageImpl implements SingleChatMessageService {
+    private static final Logger log = LoggerFactory.getLogger(SingleChatMessageImpl.class);
     @Autowired
     private SingleChatRoomService singleChatRoomService;
 
@@ -43,18 +46,22 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
 
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private DateUtil dateUtil;
 
+    @Autowired
+    private MapperUtil mapperUtil;
 
     @Override
     public ResponseEntity<Response> findChatMessages(User senderId, Long recipientId, int _page, int _limit) {
         Pageable pageable = PageRequest.of(_page, _limit, Sort.by(Sort.Direction.DESC, "createDate"));
         var chatId = singleChatRoomService.getChatRoomId(senderId, recipientId, false);
         Page<SingleChatMessage> singleChatMessages = chatId.map(id->singleChatMessageRepository.findByChatId(id,pageable)).orElse(Page.empty());
-        singleChatMessages.forEach(singleChatMessage -> {singleChatMessage.setRead(true);});
+        singleChatMessages.forEach(singleChatMessage -> singleChatMessage.setRead(true));
         singleChatMessageRepository.saveAll(singleChatMessages);
        Response response= Response.builder()
                .singleChatMessageDtoList(singleChatMessages.stream()
@@ -74,14 +81,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                    .isRead(message.isRead())
                                    .replyMessage(replyMessageContent==null?null:replyMessageContent.getMessage())
                                    .replayMessageType(replyMessageContent==null?null:replyMessageContent.getType())
-                                   .userDto(UserDto.builder()
-                                           .id(message.getUser().getId())
-                                           .firstName(message.getUser().getFirstName())
-                                           .lastName(message.getUser().getLastName())
-                                           .profileImageUrl(message.getUser().getProfile().getProfileImageName() == null
-                                                   ? null
-                                                   : storageService.getImageByName(message.getUser().getProfile().getProfileImageName()))
-                                           .build())
+                                   .userDto(mapperUtil.convertToUserDto(message.getUser(),true))
                                    .chatId(message.getChatId())
                                    .type(SingleChatMessage.Type.valueOf(message.getType().name()))
                                    .build();
@@ -102,29 +102,28 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
             byte[] decodedBytes = Base64.getDecoder().decode(fileData); // Decode directly
 
             String fileName;
-            String contentType;
-
-            switch (singleChatMessage.getType()) {
-                case IMAGE:
+            String contentType = switch (singleChatMessage.getType()) {
+                case IMAGE -> {
                     fileName = UUID.randomUUID() + ".jpg";
-                    contentType = "image/jpeg";
-                    break;
-                case VIDEO:
+                    yield "image/jpeg";
+                }
+                case VIDEO -> {
                     fileName = UUID.randomUUID() + ".mp4";
-                    contentType = "video/mp4";
-                    break;
-                case VOICE:
+                    yield "video/mp4";
+                }
+                case VOICE -> {
                     fileName = UUID.randomUUID() + ".wav";
-                    contentType = "audio/wav";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported message type: " + singleChatMessage.getType());
-            }
+                    yield "audio/wav";
+                }
+                default ->
+                        throw new IllegalArgumentException("Unsupported message type: " + singleChatMessage.getType());
+            };
+
             try {
                 String fileUrl = storageService.uploadFile(decodedBytes, fileName, contentType);
                 singleChatMessage.setMessage(fileUrl); // Set the URL of the uploaded file
             } catch (IOException e) {
-                e.printStackTrace();
+             log.error(e.getMessage());
             }
         }
         var chatId = singleChatRoomService
@@ -149,12 +148,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                                      .message(savedMessage.getMessage())
                                                      .type(savedMessage.getType())
                                                      .createDate(savedMessage.getCreateDate())
-                                                     .userDto(UserDto.builder()
-                                                                            .id(savedMessage.getUser().getId())
-                                                                            .firstName(savedMessage.getUser().getFirstName())
-                                                                            .lastName(savedMessage.getUser().getLastName())
-                                                                            .profileImageUrl(savedMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(savedMessage.getUser().getProfile().getProfileImageName()))
-                                                                            .build())
+                                                     .userDto(mapperUtil.convertToUserDto(savedMessage.getUser(),true))
                                                      .recipientId(savedMessage.getRecipientId())
                                                      .replyMessage(replyMessage==null?null:replyMessage.getMessage())
                                                      .replayMessageType(replyMessage==null?null:replyMessage.getType())
@@ -205,37 +199,37 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
     public ResponseEntity<Response> getFriendAndNonUserList(User user) {
 
         List<SingleChatMessage> messages = singleChatMessageRepository.findByUser(user);
-    Set<Long> uniqueUserIds=new HashSet<>(); messages.forEach(message->{ uniqueUserIds.add(message.getRecipientId()); });
-    List<User> uniqueRecipients = userRepository.findAllById(uniqueUserIds);
-            List<Profile>profileList=user.getProfile().getNeighbors();
-            profileList.forEach(profile -> uniqueRecipients.add(profile.getUser()));
-            for (User uniqueUser:uniqueRecipients){
-                List<SingleChatMessage>theirMessage=singleChatMessageRepository.findByUserAndRecipientId(user,uniqueUser.getId());
-                messages.addAll(theirMessage);
-            }
+        Set<Long> uniqueUserIds=new HashSet<>(); messages.forEach(message->{ uniqueUserIds.add(message.getRecipientId()); });
+        List<User> uniqueRecipients = userRepository.findAllById(uniqueUserIds);
+        List<Profile>profileList=user.getProfile().getNeighbors();
+        profileList.forEach(profile -> uniqueRecipients.add(profile.getUser()));
+        for (User uniqueUser:uniqueRecipients){
+            List<SingleChatMessage>theirMessage=singleChatMessageRepository.findByUserAndRecipientId(user,uniqueUser.getId());
+            messages.addAll(theirMessage);
+        }
 //        messages.addAll(theirMessage);
-    List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
-        System.out.println("recipient id"+recipient.getId());
-        UserDto userDto = MapperUtil.convertToUserDto(recipient);
-        userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
-        userDto.setProfileDto(MapperUtil.convertToProfileDto(recipient.getProfile()));
-        messages.stream()
-                .filter(message ->
-                        (message.getUser().getId().equals(user.getId()) && message.getRecipientId().equals(recipient.getId())) ||
-                                (message.getUser().getId().equals(recipient.getId()) && message.getRecipientId().equals(user.getId()))
-                ).max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
-        System.out.println("lastmessage :"+userDto.getLastMessage());
-         userDto.getProfileDto().setProfileImageUrl(recipient.getProfile().getProfileImageName() != null?storageService.getImageByName(recipient.getProfile().getProfileImageName()):"");
+        List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
+            System.out.println("recipient id"+recipient.getId());
+            UserDto userDto = mapperUtil.convertToUserDto(recipient,true);
+            userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
+            userDto.setProfileDto(mapperUtil.convertToProfileDto(recipient.getProfile()));
+            messages.stream()
+                    .filter(message ->
+                            (message.getUser().getId().equals(user.getId()) && message.getRecipientId().equals(recipient.getId())) ||
+                                    (message.getUser().getId().equals(recipient.getId()) && message.getRecipientId().equals(user.getId()))
+                    ).max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
+            System.out.println("lastmessage :"+userDto.getLastMessage());
+            userDto.getProfileDto().setProfileImageUrl(recipient.getProfile().getProfileImageName() != null?storageService.getImageByName(recipient.getProfile().getProfileImageName()):"");
 
-         return userDto;
+            return userDto;
         }).collect(Collectors.toList());
-            Response response=Response.builder()
-                    .statusCode(HttpStatus.OK.value())
-                    .userDtoList(userDtos)
-                    .message("Chat List Success")
-                    .build();
+        Response response=Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .userDtoList(userDtos)
+                .message("Chat List Success")
+                .build();
 
-          return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 }

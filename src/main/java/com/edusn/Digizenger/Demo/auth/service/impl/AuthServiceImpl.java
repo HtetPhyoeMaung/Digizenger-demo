@@ -18,13 +18,11 @@ import com.edusn.Digizenger.Demo.security.JWTService;
 import com.edusn.Digizenger.Demo.security.UserDetailServiceForUser;
 import com.edusn.Digizenger.Demo.auth.service.AuthService;
 import com.edusn.Digizenger.Demo.storage.StorageService;
-import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
-import com.edusn.Digizenger.Demo.utilis.DateUtil;
-import com.edusn.Digizenger.Demo.utilis.MailUtil;
-import com.edusn.Digizenger.Demo.utilis.OtpUtil;
+import com.edusn.Digizenger.Demo.utilis.*;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +40,15 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
     private final UserRepository userRepository;
-
 
     private final AuthenticationManager authenticationManager;
 
-
     private final MailUtil mailUtil;
-
 
     private final JWTService jwtService;
 
+    private final ModelMapper modelMapper;
 
     private final OtpUtil otpUtil;
 
@@ -69,10 +64,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final ProfileRepository profileRepository;
 
-    private final ModelMapper modelMapper;
-
     private final StorageService storageService;
 
+    private final MapperUtil mapperUtil;
 
     private static final int OTP_VALIDITY_DURATION_SECONDS = 60;
 
@@ -152,22 +146,13 @@ public class AuthServiceImpl implements AuthService {
                 UserDetails userDetails;
                 userDetails = userDetailServiceForUser.loadUserByUsername(user.getEmail().isEmpty()?user.getPhone():user.getEmail());
                 String token = jwtService.generateToken(userDetails);
-                Profile profile = profileRepository.findByUser(user);
-                ProfileDto profileDto = modelMapper.map(profile, ProfileDto.class);
-                UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
-                profileDto.setUserForProfileDto(userForProfileDto);
-                profileDto.setProfileImageUrl(profileDto.getProfileImageName()!=null?storageService.getImageByName(profileDto.getProfileImageName()):"");
-                profileDto.setCoverImageUrl(profileDto.getCoverImageName()!=null?storageService.getImageByName(profileDto.getCoverImageName()):"");
+                Profile profile = user.getProfile();
                 Response response = Response.builder()
                         .statusCode(HttpStatus.OK.value())
                         .token(token)
                         .message("Successfully Registered!")
                         .expirationDate("7days")
-                        .userDto(UserDto.builder()
-                                .status(profile.getUser().getStatus())
-                                .lastLoginTime(dateUtil.formattedDate(profile.getUser().getLastLoginTime()))
-                                .build())
-                        .profileDto(profileDto)
+                        .userDto(mapperUtil.convertToUserDto(profile.getUser(),true))
                         .statusCode(HttpStatus.CREATED.value())
                         .build();
                 return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -238,30 +223,13 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
 
-        ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
-        UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
-
-
-        existProfileDto.setUserForProfileDto(userForProfileDto);
-        if(existProfileDto.getProfileImageName() != null){
-            existProfileDto.setProfileImageUrl(
-                    storageService.getImageByName(existProfileDto.getProfileImageName())
-            );
-        }
-        if(existProfileDto.getCoverImageName() != null){
-            existProfileDto.setCoverImageUrl(
-                    storageService.getImageByName(existProfileDto.getCoverImageName())
-            );
-        }
+        ProfileDto existProfileDto = mapperUtil.convertToProfileDto(profile);
+        //existProfileDto.setUserForProfileDto(userForProfileDto);
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
                .message("Login Success!")
-               .userDto(UserDto.builder()
-                       .lastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()))
-                       .status(user.getStatus())
-                       .build())
+               .userDto(mapperUtil.convertToUserDto(user,true))
                .token(token)
-               .profileDto(existProfileDto)
                .expirationDate("7days")
                .build();
 

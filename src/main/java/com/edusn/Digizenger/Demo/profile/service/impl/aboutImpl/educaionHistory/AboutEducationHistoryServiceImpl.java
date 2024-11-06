@@ -36,7 +36,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
     private final ProfileRepository profileRepository;
     private final GetUserByRequest getUserByRequest;
     private final StorageService storageService;
-
+    private final MapperUtil mapperUtil;
 
     @Override
     public ResponseEntity<Response> uploadEducationHistory(HttpServletRequest request,
@@ -94,7 +94,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         profile.setSchools(schools);
 
         EducationHistory createdEducationHistory = educationHistoryRepository.save(educationHistory);
-        EducationHistoryDto educationHistoryDto = MapperUtil.convertToEducationHistoryDto(createdEducationHistory);
+        EducationHistoryDto educationHistoryDto = mapperUtil.convertToEducationHistoryDto(createdEducationHistory);
 
         if(createdEducationHistory.getSchool().getLogoImageName() != null)
             educationHistoryDto.getSchoolDto().setLogoImageUrl(storageService.getImageByName(
@@ -173,7 +173,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 profile.setSchools(schools);
 
                 EducationHistory updatedEducationHistory = educationHistoryRepository.save(educationHistory);
-                educationHistoryDto = MapperUtil.convertToEducationHistoryDto(updatedEducationHistory);
+                educationHistoryDto = mapperUtil.convertToEducationHistoryDto(updatedEducationHistory);
 
                 if(updatedEducationHistory.getSchool().getLogoImageName() != null)
                     educationHistoryDto.getSchoolDto().setLogoImageUrl(storageService.getImageByName(
@@ -226,7 +226,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
             throw new CustomNotFoundException("education cannot found in your profile");
         for (EducationHistory educationHistory : profile.getEducationHistories()){
             if(educationHistory.getId().equals(educationHistoryId)){
-                educationHistoryDto = MapperUtil.convertToEducationHistoryDto(educationHistory);
+                educationHistoryDto = mapperUtil.convertToEducationHistoryDto(educationHistory);
                 if(educationHistory.getSchool().getLogoImageName() != null)
                     educationHistoryDto.getSchoolDto().setLogoImageUrl(
                             storageService.getImageByName(educationHistory.getSchool().getLogoImageName())

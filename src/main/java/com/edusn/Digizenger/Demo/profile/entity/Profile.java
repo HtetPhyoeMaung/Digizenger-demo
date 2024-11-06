@@ -7,6 +7,7 @@ import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -36,7 +36,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
     private final GetUserByRequest getUserByRequest;
     private final ProfileRepository profileRepository;
     private final StorageService storageService;
-
+    private final MapperUtil mapperUtil;
     @Override
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request, String companyName, MultipartFile logoImage, String designation, LocalDate joinDate, LocalDate endDate) throws IOException {
 
@@ -89,7 +89,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         profile.setCompanies(companies);
 
         CareerHistory createdCareerHistory = careerHistoryRepository.save(careerHistory);
-        CareerHistoryDto careerHistoryDto = MapperUtil.convertToCareerHistoryDto(createdCareerHistory);
+        CareerHistoryDto careerHistoryDto = mapperUtil.convertToCareerHistoryDto(createdCareerHistory);
 
         if(createdCareerHistory.getCompany().getLogoImageName() != null)
             careerHistoryDto.getCompanyDto().setLogoImageUrl(storageService.getImageByName(
@@ -165,7 +165,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 profile.setCompanies(companies);
 
                 CareerHistory updatedCareerHistory = careerHistoryRepository.save(careerHistory);
-                careerHistoryDto = MapperUtil.convertToCareerHistoryDto(updatedCareerHistory);
+                careerHistoryDto = mapperUtil.convertToCareerHistoryDto(updatedCareerHistory);
 
                 if(updatedCareerHistory.getCompany().getLogoImageName() != null)
                     careerHistoryDto.getCompanyDto().setLogoImageUrl(storageService.getImageByName(
@@ -218,7 +218,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
             throw new CustomNotFoundException("career history list cannot found.");
         for(CareerHistory careerHistory: profile.getCareerHistories()){
             if(careerHistory.getId().equals(careerHistoryId)){
-                careerHistoryDto = MapperUtil.convertToCareerHistoryDto(careerHistory);
+                careerHistoryDto = mapperUtil.convertToCareerHistoryDto(careerHistory);
                 careerHistoryDto.getCompanyDto().setLogoImageUrl(
                         storageService.getImageByName(careerHistory.getCompany().getLogoImageName())
                 );

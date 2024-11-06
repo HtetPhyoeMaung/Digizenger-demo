@@ -9,6 +9,8 @@ import com.edusn.Digizenger.Demo.post.service.PostService;
 import com.edusn.Digizenger.Demo.utilis.CheckEmailOrPhoneUtil;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.io.IOException;
 @CrossOrigin
 @RequestMapping("/api/v1/posts")
 public class PostController {
+    private static final Logger log = LoggerFactory.getLogger(PostController.class);
     @Autowired
     private PostService postService;
     @Autowired
@@ -50,11 +53,14 @@ public class PostController {
     public ResponseEntity<Response> updatePost(@PathVariable("id") Long id
             ,@RequestParam("description") String description
             , @RequestParam("postType") Post.PostType postType
-            , @RequestParam("file") MultipartFile multipartFile
-            ,HttpServletRequest request,@RequestParam("imageName") String imageName) throws IOException {
+            , @RequestParam(value = "file",required = false) MultipartFile multipartFile
+            ,HttpServletRequest request,@RequestParam(value = "imageName",required = false) String imageName) throws IOException {
 
+        log.info("Reach State UpdatePostMethod");
 
         User user= getUserByRequest.getUser(request);
+
+        log.info("Reach State two");
         return  postService.updatePost(id,description,postType,user,multipartFile,imageName);
     }
     @DeleteMapping("/delete/{id}")

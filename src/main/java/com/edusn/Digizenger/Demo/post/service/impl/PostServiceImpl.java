@@ -1,7 +1,6 @@
 package com.edusn.Digizenger.Demo.post.service.impl;
 
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
-import com.edusn.Digizenger.Demo.notification.dto.NotificationDto;
 import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.notification.repo.NotificationRepository;
 import com.edusn.Digizenger.Demo.post.dto.PostDto;
@@ -43,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.edusn.Digizenger.Demo.utilis.MapperUtil.convertToUserDto;
 
 @Slf4j
 @Service
@@ -70,7 +68,8 @@ public  class PostServiceImpl implements PostService {
     private NotificationRepository notificationRepository;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
-
+    @Autowired
+    private MapperUtil mapperUtil;
 
     @Override
     public ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException {
@@ -109,8 +108,8 @@ public  class PostServiceImpl implements PostService {
         }else {
             profileDto.setProfileImageUrl("");
         }
-        PostDto postDto = MapperUtil.convertToPostDto(post);
-        postDto.setUserDto(convertToUserDto(user));
+        PostDto postDto = mapperUtil.convertToPostDto(post);
+        postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
         postDto.setProfileDto(profileDto);
 
         Response response = Response.builder()
@@ -124,39 +123,44 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
-        Post  post = postRepository.findById(id)
-                .map(existPost -> {
-                    existPost.setDescription(description);
-                    existPost.setModifiedDate(LocalDateTime.now());
-                    existPost.setPostType(postType);
-                    return existPost;
-                })
+        System.out.println("Reach 1");
+        Post existPost = postRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
-        if (!multipartFile.isEmpty()) {
+        log.info("Reach 2");
+         existPost.setDescription(description);
+         existPost.setPostType(postType);
+
+
+        log.info("Reach Before update Image");
+        if (multipartFile !=null) {
            String newImageName = storageService.updateImage(multipartFile,imageName);
-            post.setImageName(newImageName);
+            existPost.setImageName(newImageName);
         }
+        log.info("Reach After update Image");
 
         // Update media if present in request
 
 
-        post.setUser(user);
-        postRepository.save(post);  // Save the updated post
-
+        existPost.setUser(user);
+        log.info("Reach Before save");
+        postRepository.save(existPost);  // Save the updated post
+         log.info("Reach After Save");
         // Convert to DTO and return response
-        PostDto postDto = MapperUtil.convertToPostDto(post);
-        if (post.getImageName()!=null) {
-            postDto.setImageName(post.getImageName());
-            postDto.setImageUrl(storageService.getImageByName(post.getImageName()));
+        PostDto postDto = mapperUtil.convertToPostDto(existPost);
+        log.info("Reach 3");
+        if (existPost.getImageName()!=null) {
+            postDto.setImageName(existPost.getImageName());
+            postDto.setImageUrl(storageService.getImageByName(existPost.getImageName()));
         }
 
 
-        postDto.setUserDto(convertToUserDto(user));
+        postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Post updated successfully")
                 .postDto(postDto)
                 .build();
+        log.info("Reach 4");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -241,7 +245,7 @@ public  class PostServiceImpl implements PostService {
       Post post =  postRepository.findByPostLinkUrl(postLinkUrl).orElseThrow(
               ()-> new CustomNotFoundException("Post not found by "+postLinkUrl)
       );
-      PostDto postDto = MapperUtil.convertToPostDto(post);
+      PostDto postDto = mapperUtil.convertToPostDto(post);
       Profile profile = post.getUser().getProfile();
       ProfileDto profileDto = ProfileDto.builder()
                       .id(profile.getId())
@@ -292,12 +296,12 @@ public  class PostServiceImpl implements PostService {
 
 
     private PostDto commonForEachPost(Post post, User user , Profile loggedProfile){
-        UserDto userDto = MapperUtil.convertToUserDto(post.getUser());
+        UserDto userDto = mapperUtil.convertToUserDto(post.getUser(),true);
         Long viewCount = viewRepository.countByPost(post);
         Long likeCount = likeRepository.countByPostAndIsLiked(post,true);
         boolean isLike=post.getLikes().stream().anyMatch(like -> like.getUser().equals(user)&& like.isLiked());
         // Convert post to PostDto and set additional fields
-        PostDto postDto = MapperUtil.convertToPostDto(post);
+        PostDto postDto = mapperUtil.convertToPostDto(post);
         Profile postOwnerProfile = post.getUser().getProfile();
         OtherProfileDto postOwnerProfileDto = OtherProfileDto.builder()
                 .id(postOwnerProfile.getId())
@@ -328,8 +332,7 @@ public  class PostServiceImpl implements PostService {
         }else {
             postDto.setImageUrl("");
         }
-
-        postDto.setOtherProfileDto(postOwnerProfileDto);
+       // postDto.setOtherProfileDto(postOwnerProfileDto);
         postDto.setUserDto(userDto);
         postDto.setViewCount(viewCount);
         postDto.setLikeCount(likeCount);
