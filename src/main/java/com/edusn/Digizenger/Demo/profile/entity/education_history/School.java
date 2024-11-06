@@ -26,7 +26,7 @@ public class School {
 
     private String logoImageName;
 
-    @OneToMany(mappedBy = "school",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "school",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories;
 
     @ManyToMany(mappedBy = "schools")

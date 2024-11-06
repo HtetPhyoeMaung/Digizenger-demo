@@ -31,11 +31,11 @@ public class CareerHistory {
     @Enumerated(EnumType.STRING)
     private Present present;
 
-    @ManyToOne( cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_id")
     private Company company;
 }

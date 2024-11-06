@@ -18,7 +18,7 @@ public class SingleChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String chatRoomId;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

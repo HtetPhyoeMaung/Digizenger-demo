@@ -27,11 +27,11 @@ public class Like implements Serializable {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

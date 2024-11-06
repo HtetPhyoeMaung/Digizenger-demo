@@ -110,37 +110,23 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
-        System.out.println("Reach 1");
         Post existPost = postRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
-        log.info("Reach 2");
          existPost.setDescription(description);
          existPost.setPostType(postType);
-
-
-        log.info("Reach Before update Image");
         if (multipartFile !=null) {
            String newImageName = storageService.updateImage(multipartFile,imageName);
             existPost.setImageName(newImageName);
         }
-        log.info("Reach After update Image");
-
         // Update media if present in request
-
-
         existPost.setUser(user);
-        log.info("Reach Before save");
         postRepository.save(existPost);  // Save the updated post
-         log.info("Reach After Save");
         // Convert to DTO and return response
         PostDto postDto = mapperUtil.convertToPostDto(existPost);
-        log.info("Reach 3");
         if (existPost.getImageName()!=null) {
             postDto.setImageName(existPost.getImageName());
             postDto.setImageUrl(storageService.getImageByName(existPost.getImageName()));
         }
-
-
         postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

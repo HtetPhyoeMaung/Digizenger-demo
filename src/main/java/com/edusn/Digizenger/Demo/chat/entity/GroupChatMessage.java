@@ -28,11 +28,11 @@ public class GroupChatMessage {
         IMAGE,VIDEO,TEXT,VOICE
     }
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_room_id")
     private GroupRoom groupRoom;
 }

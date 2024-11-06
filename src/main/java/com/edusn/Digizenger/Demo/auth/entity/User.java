@@ -72,39 +72,39 @@ public class User {
 
     private LocalDateTime lastLoginTime;
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Post> posts;
 
     @OneToMany
     private List<Flick> flicks;
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 
 
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
     private List<Like> likes;
 
 
 
-    @OneToOne( cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
     private Profile profile;
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<SingleChatMessage> singleChatMessages;
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<SingleChatRoom> singleChatRooms;
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<GroupChatMessage> groupChatMessages;
 
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Notification> notificationList;
 
-    @ManyToMany(cascade =CascadeType.ALL)
+    @ManyToMany(cascade =CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "groups_id")
     )

@@ -33,6 +33,7 @@ public class MapperUtil {
         postDto.setCreatedDate(post.getCreatedDate());
         postDto.setModifiedDate(post.getModifiedDate());
         postDto.setPostType(post.getPostType());
+        postDto.setImageUrl(post.getImageName()!=null?storageService.getImageByName(post.getImageName()):"");
         postDto.setPostLinkUrl(post.getPostLinkUrl());
         return postDto;
     }

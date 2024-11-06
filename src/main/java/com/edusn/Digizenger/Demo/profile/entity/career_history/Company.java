@@ -29,7 +29,7 @@ public class Company {
     @JsonIgnoreProperties("companies")
     private List<Profile> profiles = new LinkedList<>();
 
-    @OneToMany(mappedBy = "company",  cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
     private List<CareerHistory> careerHistories = new LinkedList<>();
 
     public void removeCareerHistory(CareerHistory careerHistory){
