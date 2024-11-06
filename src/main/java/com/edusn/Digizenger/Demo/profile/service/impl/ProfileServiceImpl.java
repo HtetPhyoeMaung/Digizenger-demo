@@ -125,7 +125,7 @@ public class ProfileServiceImpl implements ProfileService {
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully showed existed profile data..")
-                .profileDto(userDto.getProfileDto())
+                .userDto(userDto)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

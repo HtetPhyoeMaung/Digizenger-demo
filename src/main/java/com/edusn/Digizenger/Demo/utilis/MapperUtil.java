@@ -60,8 +60,8 @@ public class MapperUtil {
         profileDto.setId(profile.getId());
         profileDto.setUsername(profile.getUsername());
         profileDto.setFollowerCount((long) profile.getFollowers().size());
-        profileDto.setProfileImageUrl(profileDto.getProfileImageName()!=null?storageService.getImageByName(profileDto.getProfileImageName()):"");
-        profileDto.setCoverImageUrl(profileDto.getCoverImageName()!=null?storageService.getImageByName(profileDto.getCoverImageName()):"");
+        profileDto.setProfileImageUrl(profile.getProfileImageName()!=null?storageService.getImageByName(profile.getProfileImageName()):"");
+        profileDto.setCoverImageUrl(profile.getCoverImageName()!=null?storageService.getImageByName(profile.getCoverImageName()):"");
         return profileDto;
     }
 
