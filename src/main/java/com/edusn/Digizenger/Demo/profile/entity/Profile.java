@@ -42,7 +42,7 @@ public class Profile {
 
     private String bio;
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "profile_follower",
             joinColumns = @JoinColumn(name = "profile_id"),

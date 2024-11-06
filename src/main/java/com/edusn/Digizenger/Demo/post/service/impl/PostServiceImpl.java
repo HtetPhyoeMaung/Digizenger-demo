@@ -35,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -73,81 +74,92 @@ public  class PostServiceImpl implements PostService {
 
     @Override
     public ResponseEntity<Response> upload(String description, Post.PostType postType, User user, MultipartFile multipartFile) throws IOException {
-         Post post;
-        if (multipartFile!=null) {
-            String filename =storageService.uploadImage(multipartFile);
-            post = Post.builder()
-                    .description(description)
-                    .postType(postType)
-                    .createdDate(LocalDateTime.now())
-                    .imageName(filename)
-                    .user(user)
+        try {
+            Post post;
+            if (multipartFile != null) {
+                String filename = storageService.uploadImage(multipartFile);
+                post = Post.builder()
+                        .description(description)
+                        .postType(postType)
+                        .createdDate(LocalDateTime.now())
+                        .imageName(filename)
+                        .user(user)
+                        .build();
+            } else {
+                post = Post.builder()
+                        .description(description)
+                        .postType(postType)
+                        .createdDate(LocalDateTime.now())
+                        .user(user)
+                        .build();
+            }
+            String postLinkUrl = generatePostUrl.generateSecurePostLinkUrl((int) (Math.random() * 9000) + 1000);
+
+            post.setPostLinkUrl(postLinkUrl);
+            postRepository.save(post);
+
+            PostDto postDto = mapperUtil.convertToPostDto(post);
+            postDto.setUserDto(mapperUtil.convertToUserDto(user, true));
+
+            Response response = Response.builder()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .message("Post created successfully")
+                    .postDto(postDto)
                     .build();
-        }else {
-            post = Post.builder()
-                    .description(description)
-                    .postType(postType)
-                    .createdDate(LocalDateTime.now())
-                    .user(user)
-                    .build();
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }catch (Exception e){
+            log.error("An error occurred during post upload: {}",e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.");
         }
-        String postLinkUrl = generatePostUrl.generateSecurePostLinkUrl((int)(Math.random() * 9000) + 1000);
-
-        post.setPostLinkUrl(postLinkUrl);
-        postRepository.save(post);
-
-        PostDto postDto = mapperUtil.convertToPostDto(post);
-        postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
-
-        Response response = Response.builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message("Post created successfully")
-                .postDto(postDto)
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
     @Override
     public ResponseEntity<Response> updatePost(Long id,String description, Post.PostType postType,User user,MultipartFile multipartFile,String imageName) throws IOException {
-        Post existPost = postRepository.findById(id)
-                .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
-         existPost.setDescription(description);
-         existPost.setPostType(postType);
-        if (multipartFile !=null) {
-           String newImageName = storageService.updateImage(multipartFile,imageName);
-            existPost.setImageName(newImageName);
-        }
-        // Update media if present in request
-        existPost.setUser(user);
-        postRepository.save(existPost);  // Save the updated post
-        // Convert to DTO and return response
-        PostDto postDto = mapperUtil.convertToPostDto(existPost);
-        if (existPost.getImageName()!=null) {
-            postDto.setImageName(existPost.getImageName());
-            postDto.setImageUrl(storageService.getImageByName(existPost.getImageName()));
-        }
-        postDto.setUserDto(mapperUtil.convertToUserDto(user,true));
-        Response response = Response.builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("Post updated successfully")
-                .postDto(postDto)
-                .build();
-        log.info("Reach 4");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+      try {
+          Post existPost = postRepository.findById(id)
+                  .orElseThrow(() -> new CustomNotFoundException("Post not found by " + id));
+          existPost.setDescription(description);
+          existPost.setPostType(postType);
+          if (multipartFile != null) {
+              String newImageName = storageService.updateImage(multipartFile, imageName);
+              existPost.setImageName(newImageName);
+          }
+          // Update media if present in request
+          existPost.setUser(user);
+          postRepository.save(existPost);  // Save the updated post
+          // Convert to DTO and return response
+          PostDto postDto = mapperUtil.convertToPostDto(existPost);
+          if (existPost.getImageName() != null) {
+              postDto.setImageName(existPost.getImageName());
+              postDto.setImageUrl(storageService.getImageByName(existPost.getImageName()));
+          }
+          postDto.setUserDto(mapperUtil.convertToUserDto(user, true));
+          Response response = Response.builder()
+                  .statusCode(HttpStatus.OK.value())
+                  .message("Post updated successfully")
+                  .postDto(postDto)
+                  .build();
+          log.info("post updated success.");
+          return new ResponseEntity<>(response, HttpStatus.OK);
+      }catch (Exception e){
+          log.error("An error occurred during post update : {}",e.getMessage());
+          throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.");
+      }
     }
 
     @Override
     public ResponseEntity<?> deletePost(long id) {
-        Post post=postRepository.findById(id).orElseThrow(()->new CustomNotFoundException("Post not found by this "+id));
-        postRepository.delete(post);
-        return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            Post post = postRepository.findById(id).orElseThrow(() -> new CustomNotFoundException("Post not found by this " + id));
+            postRepository.delete(post);
+            log.info("post delete success.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            log.error("An error occurred during delete post : {}",e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"An unexpected error occurred.Please try again later.");
+        }
     }
-
-
-
-
-
 
     public ResponseEntity<Response> getNewFeeds(int _page, int _limit, User user){
 
@@ -203,35 +215,39 @@ public  class PostServiceImpl implements PostService {
                     .postDtoList(postDtoList)
                     .build();
             return new ResponseEntity<>(response, HttpStatus.OK);
-
-
     }
 
     @Override
     public ResponseEntity<Response> findByPostLinkUrl(String postLinkUrl) {
-      Post post =  postRepository.findByPostLinkUrl(postLinkUrl).orElseThrow(
-              ()-> new CustomNotFoundException("Post not found by "+postLinkUrl)
-      );
-      PostDto postDto = mapperUtil.convertToPostDto(post);
-      Profile profile = post.getUser().getProfile();
-      ProfileDto profileDto = ProfileDto.builder()
-                      .id(profile.getId())
-              .username(profile.getUsername())
-              .profileImageUrl(profile.getProfileImageName()!=null?storageService.getImageByName(profile.getProfileImageName()):"")
-                              .build();
-      postDto.setProfileDto(profileDto);
-      postDto.setPostLinkUrl(post.getPostLinkUrl());
-      postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post,true));
-      postDto.setViewCount(viewRepository.countByPost(post));
-      List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
-      postDto.setFlickUserDtoList(flickUserDtoList);
-      postDto.setFlickAmount(post.getFlicks().size());
-      Response response = Response.builder()
-              .statusCode(HttpStatus.OK.value())
-              .message("Success")
-              .postDto(postDto)
-              .build();
-      return new ResponseEntity<>(response,HttpStatus.OK);
+        try {
+            Post post = postRepository.findByPostLinkUrl(postLinkUrl).orElseThrow(
+                    () -> new CustomNotFoundException("Post not found by " + postLinkUrl)
+            );
+            PostDto postDto = mapperUtil.convertToPostDto(post);
+            Profile profile = post.getUser().getProfile();
+            ProfileDto profileDto = ProfileDto.builder()
+                    .id(profile.getId())
+                    .username(profile.getUsername())
+                    .profileImageUrl(profile.getProfileImageName() != null ? storageService.getImageByName(profile.getProfileImageName()) : "")
+                    .build();
+            postDto.setProfileDto(profileDto);
+            postDto.setPostLinkUrl(post.getPostLinkUrl());
+            postDto.setLikeCount(likeRepository.countByPostAndIsLiked(post, true));
+            postDto.setViewCount(viewRepository.countByPost(post));
+            List<ProfileDto> flickUserDtoList = commonUtil.getFlickDtoListFromPost(post);
+            postDto.setFlickUserDtoList(flickUserDtoList);
+            postDto.setFlickAmount(post.getFlicks().size());
+            Response response = Response.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("Success")
+                    .postDto(postDto)
+                    .build();
+            log.info("Post Url is found.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("An error occurred during find post url : {}",e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"An unexpected error occurred.Please try again later.");
+        }
     }
 
 
