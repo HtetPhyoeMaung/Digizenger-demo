@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
         @Id
@@ -33,8 +34,6 @@ public class SingleChatMessage {
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT
         }
-        public SingleChatMessage(){
-                id= UUIDUtil.generateUUID();
-        }
+
 
 }

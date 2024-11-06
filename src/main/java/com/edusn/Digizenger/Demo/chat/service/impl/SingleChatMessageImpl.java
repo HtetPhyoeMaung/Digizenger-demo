@@ -9,6 +9,7 @@ import com.edusn.Digizenger.Demo.chat.service.SingleChatMessageService;
 import com.edusn.Digizenger.Demo.chat.service.SingleChatRoomService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.post.dto.UserDto;
+import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
@@ -130,6 +131,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
      SingleChatMessage savedMessage= SingleChatMessage.builder()
+             .id(UUIDUtil.generateUUID())
              .user(user)
              .message(singleChatMessage.getMessage())
              .type(singleChatMessage.getType())
@@ -201,20 +203,27 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
 
     @Override
     public ResponseEntity<Response> getFriendAndNonUserList(User user) {
+
         List<SingleChatMessage> messages = singleChatMessageRepository.findByUser(user);
     Set<Long> uniqueUserIds=new HashSet<>(); messages.forEach(message->{ uniqueUserIds.add(message.getRecipientId()); });
     List<User> uniqueRecipients = userRepository.findAllById(uniqueUserIds);
+            List<Profile>profileList=user.getProfile().getNeighbors();
+            profileList.forEach(profile -> uniqueRecipients.add(profile.getUser()));
+            for (User uniqueUser:uniqueRecipients){
+                List<SingleChatMessage>theirMessage=singleChatMessageRepository.findByUserAndRecipientId(user,uniqueUser.getId());
+                messages.addAll(theirMessage);
+            }
+//        messages.addAll(theirMessage);
     List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
         System.out.println("recipient id"+recipient.getId());
-         UserDto userDto = MapperUtil.convertToUserDto(recipient);
+        UserDto userDto = MapperUtil.convertToUserDto(recipient);
         userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
         userDto.setProfileDto(MapperUtil.convertToProfileDto(recipient.getProfile()));
         messages.stream()
                 .filter(message ->
                         (message.getUser().getId().equals(user.getId()) && message.getRecipientId().equals(recipient.getId())) ||
                                 (message.getUser().getId().equals(recipient.getId()) && message.getRecipientId().equals(user.getId()))
-                )
-                .max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
+                ).max(Comparator.comparing(SingleChatMessage::getCreateDate)).ifPresent(lastMessage -> userDto.setLastMessage(lastMessage.getMessage()));
         System.out.println("lastmessage :"+userDto.getLastMessage());
          userDto.getProfileDto().setProfileImageUrl(recipient.getProfile().getProfileImageName() != null?storageService.getImageByName(recipient.getProfile().getProfileImageName()):"");
 
