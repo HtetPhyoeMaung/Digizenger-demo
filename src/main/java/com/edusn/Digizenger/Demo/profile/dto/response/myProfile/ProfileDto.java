@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.profile.dto.response.myProfile;
 
+import com.edusn.Digizenger.Demo.profile.entity.RelationshipStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class ProfileDto {
     private Long followerCount;
     private Long followingCount ;
     private Long neighborCount ;
-    private UserForProfileDto userForProfileDto;
+    private RelationshipStatus relationshipStatus;
     private List<CareerHistoryDto> careerHistoryDtoList;
     private List<ServiceProvidedDto> serviceProvidedDtoList;
     private List<EducationHistoryDto> educationHistoryDtoList;

@@ -38,7 +38,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
     private final StorageService storageService;
     private final ViewRepository viewRepository;
     private final LikeRepository likeRepository;
-
+    private final MapperUtil mapperUtil;
     @Override
     public ResponseEntity<Response> getProfilePosts(HttpServletRequest request,
                                                     int _page,
@@ -54,7 +54,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
                         .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
-                PostDto postDto = MapperUtil.convertToPostDto(post);
+                PostDto postDto = mapperUtil.convertToPostDto(post);
                 if (post.getUser().getProfile().getProfileImageName() != null) {
                     postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
                     postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));
@@ -110,7 +110,7 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                 Long likeCount = likeRepository.countByPostAndIsLiked(post, true);
                 boolean isLike = post.getLikes().stream()
                         .anyMatch(like -> like.getUser().equals(user) && like.isLiked());
-                PostDto postDto = MapperUtil.convertToPostDto(post);
+                PostDto postDto = mapperUtil.convertToPostDto(post);
                 if (post.getUser().getProfile().getProfileImageName() != null) {
                     postDto.getProfileDto().setProfileImageName(post.getUser().getProfile().getProfileImageName());
                     postDto.getProfileDto().setProfileImageUrl(storageService.getImageByName(post.getUser().getProfile().getProfileImageName()));

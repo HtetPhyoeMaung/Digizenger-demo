@@ -51,12 +51,9 @@ public class GroupRoomImpl implements GroupRoomService {
         GroupRoom createdGroup=groupRoomRepository.save(groupRoom);
         for (User user : users) {
             user.getGroupRooms().add(createdGroup);
-            UserDto userDto = MapperUtil.convertToUserDto(user);
-                if(user.getProfile().getProfileImageName()!=null){
-                    userDto.setProfileImageUrl(storageService.getImageByName(user.getProfile().getProfileImageName()));
-                }
-            userDtoList.add(userDto);
+            UserDto userDto = mapperUtil.convertToUserDto(user,true);
 
+            userDtoList.add(userDto);
         }
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
         groupRoomDto.setUserDtoList(userDtoList);
@@ -77,11 +74,7 @@ public class GroupRoomImpl implements GroupRoomService {
         user.getGroupRooms().remove(groupRoom);
         List<UserDto> userDtoList = groupRoom.getUsers().stream()
                 .map(userInGroup -> {
-                            UserDto userDto = modelMapper.map(userInGroup, UserDto.class);
-                            if (userInGroup.getProfile().getProfileImageName() != null) {
-                                userDto.setProfileImageUrl(storageService.getImageByName(userInGroup.getProfile().getProfileImageName()));
-                            }
-                            return userDto;
+                    return mapperUtil.convertToUserDto(userInGroup,true);
                         })
                 .toList();
         GroupRoomDto groupRoomDto = modelMapper.map(groupRoom, GroupRoomDto.class);
@@ -109,11 +102,8 @@ public class GroupRoomImpl implements GroupRoomService {
         user.getGroupRooms().add(groupRoom);
         List<UserDto> userDtoList = groupRoom.getUsers().stream()
                 .map(userInGroup -> {
-                    UserDto userDto = modelMapper.map(userInGroup, UserDto.class);
-                    if (userInGroup.getProfile().getProfileImageName() != null) {
-                        userDto.setProfileImageUrl(storageService.getImageByName(userInGroup.getProfile().getProfileImageName()));
-                    }
-                    return userDto;
+
+                    return mapperUtil.convertToUserDto(userInGroup,true);
                 })
                 .toList();
         groupRoomRepository.save(groupRoom);
@@ -152,12 +142,7 @@ public class GroupRoomImpl implements GroupRoomService {
                         .groupName(groupRoom.getGroupName())
                         .createDate(groupRoom.getCreateDate())
                         .userDtoList(groupRoom.getUsers().stream()
-                                .map(groupUser -> UserDto.builder()
-                                        .id(groupUser.getId())
-                                        .firstName(groupUser.getFirstName())
-                                        .lastName(groupUser.getLastName())
-                                        .profileImageUrl(storageService.getImageByName(groupUser.getProfile().getProfileImageName()))
-                                        .build())
+                                .map(groupUser -> mapperUtil.convertToUserDto(groupUser,true))
                                 .collect(Collectors.toList()))
                         .build())
                         .toList();

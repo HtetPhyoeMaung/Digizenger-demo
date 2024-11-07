@@ -12,4 +12,7 @@ public interface SingleChatMessageRepository extends JpaRepository<SingleChatMes
     Page<SingleChatMessage> findByChatId(String chatId, Pageable pageable);
 
     List<SingleChatMessage> findByUser(User user);
+
+
+    List<SingleChatMessage> findByUserAndRecipientId(User user,Long recipientId);
 }
