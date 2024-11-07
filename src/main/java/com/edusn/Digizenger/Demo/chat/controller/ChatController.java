@@ -45,13 +45,12 @@ public class ChatController {
         return singleChatMessageService.findChatMessages(sender,selectedUserId, _page-1, _limit);
     }
 
-
     @MessageMapping("/message")
     public ResponseEntity<Response> sendMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         User sender= userRepository.findById(singleChatMessage.getUser().getId()).orElseThrow();
         return singleChatMessageService.sendMessage(singleChatMessage,sender);
-
     }
+
     @GetMapping("/chat-list")
     public ResponseEntity<Response> getFriendAndNonUserList(HttpServletRequest request) {
         User user= getUserByRequest.getUser(request);
@@ -59,11 +58,10 @@ public class ChatController {
     }
 
     @MessageMapping("/message-delete")
-    @SendTo("/user/public")
     public ResponseEntity<Response> deleteMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         return singleChatMessageService.deleteMessage(singleChatMessage);
-
     }
+
     @MessageMapping("/update-message")
     public ResponseEntity<Response> updateMessage(@Payload SingleChatMessage singleChatMessage) throws IOException {
         return singleChatMessageService.updateMessage(singleChatMessage);
@@ -77,15 +75,20 @@ public class ChatController {
     }
 
     @MessageMapping("/group-message-delete")
-    @SendTo("/user/public")
     public ResponseEntity<Response> deleteGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
         return groupChatMessageService.deleteMessage(groupChatMessage);
     }
+
     @MessageMapping("/group-message-update")
     public ResponseEntity<Response> updateGroupMessage(@Payload GroupChatMessage groupChatMessage) throws IOException {
         return groupChatMessageService.updateMessage(groupChatMessage);
     }
 
+    @GetMapping("/group-message-list/{roomId}")
+    public  ResponseEntity<Response>groupMessageList(@PathVariable("roomId") Long roomId, @RequestParam(value = "_page",defaultValue = "1") int _page,
+                                                     @RequestParam(value = "_limit",defaultValue = "10") int _limit){
+        return groupChatMessageService.getGroupChatMessageList(roomId,_page,_limit);
+    }
 
 
 }

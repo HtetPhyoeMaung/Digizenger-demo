@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
+import com.edusn.Digizenger.Demo.chat.dto.GroupChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
@@ -48,6 +49,7 @@ public class Response {
     private List<NotificationDto> notificationDtoList;
     private ProfileDto profileDto;
     private List<SingleChatMessageDto>singleChatMessageDtoList;
+    private List<GroupChatMessageDto>groupChatMessageDtoList;
     private OtherProfileDto otherProfileDto;
     private List<RelationShipDto> relationShipDtoList;
 

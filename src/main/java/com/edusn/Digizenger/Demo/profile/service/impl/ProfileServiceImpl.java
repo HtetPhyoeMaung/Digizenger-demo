@@ -49,78 +49,41 @@ public class ProfileServiceImpl implements ProfileService {
     /** Get Logged-in user's Profile **/
     @Override
     public ResponseEntity<Response> showUserProfile(HttpServletRequest request) throws IOException {
-
         User user = getUserByRequest.getUser(request);
-        Profile profile = user.getProfile();
-
-
-//        ProfileDto existProfileDto = modelMapper.map(profile, ProfileDto.class);
-//        UserForProfileDto userForProfileDto = modelMapper.map(profile.getUser(), UserForProfileDto.class);
         UserDto userDto=mapperUtil.convertToUserDto(user,true);
-
-
-
-
         /** Service Provided **/
-        if(!profile.getServiceProvidedList().isEmpty()){
-            List<ServiceProvidedDto> serviceProvidedDtoList = profile.getServiceProvidedList().stream().map(
-                    serviceProvided -> modelMapper.map(serviceProvided, ServiceProvidedDto.class)
+        if(!user.getProfile().getServiceProvidedList().isEmpty()){
+            List<ServiceProvidedDto> serviceProvidedDtoList = user.getProfile().getServiceProvidedList().stream().map(
+                    mapperUtil::convertToServiceProvidedDto
             ).collect(Collectors.toList());
             userDto.getProfileDto().setServiceProvidedDtoList(serviceProvidedDtoList);
         }
-
         /** Service **/
-        if(!profile.getFollowers().isEmpty()){
-            userDto.getProfileDto().setFollowerCount(Long.valueOf(profile.getFollowers().size()));
+        if(!user.getProfile().getFollowers().isEmpty()){
+            userDto.getProfileDto().setFollowerCount((long) user.getProfile().getFollowers().size());
         }
-
         /** Following **/
-        if(!profile.getFollowing().isEmpty()){
-            userDto.getProfileDto().setFollowingCount(Long.valueOf(profile.getFollowing().size()));
+        if(!user.getProfile().getFollowing().isEmpty()){
+            userDto.getProfileDto().setFollowingCount((long) user.getProfile().getFollowing().size());
         }
-
         /** Neighbors **/
-        if(!profile.getNeighbors().isEmpty()){
-            userDto.getProfileDto().setNeighborCount(Long.valueOf(profile.getNeighbors().size()));
+        if(!user.getProfile().getNeighbors().isEmpty()){
+            userDto.getProfileDto().setNeighborCount((long) user.getProfile().getNeighbors().size());
         }
-
         /* Education Histories **/
-        if(!profile.getEducationHistories().isEmpty()){
-            List<EducationHistoryDto> educationHistoryDtoList = profile.getEducationHistories().stream().map(
-                    educationHistory -> {
-                        EducationHistoryDto educationHistoryDto = modelMapper.map(educationHistory, EducationHistoryDto.class);
-
-                        SchoolDto schoolDto = modelMapper.map(educationHistory.getSchool(), SchoolDto.class);
-                        if(educationHistory.getSchool().getLogoImageName() != null){
-                            schoolDto.setLogoImageUrl(storageService.getImageByName(educationHistory.getSchool().getLogoImageName()));
-                        }
-                        educationHistoryDto.setSchoolDto(schoolDto);
-                        return educationHistoryDto;
-
-                    }
+        if(!user.getProfile().getEducationHistories().isEmpty()){
+            List<EducationHistoryDto> educationHistoryDtoList = user.getProfile().getEducationHistories().stream().map(
+                    mapperUtil::convertToEducationHistoryDto
             ).collect(Collectors.toList());
-
             userDto.getProfileDto().setEducationHistoryDtoList(educationHistoryDtoList);
         }
-
         /* Career Histories **/
-        if(!profile.getCareerHistories().isEmpty()){
-            List<CareerHistoryDto> careerHistoryDtoList = profile.getCareerHistories().stream().map(
-                    careerHistory -> {
-                        CareerHistoryDto careerHistoryDto = modelMapper.map(careerHistory, CareerHistoryDto.class);
-
-                        CompanyDto companyDto = modelMapper.map(careerHistory.getCompany(), CompanyDto.class);
-                        if(careerHistory.getCompany().getLogoImageName() != null){
-                            companyDto.setLogoImageUrl(storageService.getImageByName(careerHistory.getCompany().getLogoImageName()));
-                        }
-                        careerHistoryDto.setCompanyDto(companyDto);
-                        return careerHistoryDto;
-
-                    }
+        if(!user.getProfile().getCareerHistories().isEmpty()){
+            List<CareerHistoryDto> careerHistoryDtoList = user.getProfile().getCareerHistories().stream().map(
+                    mapperUtil::convertToCareerHistoryDto
             ).collect(Collectors.toList());
             userDto.getProfileDto().setCareerHistoryDtoList(careerHistoryDtoList);
         }
-
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully showed existed profile data..")
@@ -133,23 +96,22 @@ public class ProfileServiceImpl implements ProfileService {
     public ResponseEntity<Response> getProfileByProfileUrlLink(String username, HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile.getUsername().equals(username)){
+        if(user.getProfile().getUsername().equals(username)){
             return showUserProfile(request);
         }
         else {
             Profile otherProfile = profileRepository.findByUsername(username)
                     .orElseThrow(()-> new CustomNotFoundException("profile not found by url which have username : "+username));
-            return otherProfileService.showOtherUserProfile(otherProfile, profile);
+            return otherProfileService.showOtherUserProfile(otherProfile, user.getProfile());
         }
     }
 
     @Override
     public ResponseEntity<Response> getProfileById(HttpServletRequest request, Long id) throws IOException {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         Profile toFindProfile = profileRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("profile is not exists by id : "+id));
-        return otherProfileService.showOtherUserProfile(toFindProfile, profile);
+        return otherProfileService.showOtherUserProfile(toFindProfile, user.getProfile());
     }
+
 }

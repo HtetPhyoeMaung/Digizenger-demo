@@ -212,7 +212,7 @@ public class AuthServiceImpl implements AuthService {
             UserDetails userDetails;
             if (!checkUser.isActivated()) {
                 log.warn("Email was not verified. So please verified your email!");
-                throw new CustomNotFoundException("Email was not verified. So please verified your email!");
+                throw new AlreadyExistsException("Email was not verified. So please verified your email!");
             }
             // authentication
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmailOrPhone(), request.getPassword()));

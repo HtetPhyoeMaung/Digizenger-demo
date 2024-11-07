@@ -16,11 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupChatMessageDto {
-    private Long id;
-    private String text;
-    private LocalDateTime createDate;
-    private LocalDateTime modifiedDate;
-    private String photoOrVideo;
+    private String id;
+    private String message;
+    private String createDate;
+    private String modifiedDate;
     private GroupChatMessage.Type type;
     private UserDto userDto;
     private GroupRoomDto groupRoomDto;
