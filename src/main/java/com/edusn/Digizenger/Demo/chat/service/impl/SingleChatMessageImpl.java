@@ -91,7 +91,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                                     .createdDate(dateUtil.formattedDate(reaction.getCreatedDate()))
                                                     .createdDate(dateUtil.formattedDate(reaction.getEditedDate()))
                                                     .emoji(reaction.getEmoji())
-                                                    .userDto(mapperUtil.convertToUserDto(message.getUser(),true))
+                                                    .userDto(mapperUtil.convertToUserDto(reaction.getUser(),true))
                                                     .build()
                                     ).collect(Collectors.toList()))
                                     .build();
