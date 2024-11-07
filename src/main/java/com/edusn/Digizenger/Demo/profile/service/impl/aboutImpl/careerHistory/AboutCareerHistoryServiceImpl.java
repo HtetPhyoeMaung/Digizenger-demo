@@ -41,10 +41,8 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
     public ResponseEntity<Response> uploadCareerHistory(HttpServletRequest request, String companyName, MultipartFile logoImage, String designation, LocalDate joinDate, LocalDate endDate) throws IOException {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         List<Profile> profiles = new LinkedList<>();
-        profiles.add(profile);
-
+        profiles.add(user.getProfile());
         String logoImageName = null;
         if(logoImage != null){
             logoImageName = storageService.uploadImage(logoImage);
@@ -68,7 +66,7 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
                 .company(company)
                 .designation(designation)
                 .joinDate(joinDate)
-                .profile(profile)
+                .profile(user.getProfile())
                 .build();
 
         if(endDate != null){
@@ -85,8 +83,8 @@ public class AboutCareerHistoryServiceImpl implements AboutCareerHistoryService 
         companies.add(company);
 
         company.setCareerHistories(careerHistories);
-        profile.setCareerHistories(careerHistories);
-        profile.setCompanies(companies);
+        user.getProfile().setCareerHistories(careerHistories);
+        user.getProfile().setCompanies(companies);
 
         CareerHistory createdCareerHistory = careerHistoryRepository.save(careerHistory);
         CareerHistoryDto careerHistoryDto = mapperUtil.convertToCareerHistoryDto(createdCareerHistory);

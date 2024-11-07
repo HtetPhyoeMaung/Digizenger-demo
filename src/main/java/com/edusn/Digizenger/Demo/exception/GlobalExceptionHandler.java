@@ -88,16 +88,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<CustomErrorResponse> resetPasswordNotSameException(RuntimeException ex) {
-        CustomErrorResponse response = CustomErrorResponse.builder()
-                .status(HttpStatus.NOT_MODIFIED.value())
-                .message(ex.getMessage())
-                .timeStamp(LocalDateTime.now())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.NOT_MODIFIED);
-    }
-
-
-
 }
