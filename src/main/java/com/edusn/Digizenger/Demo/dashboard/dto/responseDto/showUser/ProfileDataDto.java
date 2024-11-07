@@ -1,13 +1,10 @@
 package com.edusn.Digizenger.Demo.dashboard.dto.responseDto.showUser;
-
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.CareerHistoryDto;
 import com.edusn.Digizenger.Demo.profile.dto.response.myProfile.ServiceProvidedDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class ProfileDataDto {
 
     private Long id;

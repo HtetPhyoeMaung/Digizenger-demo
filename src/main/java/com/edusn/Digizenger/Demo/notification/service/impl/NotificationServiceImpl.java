@@ -43,15 +43,18 @@ public class NotificationServiceImpl implements NotificationService {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
+    private MapperUtil mapperUtil;
+
+    @Autowired
     private DateUtil dateUtil;
 
     @Override
     public void sendNotiMessage(Notification notification) {
      Notification saveNotification=   notificationRepository.save(notification);
-        ProfileDto profileDto=MapperUtil.convertToProfileDto(saveNotification.getProfile());
+        ProfileDto profileDto=mapperUtil.convertToProfileDto(saveNotification.getProfile());
         PostDto postDto = new PostDto();
         if(saveNotification.getPost()!=null){
-             postDto=MapperUtil.convertToPostDto(saveNotification.getPost());
+             postDto=mapperUtil.convertToPostDto(saveNotification.getPost());
             if(saveNotification.getPost().getImageName()!=null){
                 postDto.setImageUrl(storageService.getImageByName(saveNotification.getPost().getImageName()));
             }else{
@@ -85,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<NotificationDto> notificationDtos = notificationPage.getContent().stream()
                 .map(notification -> {
                     // Manually create and populate NotificationDto, applying the formatted date
-                    NotificationDto notificationDto = MapperUtil.convertToNotificationDto(notification);
+                    NotificationDto notificationDto = mapperUtil.convertToNotificationDto(notification);
                     if(notification.getPost()!=null){
                         if(notification.getPost().getImageName()!=null){
                             notificationDto.getPostDto().setImageUrl(storageService.getImageByName(notification.getPost().getImageName()));
@@ -130,7 +133,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.saveAll(notificationList);
         List<NotificationDto> notificationDtos = notificationList.stream()
                 .map(notification -> {
-                    NotificationDto notificationDto = MapperUtil.convertToNotificationDto(notification);
+                    NotificationDto notificationDto = mapperUtil.convertToNotificationDto(notification);
                     if(notification.getPost().getImageName()!=null){
                         notificationDto.getPostDto().setImageUrl(storageService.getImageByName(notification.getPost().getImageName()));
 

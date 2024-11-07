@@ -18,6 +18,7 @@ import com.edusn.Digizenger.Demo.post.dto.UserDto;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.DateUtil;
 import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +42,9 @@ public class ReactionServiceImpl implements ReactionService {
     private final SingleChatMessageRepository singleChatMessageRepository;
     private final GroupChatMessageRepository groupChatMessageRepository;
     private final DateUtil dateUtil;
-    private final StorageService storageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserRepository userRepository;
-    private final GetUserByRequest getUserByRequest;
+    private final MapperUtil mapperUtil;
 
     @Override
     @Transactional
@@ -121,13 +121,7 @@ public class ReactionServiceImpl implements ReactionService {
                                     .id(reaction1.getId())
                                     .emoji(reaction1.getEmoji())  .createdDate(dateUtil.formattedDate(reaction1.getCreatedDate()))
                                     .editedDate(reaction1.getEditedDate() == null ? null : dateUtil.formattedDate(reaction1.getEditedDate()))
-                                    .userDto(UserDto.builder()
-                                            .id(reaction1.getUser().getId())
-                                            .firstName(reaction1.getUser().getFirstName())
-                                            .lastName(reaction1.getUser().getLastName())
-                                            .profileImageUrl(reaction1.getUser().getProfile().getProfileImageName() == null ? null :
-                                                    storageService.getImageByName(reaction1.getUser().getProfile().getProfileImageName()))
-                                            .build())
+                                    .userDto(mapperUtil.convertToUserDto(reaction1.getUser(),true))
                                     .build();
 
                             reactionDtoList.add(reactionDto);
@@ -141,12 +135,7 @@ public class ReactionServiceImpl implements ReactionService {
                     .message(singleChatMessage.getMessage())
                     .type(singleChatMessage.getType())
                     .createDate(singleChatMessage.getCreateDate())
-                    .userDto(UserDto.builder()
-                            .id(singleChatMessage.getUser().getId())
-                            .firstName(singleChatMessage.getUser().getFirstName())
-                            .lastName(singleChatMessage.getUser().getLastName())
-                            .profileImageUrl(singleChatMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(singleChatMessage.getUser().getProfile().getProfileImageName()))
-                            .build())
+                    .userDto(mapperUtil.convertToUserDto(singleChatMessage.getUser(),true))
                     .recipientId(singleChatMessage.getRecipientId())
                     .reactionDtoList(reactionDtoList)
                     .isRead(singleChatMessage.isRead())
@@ -166,12 +155,7 @@ public class ReactionServiceImpl implements ReactionService {
                     .text(groupChatMessage.getMessage())
                     .type(groupChatMessage.getType())
                     .createDate(groupChatMessage.getCreateDate())
-                    .userDto(UserDto.builder()
-                            .id(groupChatMessage.getUser().getId())
-                            .firstName(groupChatMessage.getUser().getFirstName())
-                            .lastName(groupChatMessage.getUser().getLastName())
-                            .profileImageUrl(groupChatMessage.getUser().getProfile().getProfileImageName()==null?null:storageService.getImageByName(singleChatMessage.getUser().getProfile().getProfileImageName()))
-                            .build())
+                    .userDto(mapperUtil.convertToUserDto(groupChatMessage.getUser(),true))
                     .reactionDtoList(reactionDtoList)
                     .build();
 

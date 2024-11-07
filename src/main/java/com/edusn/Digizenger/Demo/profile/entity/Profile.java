@@ -7,6 +7,7 @@ import com.edusn.Digizenger.Demo.profile.entity.career_history.Company;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
 import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,7 @@ public class Profile {
 
     private String bio;
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "profile_follower",
             joinColumns = @JoinColumn(name = "profile_id"),
@@ -66,11 +67,11 @@ public class Profile {
     )
     private List<Profile> neighbors = new LinkedList<>();
 
-    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne( cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<CareerHistory> careerHistories = new LinkedList<>();
 
     @ManyToMany
@@ -101,9 +102,9 @@ public class Profile {
     @JsonIgnoreProperties("profileList")
     private List<ServiceProvided> serviceProvidedList = new LinkedList<>();
 
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<EducationHistory> educationHistories = new LinkedList<>();
-    @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile",  cascade = CascadeType.ALL)
     private List<Notification> notificationList = new LinkedList<>();
 
     public void addServiceProvided(ServiceProvided serviceProvided){

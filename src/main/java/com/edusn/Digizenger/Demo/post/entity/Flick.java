@@ -13,6 +13,7 @@ import java.util.UUID;
 @Data
 @Builder
 @AllArgsConstructor
+@Table(name = "flick")
 public class Flick implements Serializable {
     private static final long serialVersionUID=1L;
     @Id

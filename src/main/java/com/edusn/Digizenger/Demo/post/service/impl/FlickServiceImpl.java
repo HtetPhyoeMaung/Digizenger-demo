@@ -44,6 +44,8 @@ public class FlickServiceImpl implements FlickService {
     private NotificationRepository notificationRepository;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private MapperUtil mapperUtil;
 
     @Override
     public ResponseEntity<Response> flick(int postId, HttpServletRequest request) {
@@ -81,8 +83,8 @@ public class FlickServiceImpl implements FlickService {
         NotificationDto notificationDtoForPostOwner = NotificationDto.builder()
                 .id(notificationForPostOwner.getId())
                 .message(notificationForPostOwner.getMessage())
-                .postDto(MapperUtil.convertToPostDto(notificationForPostOwner.getPost()))
-                .profileDto(MapperUtil.convertToProfileDto(notificationForPostOwner.getProfile()))
+                .postDto(mapperUtil.convertToPostDto(notificationForPostOwner.getPost()))
+                .profileDto(mapperUtil.convertToProfileDto(notificationForPostOwner.getProfile()))
                 .createDate(dateUtil.formattedDate(notificationForPostOwner.getCreateDate()))
                 .type(notificationForPostOwner.getType())
                 .build();
@@ -101,7 +103,7 @@ public class FlickServiceImpl implements FlickService {
         // Set up the notification DTO
         NotificationDto notificationDtoForNeighbors = NotificationDto.builder()
                 .message(message)
-                .postDto(MapperUtil.convertToPostDto(notificationForNeighbor.getPost()))
+                .postDto(mapperUtil.convertToPostDto(notificationForNeighbor.getPost()))
                 .isRead(notificationForNeighbor.isRead())
                 .type(notificationForNeighbor.getType())
                 .createDate(dateUtil.formattedDate(notificationForNeighbor.getCreateDate()))
