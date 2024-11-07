@@ -1,7 +1,6 @@
 package com.edusn.Digizenger.Demo.chat.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -29,8 +27,7 @@ public class SingleChatMessage {
         private Long recipientId;
         private Type type;
         private boolean isRead;
-//        @Transient
-//        private Long sendId;
+        private String replyMessageId;
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name = "user_id")
         private User user;
@@ -40,6 +37,7 @@ public class SingleChatMessage {
 
         @OneToMany(mappedBy = "singleChatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
         private List<Reaction> reactions = new LinkedList<>();
+
 
 
 

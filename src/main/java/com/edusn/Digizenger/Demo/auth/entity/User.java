@@ -5,6 +5,7 @@ import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.post.entity.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
+@ToString(exclude = {"profile"})
 public class User {
 
     @Id
@@ -45,6 +47,13 @@ public class User {
 
     private boolean locked;
 
+    private boolean inactive;
+
+    private boolean suspended;
+
+    private boolean banned;
+
+    private LocalDateTime suspensionDate;
 
     private LocalDateTime validPassDate;
 
@@ -76,8 +85,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
     private List<Like> likes;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "user")
-    private List<Reply> replies;
+
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
     private Profile profile;
@@ -99,7 +107,7 @@ public class User {
 
 
 
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToMany(cascade =CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "groups_id")
     )
@@ -113,8 +121,5 @@ public class User {
     public enum Status{
         ONLINE,OFFLINE
     }
-
-
-
 
 }
