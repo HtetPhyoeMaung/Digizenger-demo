@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/test")
 public class TestController {
-   @GetMapping("/serverTest")
+
+    @GetMapping("/serverTest")
     public ResponseEntity<Response> getServerTest()  {
        Response response = Response.builder()
                .statusCode(HttpStatus.OK.value())
@@ -16,5 +17,9 @@ public class TestController {
                .build();
        return new ResponseEntity<>(response, HttpStatus.OK);
    }
+
+
+
+
 
 }

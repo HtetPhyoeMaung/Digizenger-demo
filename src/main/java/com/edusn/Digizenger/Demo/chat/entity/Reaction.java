@@ -5,38 +5,38 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Table(name = "reactions")
+@Table(name = "reactions", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "single_chat_message_id"})
+})
 public class Reaction {
     @Id
     private String id;
 
-    private boolean isReacted;
     private String emoji;
+    private boolean isReacted = false;
     private LocalDateTime createdDate;
     private LocalDateTime editedDate;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "single_chat_id")
     private SingleChatMessage singleChatMessage;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_chat_id")
     private GroupChatMessage groupChatMessage;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    private User reactedUser;
+    private User user;
 
-    public Reaction(){
-        this.id = UUID.randomUUID().toString();
-    }
 
 }

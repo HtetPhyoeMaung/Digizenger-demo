@@ -10,6 +10,7 @@ import com.edusn.Digizenger.Demo.chat.repo.GroupRoomRepository;
 import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
             }
         }
         GroupChatMessage savedMessage=groupChatMessageRepository.save(GroupChatMessage.builder()
+                        .id(UUIDUtil.generateUUID())
                         .user(sender)
                         .groupRoom(groupRoom)
                         .message(groupChatMessage.getMessage())

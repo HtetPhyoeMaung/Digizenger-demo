@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name="group_chat_message")
 public class GroupChatMessage {
     @Id
@@ -40,7 +42,4 @@ public class GroupChatMessage {
     @OneToMany(mappedBy = "groupChatMessage", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reaction> reactions = new LinkedList<>();
 
-    public GroupChatMessage(){
-        this.id = UUID.randomUUID().toString();
-    }
 }

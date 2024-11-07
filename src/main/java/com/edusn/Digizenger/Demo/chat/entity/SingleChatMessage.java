@@ -17,6 +17,7 @@ import java.util.UUID;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "one_to_one_message")
 public class SingleChatMessage {
         @Id
@@ -37,11 +38,9 @@ public class SingleChatMessage {
             IMAGE,VIDEO,VOICE,TEXT
         }
 
-        @OneToMany(mappedBy = "singleChatMessage", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+        @OneToMany(mappedBy = "singleChatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
         private List<Reaction> reactions = new LinkedList<>();
 
 
-        public SingleChatMessage(){
-                this.id = UUID.randomUUID().toString();
-        }
+
 }

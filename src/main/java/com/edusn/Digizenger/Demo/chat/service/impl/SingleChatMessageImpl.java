@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.chat.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.chat.dto.ReactionDto;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatMessageRepository;
@@ -72,6 +73,21 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                                        .build()) // Create UserDto from senderId
                                .chatId(message.getChatId())
                                .type(SingleChatMessage.Type.valueOf(message.getType().name()))
+                               .reactionDtoList(message.getReactions().stream().map(
+                                       reaction -> ReactionDto.builder()
+                                               .id(reaction.getId())
+                                               .createdDate(dateUtil.formattedDate(reaction.getCreatedDate()))
+                                               .createdDate(dateUtil.formattedDate(reaction.getEditedDate()))
+                                               .emoji(reaction.getEmoji())
+                                               .userDto(UserDto.builder()
+                                                       .id(reaction.getUser().getId())
+                                                       .firstName(reaction.getUser().getFirstName())
+                                                       .lastName(reaction.getUser().getLastName())
+                                                       .profileImageUrl(reaction.getUser().getProfile().getProfileImageName() == null ? null :
+                                                               storageService.getImageByName(reaction.getUser().getProfile().getProfileImageName()))
+                                                       .build())
+                                               .build()
+                               ).collect(Collectors.toList()))
                                .build())
                        .collect(Collectors.toList()))
                .statusCode(HttpStatus.OK.value())
@@ -117,6 +133,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
                 .getChatRoomId(user,singleChatMessage.getRecipientId(), true)
                 .orElseThrow(); // You can create your own dedicated exception
      SingleChatMessage savedMessage= SingleChatMessage.builder()
+             .id(UUIDUtil.generateUUID())
              .user(user)
              .message(singleChatMessage.getMessage())
              .type(singleChatMessage.getType())

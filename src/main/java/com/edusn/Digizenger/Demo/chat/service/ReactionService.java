@@ -5,5 +5,5 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface ReactionService {
-    ResponseEntity<Response> makeReact(String singleMessageId,String groupMessageId, String emojiUtf8, HttpServletRequest request);
+    ResponseEntity<Response> makeReact(String singleMessageId,String groupMessageId, String emojiUtf8, Long userId);
 }
