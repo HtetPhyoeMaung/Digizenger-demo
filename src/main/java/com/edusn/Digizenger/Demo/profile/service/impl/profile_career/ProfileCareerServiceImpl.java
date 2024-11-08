@@ -24,9 +24,8 @@ public class ProfileCareerServiceImpl implements ProfileCareerService {
     public ResponseEntity<Response> uploadCareer(String careerName, HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        profile.setProfileCareer(careerName);
-        profileRepository.save(profile);
+        user.getProfile().setProfileCareer(careerName);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -39,11 +38,10 @@ public class ProfileCareerServiceImpl implements ProfileCareerService {
     public ResponseEntity<Response> removeCareer(HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileCareer() == null)
+        if(user.getProfile().getProfileCareer() == null)
             throw new CustomNotFoundException("career is not exist.");
-        profile.setProfileCareer(null);
-        profileRepository.save(profile);
+        user.getProfile().setProfileCareer(null);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

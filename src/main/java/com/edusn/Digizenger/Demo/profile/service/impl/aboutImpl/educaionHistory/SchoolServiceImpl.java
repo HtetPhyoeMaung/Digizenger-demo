@@ -26,12 +26,12 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public ResponseEntity<Response> getExistingSchoolNameByName(HttpServletRequest request, String name) {
 
-        User user = getUserByRequest.getUser(request);
-        if(user == null) throw new CustomNotFoundException("User cannot found");
+//        User user = getUserByRequest.getUser(request);
+//        if(user == null) throw new CustomNotFoundException("User cannot found");
 
         List<School> schoolList = schoolRepository.findSchoolByDynamicName(name);
         List<String> schoolNameList = schoolList.stream().map(
-                school -> school.getSchoolName()
+                School::getSchoolName
         ).collect(Collectors.toList());
 
         Response response = Response.builder()

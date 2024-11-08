@@ -32,11 +32,10 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         User user = getUserByRequest.getUser(request);
 
-        Profile profile = profileRepository.findByUser(user);
 
-        profile.setCoverImageName(fileName);
-        profile = profileRepository.save(profile);
-        String coverImageUrl = storageService.getImageByName(profile.getCoverImageName());
+        user.getProfile().setCoverImageName(fileName);
+        Profile savedProfile = profileRepository.save(user.getProfile());
+        String coverImageUrl = storageService.getImageByName(savedProfile.getCoverImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -53,14 +52,12 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         User user = getUserByRequest.getUser(request);
 
-        Profile profile = profileRepository.findByUser(user);
+        if(user.getProfile().getCoverImageName() == null) throw new CustomNotFoundException("Image cannot found by name!");
 
-        if(profile.getCoverImageName() == null) throw new CustomNotFoundException("Image cannot found by name : "+ profile.getCoverImageName());
+        storageService.deleteImage(user.getProfile().getCoverImageName());
+        user.getProfile().setCoverImageName(null);
 
-        storageService.deleteImage(profile.getCoverImageName());
-        profile.setCoverImageName(null);
-
-        profileRepository.save(profile);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -74,14 +71,14 @@ public class CoverImageServiceImpl implements CoverImageService {
 
         User user = getUserByRequest.getUser(request);
 
-        Profile profile = profileRepository.findByUser(user);
+//        Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getCoverImageName() == null) throw new CustomNotFoundException("can't found cover image ");
+        if(user.getProfile().getCoverImageName() == null) throw new CustomNotFoundException("can't found cover image ");
 
-        String updateFilename = storageService.updateImage(file, profile.getCoverImageName());
-        profile.setCoverImageName(updateFilename);
-        profile = profileRepository.save(profile);
-        String coverImageUrl = storageService.getImageByName(profile.getCoverImageName());
+        String updateFilename = storageService.updateImage(file, user.getProfile().getCoverImageName());
+        user.getProfile().setCoverImageName(updateFilename);
+        Profile savedProfile = profileRepository.save(user.getProfile());
+        String coverImageUrl = storageService.getImageByName(savedProfile.getCoverImageName());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

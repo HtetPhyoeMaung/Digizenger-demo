@@ -47,9 +47,8 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                                                            LocalDate joinDate,
                                                            LocalDate endDate) throws IOException {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         List<Profile> profiles = new LinkedList<>();
-        profiles.add(profile);
+        profiles.add(user.getProfile());
 
         String logoImageName = null;
         if(logoImage != null){
@@ -57,7 +56,6 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         }
 
         School school;
-
         if(!schoolRepository.existsBySchoolName(schoolName)){
             school = School.builder()
                     .schoolName(schoolName)
@@ -73,7 +71,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 .degreeName(degreeName)
                 .fieldOfStudy(fieldOfStudy)
                 .joinDate(joinDate)
-                .profile(profile)
+                .profile(user.getProfile())
                 .build();
 
         if(endDate != null){
@@ -82,16 +80,17 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
         } else {
             educationHistory.setPresent(Present.YES);
         }
-
-        List<EducationHistory> educationHistories = new LinkedList<>();
-        educationHistories.add(educationHistory);
-
-        List<School> schools = new LinkedList<>();
-        schools.add(school);
-
-        school.setEducationHistories(educationHistories);
-        profile.setEducationHistories(educationHistories);
-        profile.setSchools(schools);
+//
+//        List<EducationHistory> educationHistories = new LinkedList<>();
+//        educationHistories.add(educationHistory);
+//
+//        List<School> schools = new LinkedList<>();
+//        schools.add(school);
+//
+//        school.setEducationHistories(educationHistories);
+//
+//        user.getProfile().setEducationHistories(educationHistories);
+//        user.getProfile().setSchools(schools);
 
         EducationHistory createdEducationHistory = educationHistoryRepository.save(educationHistory);
         EducationHistoryDto educationHistoryDto = mapperUtil.convertToEducationHistoryDto(createdEducationHistory);
@@ -119,12 +118,11 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                                                            LocalDate joinDate,
                                                            LocalDate endDate) throws IOException {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         List<Profile> profiles = new LinkedList<>();
-        profiles.add(profile);
+        profiles.add(user.getProfile());
 
         EducationHistoryDto educationHistoryDto = null;
-        for(EducationHistory educationHistory : profile.getEducationHistories()){
+        for(EducationHistory educationHistory : user.getProfile().getEducationHistories()){
             if(educationHistory.getId().equals(educationHistoryId)){
 
                 educationHistory.setId(educationHistoryId);
@@ -152,7 +150,7 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 if(degreeName != null) educationHistory.setDegreeName(degreeName);
                 if(fieldOfStudy != null) educationHistory.setFieldOfStudy(fieldOfStudy);
                 if(joinDate != null) educationHistory.setJoinDate(joinDate);
-                educationHistory.setProfile(profile);
+                educationHistory.setProfile(user.getProfile());
 
 
                 if(endDate != null){
@@ -161,16 +159,16 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
                 } else {
                     educationHistory.setPresent(Present.YES);
                 }
-
-                List<EducationHistory> educationHistories = new LinkedList<>();
-                educationHistories.add(educationHistory);
-
-                List<School> schools = new LinkedList<>();
-                schools.add(school);
-
-                school.setEducationHistories(educationHistories);
-                profile.setEducationHistories(educationHistories);
-                profile.setSchools(schools);
+//
+//                List<EducationHistory> educationHistories = new LinkedList<>();
+//                educationHistories.add(educationHistory);
+//
+//                List<School> schools = new LinkedList<>();
+//                schools.add(school);
+//
+//                school.setEducationHistories(educationHistories);
+//                user.getProfile().setEducationHistories(educationHistories);
+//                user.getProfile().setSchools(schools);
 
                 EducationHistory updatedEducationHistory = educationHistoryRepository.save(educationHistory);
                 educationHistoryDto = mapperUtil.convertToEducationHistoryDto(updatedEducationHistory);
@@ -192,22 +190,22 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
 
     @Override
     public ResponseEntity<Response> removeEducationHistory(HttpServletRequest request, Long educationHistoryId) {
-        User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
+//        User user = getUserByRequest.getUser(request);
 
         EducationHistory educationHistory = educationHistoryRepository.findById(educationHistoryId)
                         .orElseThrow
                                 (() -> new CustomNotFoundException("educationHistory can't exist by id : "+educationHistoryId));
+        educationHistoryRepository.delete(educationHistory);
 
-        if(!educationHistory.getProfile().getId().equals(profile.getId()))
-            throw new CustomNotFoundException("You cannot remove other's educationHistory.");
-
-        profile.removeEducationHistory(educationHistory);
-        School school = schoolRepository.findById(educationHistory.getSchool().getId())
-                .orElseThrow(() -> new CustomNotFoundException("school not found"));
-        school.removeEducationHistory(educationHistory);
-        schoolRepository.save(school);
-        profileRepository.save(profile);
+//        if(!educationHistory.getProfile().getId().equals(user.getProfile().getId()))
+//            throw new CustomNotFoundException("You cannot remove other's educationHistory.");
+//
+//        user.getProfile().removeEducationHistory(educationHistory);
+//        School school = schoolRepository.findById(educationHistory.getSchool().getId())
+//                .orElseThrow(() -> new CustomNotFoundException("school not found"));
+//        school.removeEducationHistory(educationHistory);
+//        schoolRepository.save(school);
+//        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -219,18 +217,17 @@ public class AboutEducationHistoryServiceImpl implements AboutEducationHistorySe
     @Override
     public ResponseEntity<Response> EducationHistoryGetById(HttpServletRequest request, Long educationHistoryId) {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
         EducationHistoryDto educationHistoryDto = null;
-        if(profile.getEducationHistories().isEmpty())
+        if(user.getProfile().getEducationHistories().isEmpty())
             throw new CustomNotFoundException("education cannot found in your profile");
-        for (EducationHistory educationHistory : profile.getEducationHistories()){
+        for (EducationHistory educationHistory : user.getProfile().getEducationHistories()){
             if(educationHistory.getId().equals(educationHistoryId)){
                 educationHistoryDto = mapperUtil.convertToEducationHistoryDto(educationHistory);
-                if(educationHistory.getSchool().getLogoImageName() != null)
-                    educationHistoryDto.getSchoolDto().setLogoImageUrl(
-                            storageService.getImageByName(educationHistory.getSchool().getLogoImageName())
-                    );
+//                if(educationHistory.getSchool().getLogoImageName() != null)
+//                    educationHistoryDto.getSchoolDto().setLogoImageUrl(
+//                            storageService.getImageByName(educationHistory.getSchool().getLogoImageName())
+//                    );
             }
         }
 

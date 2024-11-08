@@ -44,10 +44,10 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                                                     int _page,
                                                     int _limit) {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
+
 
         List<PostDto> postDtoList = null;
-        if(profile.getUser().getPosts() != null){
+        if(user.getPosts() != null){
             Pageable pageable =  PageRequest.of(_page -1, _limit);
             postDtoList = postRepository.findByUserIdOrderByCreatedDateDesc(user.getId(), pageable).stream().map(post -> {
                 Long viewCount = viewRepository.countByPost(post);
@@ -86,7 +86,6 @@ public class ProfilePostServiceImpl implements ProfilePostService {
                                                          int _limit) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
         Profile otherProfile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+profileId));
@@ -97,9 +96,9 @@ public class ProfilePostServiceImpl implements ProfilePostService {
             Pageable pageable = PageRequest.of(_page -1, _limit);
             Page<Post> postList;
 
-            if(otherProfile.getNeighbors().contains(profile)){
+            if(otherProfile.getNeighbors().contains(user.getProfile())){
                 postList = postRepository.findByUserIdOrderByCreatedDateDesc(otherProfile.getId(), pageable);
-            }else if(otherProfile.getFollowers().contains(profile)){
+            }else if(otherProfile.getFollowers().contains(user.getProfile())){
                 postList = postRepository.findByUserIdAndPostTypeNotOrderByCreatedDateDesc(otherUser.getId(), Post.PostType.NEIGHBORS, pageable);
             }else{
                 postList = postRepository.findByUserIdAndPostTypeNotAndPostTypeNotOrderByCreatedDateDesc(otherProfile.getId(), Post.PostType.NEIGHBORS, Post.PostType.FOLLOWERS,pageable);

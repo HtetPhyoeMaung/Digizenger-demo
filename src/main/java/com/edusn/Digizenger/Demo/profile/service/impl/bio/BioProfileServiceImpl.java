@@ -24,9 +24,8 @@ public class BioProfileServiceImpl implements BioProfileService {
     public ResponseEntity<Response> uploadBio(String bio, HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        profile.setBio(bio);
-        profileRepository.save(profile);
+        user.getProfile().setBio(bio);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -39,13 +38,12 @@ public class BioProfileServiceImpl implements BioProfileService {
     public ResponseEntity<Response> removeBio(HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getBio() == null) throw new CustomNotFoundException("Bio not found in profile.");
+        if(user.getProfile().getBio() == null) throw new CustomNotFoundException("Bio not found in profile.");
 
 
-        profile.setBio(null);
-        profileRepository.save(profile);
+        user.getProfile().setBio(null);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

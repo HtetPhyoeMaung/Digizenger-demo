@@ -30,18 +30,15 @@ public class ProfileImageServiceImpl implements ProfileImageService {
 
         String profileImageName = storageService.uploadImage(file);
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        profile.setProfileImageName(profileImageName);
-        profile = profileRepository.save(profile);
-        String profileImageUrl = storageService.getImageByName(profile.getProfileImageName());
-
+        user.getProfile().setProfileImageName(profileImageName);
+         profileRepository.save(user.getProfile());
         Response response = Response.builder()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.CREATED.value())
                 .message("successfully uploaded profile image.")
-                .profileImageUrl(profileImageUrl)
+                .profileImageUrl(storageService.getImageByName(profileImageName))
                 .build();
 
-        return new  ResponseEntity<>(response, HttpStatus.OK);
+        return new  ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
@@ -49,37 +46,34 @@ public class ProfileImageServiceImpl implements ProfileImageService {
     public ResponseEntity<Response> deleteProfileImage(HttpServletRequest request){
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileImageName() == null)
+        if(user.getProfile().getProfileImageName() == null)
             throw new CustomNotFoundException("Image cannot found by name");
-        storageService.deleteImage(profile.getProfileImageName());
-        profile.setProfileImageName(null);
-        profileRepository.save(profile);
+        storageService.deleteImage(user.getProfile().getProfileImageName());
+        user.getProfile().setProfileImageName(null);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .message("successfully deleted profile image")
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     @Override
     public ResponseEntity<Response> updateProfileImage(MultipartFile file, HttpServletRequest request) throws IOException {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile.getProfileImageName() == null)
+        if(user.getProfile().getProfileImageName() == null)
             throw new CustomNotFoundException("can't update the cover because image is null");
-        String updateFilename = storageService.updateImage(file, profile.getProfileImageName());
-        profile.setProfileImageName(updateFilename);
-        profile = profileRepository.save(profile);
-        String profileImageUrl = storageService.getImageByName(profile.getProfileImageName());
+        String updateFilename = storageService.updateImage(file, user.getProfile().getProfileImageName());
+        user.getProfile().setProfileImageName(updateFilename);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("successfully updated profile image.")
-                .profileImageUrl(profileImageUrl)
+                .profileImageUrl(storageService.getImageByName(updateFilename))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

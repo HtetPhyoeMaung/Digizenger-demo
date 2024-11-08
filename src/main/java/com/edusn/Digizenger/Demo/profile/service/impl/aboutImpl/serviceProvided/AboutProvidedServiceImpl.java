@@ -34,8 +34,7 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
     public ResponseEntity<Response> findByServiceName(HttpServletRequest request, String serviceName) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile == null) throw  new CustomNotFoundException("profile Not found Please login first");
+        if(user.getProfile() == null) throw  new CustomNotFoundException("profile Not found Please login first");
 
         List<ServiceProvided> serviceProvidedList = serviceProvidedRepository.findByServiceNameDynamic(serviceName);
         List<ServiceProvidedDto> serviceProvidedDtoList = serviceProvidedList.stream().map(
@@ -54,9 +53,8 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
     public ResponseEntity<Response> uploadServiceProvided(HttpServletRequest request,
                                                           String service){
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         List<Profile> profileList = new LinkedList<>();
-        profileList.add(profile);
+        profileList.add(user.getProfile());
 
         ServiceProvided serviceProvided = ServiceProvided.builder()
                 .service(service)
@@ -64,8 +62,8 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
                 .build();
         serviceProvided = serviceProvidedRepository.save(serviceProvided);
 
-        profile.addServiceProvided(serviceProvided);
-        profileRepository.save(profile);
+        user.getProfile().addServiceProvided(serviceProvided);
+        profileRepository.save(user.getProfile());
         ServiceProvidedDto serviceProvidedDto = ServiceProvidedDto.builder()
                 .id(serviceProvided.getId())
                 .service(serviceProvided.getService())
@@ -83,13 +81,12 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
     public ResponseEntity<Response> uploadServiceProvidedById(HttpServletRequest request,
                                                               Long id) {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
         ServiceProvided serviceProvided = serviceProvidedRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("service provided not found by id : "+id));
 
-        profile.addServiceProvided(serviceProvided);
-        profileRepository.save(profile);
+        user.getProfile().addServiceProvided(serviceProvided);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -104,15 +101,14 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
                                                           String service) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
         ServiceProvidedDto serviceProvidedDto = null;
-        for(ServiceProvided serviceProvided : profile.getServiceProvidedList()){
-            if(serviceProvided.getId() == id){
-                serviceProvided.setId(id);
+        for(ServiceProvided serviceProvided : user.getProfile().getServiceProvidedList()){
+            if(serviceProvided.getId().equals(id)){
+//                serviceProvided.setId(id);
                 serviceProvided.setService(service);
-                serviceProvided = serviceProvidedRepository.save(serviceProvided);
-                profileRepository.save(profile);
+//                serviceProvided = serviceProvidedRepository.save(serviceProvided);
+                profileRepository.save(user.getProfile());
 
                 serviceProvidedDto = ServiceProvidedDto.builder()
                         .id(serviceProvided.getId())
@@ -133,12 +129,11 @@ public class AboutProvidedServiceImpl implements AboutProvidedService {
     public ResponseEntity<Response> removeServiceProvided(HttpServletRequest request,
                                                           Long id) {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         ServiceProvided serviceProvided = serviceProvidedRepository.findById(id)
                 .orElseThrow(() -> new CustomNotFoundException("service provided not found by id : "+ id));
 
-        profile.removeProvided(serviceProvided);
-        profileRepository.save(profile);
+        user.getProfile().removeProvided(serviceProvided);
+        profileRepository.save(user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
