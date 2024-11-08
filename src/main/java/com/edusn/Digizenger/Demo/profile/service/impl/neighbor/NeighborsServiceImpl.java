@@ -34,15 +34,14 @@ public class NeighborsServiceImpl implements NeighborService {
 
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getId().equals(profileId)){
-            if(profile.getFollowers().isEmpty())
+        if(user.getProfile().getId().equals(profileId)){
+            if(user.getProfile().getFollowers().isEmpty())
                 throw new CustomNotFoundException("Neighbors are not have in Your profile.");
 
-            Page<Profile> neighborPages = profileRepository.findNeighborsByProfileId(profile.getId(),pageable);
+            Page<Profile> neighborPages = profileRepository.findNeighborsByProfileId(user.getProfile().getId(),pageable);
             List<RelationShipDto> profileNeighbors = neighborPages.stream().map(
-                    neighbor -> profileMapperUtils.convertToRelationShipDto(neighbor)
+                    profileMapperUtils::convertToRelationShipDto
             ).collect(Collectors.toList());
 
             if(profileNeighbors.isEmpty())
@@ -61,7 +60,7 @@ public class NeighborsServiceImpl implements NeighborService {
 
         Page<Profile> neighborPages = profileRepository.findNeighborsByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> neighbors = neighborPages.stream().map(
-                neighbor -> profileMapperUtils.convertToRelationShipDto(neighbor)
+                profileMapperUtils::convertToRelationShipDto
         ).collect(Collectors.toList());
 
         if(neighbors.isEmpty())

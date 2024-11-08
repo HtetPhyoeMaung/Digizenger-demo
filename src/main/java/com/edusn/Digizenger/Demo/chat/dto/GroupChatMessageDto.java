@@ -19,10 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 public class GroupChatMessageDto {
     private String id;
-    private String text;
-    private LocalDateTime createDate;
-    private LocalDateTime modifiedDate;
-    private String photoOrVideo;
+    private String message;
+    private String createDate;
+    private String modifiedDate;
     private GroupChatMessage.Type type;
     private UserDto userDto;
     private GroupRoomDto groupRoomDto;

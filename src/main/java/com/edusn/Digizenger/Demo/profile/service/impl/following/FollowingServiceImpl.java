@@ -34,13 +34,12 @@ public class FollowingServiceImpl implements FollowingService {
 
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getId().equals(profileId)){
+        if(user.getProfile().getId().equals(profileId)){
 
-            Page<Profile> followingPage = profileRepository.findFollowingByProfileId(profile.getId(),pageable);
+            Page<Profile> followingPage = profileRepository.findFollowingByProfileId(user.getProfile().getId(),pageable);
             List<RelationShipDto> profilefollowingList = followingPage.stream().map(
-                    following -> profileMapperUtils.convertToRelationShipDto(following)
+                    profileMapperUtils::convertToRelationShipDto
             ).collect(Collectors.toList());
 
             if(profilefollowingList.isEmpty())
@@ -59,7 +58,7 @@ public class FollowingServiceImpl implements FollowingService {
 
         Page<Profile> followingPage = profileRepository.findFollowingByProfileId(otherUserProfile.getId(),pageable);
         List<RelationShipDto> followingList = followingPage.stream().map(
-                following -> profileMapperUtils.convertToRelationShipDto(following)
+                profileMapperUtils::convertToRelationShipDto
         ).collect(Collectors.toList());
 
         if(followingList.isEmpty())

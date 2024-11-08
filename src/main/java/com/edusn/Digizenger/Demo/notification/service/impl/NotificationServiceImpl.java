@@ -55,17 +55,6 @@ public class NotificationServiceImpl implements NotificationService {
         PostDto postDto = new PostDto();
         if(saveNotification.getPost()!=null){
              postDto=mapperUtil.convertToPostDto(saveNotification.getPost());
-            if(saveNotification.getPost().getImageName()!=null){
-                postDto.setImageUrl(storageService.getImageByName(saveNotification.getPost().getImageName()));
-            }else{
-                postDto.setImageUrl("");
-            }
-        }
-
-        if(saveNotification.getProfile().getProfileImageName()!=null){
-            profileDto.setProfileImageUrl(storageService.getImageByName(saveNotification.getProfile().getProfileImageName()));
-        }else{
-            profileDto.setProfileImageUrl("");
         }
         NotificationDto notificationDto=NotificationDto.builder()
                 .message(saveNotification.getMessage())

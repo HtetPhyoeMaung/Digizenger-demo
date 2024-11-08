@@ -149,9 +149,9 @@ public class ReactionServiceImpl implements ReactionService {
         }else if (groupChatMessage != null) {
             GroupChatMessageDto groupChatMessageDto =GroupChatMessageDto.builder()
                     .id(groupChatMessage.getId())
-                    .text(groupChatMessage.getMessage())
+                    .message(groupChatMessage.getMessage())
                     .type(groupChatMessage.getType())
-                    .createDate(groupChatMessage.getCreateDate())
+                    .createDate(dateUtil.formattedDate(groupChatMessage.getCreateDate()))
                     .userDto(mapperUtil.convertToUserDto(groupChatMessage.getUser(),true))
                     .reactionDtoList(reactionDtoList)
                     .build();

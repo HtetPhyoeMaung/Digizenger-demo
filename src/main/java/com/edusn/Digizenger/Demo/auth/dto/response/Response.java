@@ -1,5 +1,6 @@
 package com.edusn.Digizenger.Demo.auth.dto.response;
 
+import com.edusn.Digizenger.Demo.chat.dto.GroupChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.dto.GroupRoomDto;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.checkUser.dto.CheckUserDto;
@@ -19,6 +20,7 @@ import lombok.Data;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -36,7 +38,7 @@ public class Response {
     private String otp;
     private Long unreadNotificationCount;
     private List<PostDto> postDtoList;
-    private List<UserDto> userDtoList;
+    private Set<UserDto> userDtoList;
     private Long viewCount;
     private URL imageUrl;
     private UserDto userDto;
@@ -48,6 +50,7 @@ public class Response {
     private List<NotificationDto> notificationDtoList;
     private ProfileDto profileDto;
     private List<SingleChatMessageDto>singleChatMessageDtoList;
+    private List<GroupChatMessageDto>groupChatMessageDtoList;
     private OtherProfileDto otherProfileDto;
     private List<RelationShipDto> relationShipDtoList;
 

@@ -31,7 +31,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<Company> companies = companyRepository.findCompanyByDynamicName(name);
         List<String> companyNameList = companies.stream().map(
-                company -> company.getCompanyName()
+                Company::getCompanyName
         ).collect(Collectors.toList());
 
         Response response = Response.builder()

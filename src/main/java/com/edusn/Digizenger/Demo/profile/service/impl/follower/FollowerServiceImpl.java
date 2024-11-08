@@ -39,40 +39,40 @@ public class FollowerServiceImpl implements FollowerService {
     @Override
     public ResponseEntity<Response> followToProfile(HttpServletRequest request, Long toFollowProfileId) {
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
+//        Profile profile = profileRepository.findByUser(user);
 
         Profile toFollowUserProfile = profileRepository.findById(toFollowProfileId)
                 .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+toFollowProfileId));
 
-        if(toFollowUserProfile.getFollowers().contains(profile))
+        if(toFollowUserProfile.getFollowers().contains(user.getProfile()))
             throw new AlreadyExistsException("your already followed this user.");
 
-        if(toFollowUserProfile.equals(profile))
+        if(toFollowUserProfile.equals(user.getProfile()))
             throw new NotAcceptableStatusException("You can't follow to your profile.");
 
-        profile.getFollowing().add(toFollowUserProfile);
-        toFollowUserProfile.getFollowers().add(profile);
+        user.getProfile().getFollowing().add(toFollowUserProfile);
+        toFollowUserProfile.getFollowers().add(user.getProfile());
 
         String message = "You following to "
                 +toFollowUserProfile.getUser().getFirstName()
                 + " "+toFollowUserProfile.getUser().getLastName();
 
         RelationshipStatus relationshipStatus = RelationshipStatus.FOLLOWING;
-        if(!toFollowUserProfile.getFollowing().contains(profile)) {
-            notificationService.sendFollowNotification(profile,toFollowUserProfile);
+        if(!toFollowUserProfile.getFollowing().contains(user.getProfile())) {
+            notificationService.sendFollowNotification(user.getProfile(),toFollowUserProfile);
 
         }
         else{
-            profile.getNeighbors().add(toFollowUserProfile);
-            toFollowUserProfile.getNeighbors().add(profile);
+            user.getProfile().getNeighbors().add(toFollowUserProfile);
+            toFollowUserProfile.getNeighbors().add(user.getProfile());
             message = "You following to "
                     +toFollowUserProfile.getUser().getFirstName()
                     + " "+toFollowUserProfile.getUser().getLastName()
                     + ".And now  You are neighbors.";
-            notificationService.sendFollowNotification(profile,toFollowUserProfile);
+            notificationService.sendFollowNotification(user.getProfile(),toFollowUserProfile);
             relationshipStatus = RelationshipStatus.NEIGHBOURS;
         }
-        profileRepository.save(profile);
+        profileRepository.save(user.getProfile());
         profileRepository.save(toFollowUserProfile);
 
         Response response = Response.builder()
@@ -87,27 +87,26 @@ public class FollowerServiceImpl implements FollowerService {
     public ResponseEntity<Response> unFollowToProfile(HttpServletRequest request, Long toUnFollowProfileId) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         Profile toUnFollowUserProfile = profileRepository.findById(toUnFollowProfileId)
                 .orElseThrow(() -> new CustomNotFoundException("profile not exists by id : "+toUnFollowProfileId));
 
-        if(!toUnFollowUserProfile.getFollowers().contains(profile))
+        if(!toUnFollowUserProfile.getFollowers().contains(user.getProfile()))
             throw new NotAcceptableStatusException("you cannot unfollowed this user because you are  not relationship.");
 
-        if(toUnFollowUserProfile.equals(profile))
+        if(toUnFollowUserProfile.equals(user.getProfile()))
             throw new NotAcceptableStatusException("you can't unfollow your profile.");
 
-        profile.getFollowing().remove(toUnFollowUserProfile);
-        toUnFollowUserProfile.getFollowers().remove(profile);
+        user.getProfile().getFollowing().remove(toUnFollowUserProfile);
+        toUnFollowUserProfile.getFollowers().remove(user.getProfile());
         String message = "You unfollowed the profile : "
                 +toUnFollowUserProfile.getUser().getFirstName()+" "
                 +toUnFollowUserProfile.getUser().getLastName();
 
-        if(toUnFollowUserProfile.getFollowing().contains(profile)){
-            profile.getNeighbors().remove(toUnFollowUserProfile);
-            toUnFollowUserProfile.getNeighbors().remove(profile);
+        if(toUnFollowUserProfile.getFollowing().contains(user.getProfile())){
+            user.getProfile().getNeighbors().remove(toUnFollowUserProfile);
+            toUnFollowUserProfile.getNeighbors().remove(user.getProfile());
         }
-        profileRepository.save(profile);
+        profileRepository.save(user.getProfile());
         profileRepository.save(toUnFollowUserProfile);
 
         Response response = Response.builder()
@@ -123,13 +122,12 @@ public class FollowerServiceImpl implements FollowerService {
 
         Pageable pageable = PageRequest.of(_page - 1, _limit);
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
 
-        if(profile.getId().equals(profileId)){
-            if(profile.getFollowers().isEmpty())
+        if(user.getProfile().getId().equals(profileId)){
+            if(user.getProfile().getFollowers().isEmpty())
                 throw new CustomNotFoundException("followers are not have in Your profile.");
 
-            Page<Profile> followers = profileRepository.findFollowersByProfileId(profile.getId(),pageable);
+            Page<Profile> followers = profileRepository.findFollowersByProfileId(user.getProfile().getId(),pageable);
             List<RelationShipDto> profileFollowers = followers.stream().map(
                     profileMapperUtils::convertToRelationShipDto
             ).collect(Collectors.toList());

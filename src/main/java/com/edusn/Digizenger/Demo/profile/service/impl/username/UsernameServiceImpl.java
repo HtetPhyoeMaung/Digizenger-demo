@@ -29,11 +29,10 @@ public class UsernameServiceImpl implements UsernameService {
     public ResponseEntity<Response> uploadUsername(String username, HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
         if(profileRepository.existsByUsername(username))
             throw new CustomNotFoundException("username is already exists.Please enter another name.");
-        profile.setUsername(username.trim());
-        profileRepository.save(profile);
+        user.getProfile().setUsername(username.trim());
+        profileRepository.save( user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())
@@ -46,12 +45,11 @@ public class UsernameServiceImpl implements UsernameService {
     public ResponseEntity<Response> removeUsername(HttpServletRequest request) {
 
         User user = getUserByRequest.getUser(request);
-        Profile profile = profileRepository.findByUser(user);
-        if(profile.getUsername() == null)
+        if( user.getProfile().getUsername() == null)
             throw new UsernameNotFoundException("username not found!" );
         String randomString = UrlGenerator.generateRandomString();
-        profile.setUsername(randomString + "RD");
-        profileRepository.save(profile);
+        user.getProfile().setUsername(randomString + "RD");
+        profileRepository.save( user.getProfile());
 
         Response response = Response.builder()
                 .statusCode(HttpStatus.OK.value())

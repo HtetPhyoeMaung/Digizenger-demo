@@ -95,17 +95,16 @@ public class ImagesServiceImpl implements ImagesService{
     @Override
     public ResponseEntity<Response> getOtherProfileImages(HttpServletRequest request, Long profileId) {
         User loggedUser = getUserByRequest.getUser(request);
-        Profile loggedProfile = profileRepository.findByUser(loggedUser);
 
         Profile otherProfile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new CustomNotFoundException("other profile can't found by id: " + profileId));
         User otherUser = otherProfile.getUser();
         Long totalImage;
         List<Post> otherPostList = null;
-        if(otherProfile.getNeighbors().contains(loggedProfile)){
+        if(otherProfile.getNeighbors().contains(loggedUser.getProfile())){
             otherPostList = postRepository.findTop9ByUserIdAndImageNameIsNotNull(otherUser.getId());
             totalImage = postRepository.countByUserIdAndImageNameIsNotNull(otherUser.getId());
-        }else if(otherProfile.getFollowers().contains(loggedProfile)){
+        }else if(otherProfile.getFollowers().contains(loggedUser.getProfile())){
             otherPostList = postRepository.findTop9ByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
             totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
         }else{
@@ -140,7 +139,6 @@ public class ImagesServiceImpl implements ImagesService{
     @Override
     public ResponseEntity<Response> getOtherAllImages(HttpServletRequest request, Long profileId, int _page, int _limit) {
         User loggedUser = getUserByRequest.getUser(request);
-        Profile loggedProfile = profileRepository.findByUser(loggedUser);
 
         Pageable pageable = PageRequest.of(_page -1, _limit);
 
@@ -149,10 +147,10 @@ public class ImagesServiceImpl implements ImagesService{
         User otherUser = otherProfile.getUser();
         Long totalImage;
         Page<Post> otherPostPages = null;
-        if(otherProfile.getNeighbors().contains(loggedProfile)){
+        if(otherProfile.getNeighbors().contains(loggedUser.getProfile())){
             otherPostPages = postRepository.findByUserIdAndImageNameIsNotNull(otherUser.getId(), pageable);
             totalImage = postRepository.countByUserIdAndImageNameIsNotNull(otherUser.getId());
-        }else if(otherProfile.getFollowers().contains(loggedProfile)){
+        }else if(otherProfile.getFollowers().contains(loggedUser.getProfile())){
             otherPostPages = postRepository.findByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS, pageable);
             totalImage = postRepository.countByUserIdAndPostTypeNotAndImageNameIsNotNull(otherUser.getId(), Post.PostType.NEIGHBORS);
         }else{

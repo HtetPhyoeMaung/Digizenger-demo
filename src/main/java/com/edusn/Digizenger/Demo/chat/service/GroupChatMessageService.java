@@ -11,4 +11,6 @@ public interface GroupChatMessageService {
     ResponseEntity<Response> deleteMessage(GroupChatMessage groupChatMessage);
 
     ResponseEntity<Response> updateMessage(GroupChatMessage groupChatMessage);
+
+    ResponseEntity<Response> getGroupChatMessageList(Long roomId, int page, int limit);
 }
