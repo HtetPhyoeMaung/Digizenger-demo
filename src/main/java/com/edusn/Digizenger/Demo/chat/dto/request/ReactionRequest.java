@@ -10,8 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ReactionRequest {
-    private String singleMessageId;
-    private String groupMessageId;
+    private ChatType chatType;
+    private String messageId;
     private String emojiUtf8;
     private Long userId;
+
+    public enum ChatType{
+        SINGLE,
+        GROUP
+    }
 }

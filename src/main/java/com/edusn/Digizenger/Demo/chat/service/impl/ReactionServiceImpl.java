@@ -6,6 +6,7 @@ import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
 import com.edusn.Digizenger.Demo.chat.dto.GroupChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.dto.ReactionDto;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
+import com.edusn.Digizenger.Demo.chat.dto.request.ReactionRequest;
 import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
 import com.edusn.Digizenger.Demo.chat.entity.Reaction;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
@@ -14,13 +15,9 @@ import com.edusn.Digizenger.Demo.chat.repo.ReactionRepository;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatMessageRepository;
 import com.edusn.Digizenger.Demo.chat.service.ReactionService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
-import com.edusn.Digizenger.Demo.post.dto.UserDto;
-import com.edusn.Digizenger.Demo.storage.StorageService;
 import com.edusn.Digizenger.Demo.utilis.DateUtil;
-import com.edusn.Digizenger.Demo.utilis.GetUserByRequest;
 import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,8 +45,8 @@ public class ReactionServiceImpl implements ReactionService {
 
     @Override
     @Transactional
-    public synchronized ResponseEntity<Response> makeReact(String singleMessageId,
-                                                           String groupMessageId,
+    public synchronized ResponseEntity<Response> makeReact(ReactionRequest.ChatType chatType,
+                                                           String messageId,
                                                            String emojiUtf8,
                                                            Long userId) {
 
@@ -58,8 +55,8 @@ public class ReactionServiceImpl implements ReactionService {
         String message = "";
         Reaction existSingleReaction = null;
         Reaction existGroupReaction = null;
-        if(singleMessageId != null) {
-            existSingleReaction = reactionRepository.findBySingleChatMessageIdAndUserId(singleMessageId,user.getId());
+        if(chatType == ReactionRequest.ChatType.SINGLE) {
+            existSingleReaction = reactionRepository.findBySingleChatMessageIdAndUserId(messageId,user.getId());
             if(existSingleReaction != null && existSingleReaction.getEmoji().equals(emojiUtf8)){
                 existSingleReaction.getSingleChatMessage().getReactions().remove(existSingleReaction);
                 singleChatMessageRepository.save(existSingleReaction.getSingleChatMessage());
@@ -72,8 +69,8 @@ public class ReactionServiceImpl implements ReactionService {
                 message = "successfully updated reaction.";
 
             }
-        }else if(groupMessageId != null){
-            existGroupReaction = reactionRepository.findByGroupChatMessageIdAndUserId(groupMessageId, user.getId());
+        }else if(chatType == ReactionRequest.ChatType.GROUP){
+            existGroupReaction = reactionRepository.findByGroupChatMessageIdAndUserId(messageId, user.getId());
             if(existGroupReaction != null && existGroupReaction.getEmoji().equals(emojiUtf8)){
                 existGroupReaction.getSingleChatMessage().getReactions().remove(existGroupReaction);
                 singleChatMessageRepository.save(existGroupReaction.getSingleChatMessage());
@@ -89,11 +86,11 @@ public class ReactionServiceImpl implements ReactionService {
         }
 
         SingleChatMessage singleChatMessage = null;
-        if(singleMessageId != null) singleChatMessage =  singleChatMessageRepository.findById(singleMessageId)
+        if(chatType == ReactionRequest.ChatType.SINGLE) singleChatMessage =  singleChatMessageRepository.findById(messageId)
                 .orElseThrow(() -> new CustomNotFoundException("One to one message cannot found in server"));
 
         GroupChatMessage groupChatMessage = null;
-        if(groupMessageId != null) groupChatMessage = groupChatMessageRepository.findById(groupMessageId)
+        if(chatType == ReactionRequest.ChatType.GROUP) groupChatMessage = groupChatMessageRepository.findById(messageId)
                 .orElseThrow(() -> new CustomNotFoundException("Group message cannot found in server"));
 
 

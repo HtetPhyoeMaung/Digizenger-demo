@@ -19,7 +19,7 @@ public class ReactionController {
     @MessageMapping("/messages/react")
     public ResponseEntity<Response> response(@Payload ReactionRequest reactionRequest){
 
-        return reactionService.makeReact(reactionRequest.getSingleMessageId(),reactionRequest.getGroupMessageId(),reactionRequest.getEmojiUtf8(),reactionRequest.getUserId());
+        return reactionService.makeReact(reactionRequest.getChatType(),reactionRequest.getMessageId(),reactionRequest.getEmojiUtf8(),reactionRequest.getUserId());
     }
 
 }
