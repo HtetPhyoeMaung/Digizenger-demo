@@ -20,6 +20,7 @@ import lombok.Data;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -37,7 +38,7 @@ public class Response {
     private String otp;
     private Long unreadNotificationCount;
     private List<PostDto> postDtoList;
-    private List<UserDto> userDtoList;
+    private Set<UserDto> userDtoList;
     private Long viewCount;
     private URL imageUrl;
     private UserDto userDto;
