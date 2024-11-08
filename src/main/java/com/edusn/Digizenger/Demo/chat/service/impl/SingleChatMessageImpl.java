@@ -215,11 +215,12 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         List<Profile>profileList=user.getProfile().getNeighbors();
         profileList.forEach(profile -> uniqueRecipients.add(profile.getUser()));
         for (User uniqueUser:uniqueRecipients){
-            List<SingleChatMessage>theirMessage=singleChatMessageRepository.findByUserAndRecipientId(user,uniqueUser.getId());
+            List<SingleChatMessage>theirMessage=singleChatMessageRepository.findByUserAndRecipientId(uniqueUser,user.getId());
             messages.addAll(theirMessage);
         }
 //        messages.addAll(theirMessage);
-        List<UserDto> userDtos = uniqueRecipients.stream() .map(recipient -> {
+
+        Set<UserDto> userDtos =  uniqueRecipients.stream() .map(recipient -> {
             System.out.println("recipient id"+recipient.getId());
             UserDto userDto = mapperUtil.convertToUserDto(recipient,true);
             userDto.setLastLoginTime(dateUtil.formattedDate(user.getLastLoginTime()));
@@ -233,7 +234,7 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
             userDto.getProfileDto().setProfileImageUrl(recipient.getProfile().getProfileImageName() != null?storageService.getImageByName(recipient.getProfile().getProfileImageName()):"");
 
             return userDto;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toSet());
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .userDtoList(userDtos)

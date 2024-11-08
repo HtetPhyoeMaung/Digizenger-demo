@@ -13,6 +13,7 @@ import com.edusn.Digizenger.Demo.profile.entity.Profile;
 import com.edusn.Digizenger.Demo.profile.entity.career_history.CareerHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.EducationHistory;
 import com.edusn.Digizenger.Demo.profile.entity.education_history.School;
+import com.edusn.Digizenger.Demo.profile.entity.serviceProvided.ServiceProvided;
 import com.edusn.Digizenger.Demo.storage.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +88,7 @@ public class MapperUtil {
         CompanyDto companyDto = CompanyDto.builder()
                 .id(careerHistory.getCompany().getId())
                 .companyName(careerHistory.getCompany().getCompanyName())
+                .logoImageUrl(careerHistory.getCompany().getLogoImageName()!=null?storageService.getImageByName(careerHistory.getCompany().getLogoImageName()):"")
                 .build();
 
         CareerHistoryDto careerHistoryDto = CareerHistoryDto.builder()
@@ -110,6 +112,7 @@ public class MapperUtil {
         SchoolDto schoolDto = SchoolDto.builder()
                 .id(educationHistory.getSchool().getId())
                 .schoolName(educationHistory.getSchool().getSchoolName())
+                .logoImageUrl(educationHistory.getSchool().getLogoImageName()!=null?storageService.getImageByName(educationHistory.getSchool().getLogoImageName()):"")
                 .build();
 
         EducationHistoryDto educationHistoryDto = EducationHistoryDto.builder()
@@ -129,7 +132,12 @@ public class MapperUtil {
 
         return educationHistoryDto;
     }
-
+    public ServiceProvidedDto convertToServiceProvidedDto(ServiceProvided serviceProvided){
+        ServiceProvidedDto serviceProvidedDto=new ServiceProvidedDto();
+        serviceProvidedDto.setId(serviceProvided.getId());
+        serviceProvidedDto.setService(serviceProvided.getService());
+        return serviceProvidedDto;
+    }
 
 
 }

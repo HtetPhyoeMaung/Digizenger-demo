@@ -10,31 +10,34 @@ import com.edusn.Digizenger.Demo.chat.repo.GroupRoomRepository;
 import com.edusn.Digizenger.Demo.chat.service.GroupChatMessageService;
 import com.edusn.Digizenger.Demo.exception.CustomNotFoundException;
 import com.edusn.Digizenger.Demo.storage.StorageService;
+import com.edusn.Digizenger.Demo.utilis.DateUtil;
+import com.edusn.Digizenger.Demo.utilis.MapperUtil;
 import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class GroupChatMessageImpl implements GroupChatMessageService {
     @Autowired
     private StorageService storageService;
-
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
-
     @Autowired
     public GroupChatMessageRepository groupChatMessageRepository;
     @Autowired
     private GroupRoomRepository groupRoomRepository;
-
+    @Autowired
+    private DateUtil dateUtil;
+    @Autowired
+    private MapperUtil mapperUtil;
     @Override
     public ResponseEntity<Response> sendGroupMessage(GroupChatMessage groupChatMessage, User sender) {
         GroupRoom groupRoom = groupRoomRepository.findById(groupChatMessage.getGroupRoom().getId()).orElseThrow(()->new CustomNotFoundException("Group is not found by this id"));
@@ -69,22 +72,24 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                 e.printStackTrace();
             }
         }
-        GroupChatMessage savedMessage=groupChatMessageRepository.save(GroupChatMessage.builder()
-                        .id(UUIDUtil.generateUUID())
-                        .user(sender)
-                        .groupRoom(groupRoom)
-                        .message(groupChatMessage.getMessage())
-                        .createDate(LocalDateTime.now())
-                        .type(groupChatMessage.getType())
-                        .build());
+
+        GroupChatMessage savedMessage=GroupChatMessage.builder()
+                                                                .id(UUIDUtil.generateUUID())
+                                                                .user(sender)
+                                                                .groupRoom(groupRoom)
+                                                                .message(groupChatMessage.getMessage())
+                                                                .createDate(LocalDateTime.now())
+                                                                .type(groupChatMessage.getType())
+                                                                .build();
         GroupChatMessageDto groupChatMessageDto=GroupChatMessageDto.builder()
                                                 .id(savedMessage.getId())
-                                                .text(savedMessage.getMessage())
+                                                .message(savedMessage.getMessage())
                                                 .type(savedMessage.getType())
-                                                .createDate(savedMessage.getCreateDate())
-                                                .modifiedDate(savedMessage.getModifiedDate())
+                                                .createDate(dateUtil.formattedDate(savedMessage.getCreateDate()))
+                                                .modifiedDate(dateUtil.formattedDate(savedMessage.getModifiedDate()))
                                                 .build();
         messagingTemplate.convertAndSendToUser(String.valueOf(groupChatMessage.getGroupRoom().getId()),"/queue/group-messages" , groupChatMessageDto);
+        groupChatMessageRepository.save(savedMessage);
         Response response=Response.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Group Message send success")
@@ -96,10 +101,10 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
     public ResponseEntity<Response> deleteMessage(GroupChatMessage groupChatMessage) {
         groupChatMessageRepository.delete(groupChatMessage);
         Response response=Response.builder()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .message("Group Message Delete success")
                 .build();
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
     }
 
     @Override
@@ -112,16 +117,37 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
         GroupChatMessage savedMessage=groupChatMessageRepository.save(existGroupMessage);
         GroupChatMessageDto groupChatMessageDto=GroupChatMessageDto.builder()
                                                 .id(savedMessage.getId())
-                                                .text(savedMessage.getMessage())
+                                                .message(savedMessage.getMessage())
                                                 .type(savedMessage.getType())
-                                                .createDate(savedMessage.getCreateDate())
-                                                .modifiedDate(savedMessage.getModifiedDate())
+                                                .createDate(dateUtil.formattedDate(savedMessage.getCreateDate()))
+                                                .modifiedDate(savedMessage.getModifiedDate()!=null?dateUtil.formattedDate(savedMessage.getModifiedDate()):"")
                                                 .build();
         messagingTemplate.convertAndSendToUser(String.valueOf(groupChatMessage.getGroupRoom().getId()),"/queue/group-messages" , groupChatMessageDto);
         Response response=Response.builder()
                                     .statusCode(HttpStatus.OK.value())
                                     .message("Group Message update success")
                                     .build();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Response> getGroupChatMessageList(Long roomId, int page, int limit) {
+        GroupRoom groupRoom=groupRoomRepository.findById(roomId).orElseThrow(()->new CustomNotFoundException("Group is not found by "+roomId+"!"));
+        List<GroupChatMessage>groupChatMessageList=groupChatMessageRepository.findGroupChatMessageByGroupRoom(groupRoom);
+        List<GroupChatMessageDto> groupChatMessageDtoList=groupChatMessageList.stream().map(groupChatMessage -> GroupChatMessageDto.builder()
+                                                            .id(groupChatMessage.getId())
+                                                            .type(groupChatMessage.getType())
+                                                            .message(groupChatMessage.getMessage())
+                                                            .createDate(dateUtil.formattedDate(groupChatMessage.getCreateDate()))
+                                                            .modifiedDate(groupChatMessage.getModifiedDate()!=null?dateUtil.formattedDate(groupChatMessage.getModifiedDate()):"")
+                                                            .userDto(mapperUtil.convertToUserDto(groupChatMessage.getUser(),true))
+                                                            .build())
+                                                            .toList();
+        Response response=Response.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .groupChatMessageDtoList(groupChatMessageDtoList)
+                            .message("Group Message List success")
+                            .build();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
