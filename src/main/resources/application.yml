@@ -9,6 +9,8 @@ spring:
   server:
     port: 8080
 
+
+
   datasource:
 
 
@@ -20,6 +22,12 @@ spring:
 #      username: root
 #      password: helloworld
 #      driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/digizenger?sessionVariables=sql_require_primary_key=0
+#    username: zues
+#    password: hello
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 
 
   jpa:
@@ -48,3 +56,5 @@ spring:
 
 app:
   baseUrl: https://digizenger.info
+
+

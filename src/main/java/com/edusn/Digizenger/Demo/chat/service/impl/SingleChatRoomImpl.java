@@ -27,23 +27,23 @@ public class SingleChatRoomImpl implements SingleChatRoomService {
          return Optional.of(existingRoom.get().getChatRoomId());
     }
     if(createNewRoomIfNotExists){
-        String chatRoomId=creatChatId(senderId,recipientId);
+        String chatRoomId=createChatId(senderId,recipientId);
         return Optional.of(chatRoomId);
     }
         return Optional.empty();
     }
 
-    private String creatChatId(User senderId, Long recipientId) {
+    private String createChatId(User senderId, Long recipientId) {
         String chatId = String.format("%s_%s", senderId.getId(), recipientId);
         SingleChatRoom senderRecipient =SingleChatRoom.builder()
                                             .chatRoomId(chatId)
                                             .user(senderId)
                                             .recipientId(recipientId)
                                             .build();
-        Optional<User> receipient= userRepository.findById(recipientId);
+        Optional<User> recipient= userRepository.findById(recipientId);
         SingleChatRoom recipientSender =SingleChatRoom.builder()
                                             .chatRoomId(chatId)
-                                            .user(receipient.get())
+                                            .user(recipient.get())
                                             .recipientId(senderId.getId())
                                             .build();
         singleChatRoomRepository.save(senderRecipient);

@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -29,10 +28,8 @@ import java.util.UUID;
 public class GroupChatMessageImpl implements GroupChatMessageService {
     @Autowired
     private StorageService storageService;
-
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
-
     @Autowired
     public GroupChatMessageRepository groupChatMessageRepository;
     @Autowired
@@ -75,6 +72,7 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
                 e.printStackTrace();
             }
         }
+
         GroupChatMessage savedMessage=GroupChatMessage.builder()
                                                                 .id(UUIDUtil.generateUUID())
                                                                 .user(sender)
@@ -111,8 +109,9 @@ public class GroupChatMessageImpl implements GroupChatMessageService {
 
     @Override
     public ResponseEntity<Response> updateMessage(GroupChatMessage groupChatMessage) {
+
         GroupChatMessage existGroupMessage=groupChatMessageRepository.findById(groupChatMessage.getId())
-                                                .orElseThrow(()->new CustomNotFoundException("Group Message not found with this id "+groupChatMessage.getId()));
+                .orElseThrow(()->new CustomNotFoundException("Group Message not found with this id "+groupChatMessage.getId()));;
         existGroupMessage.setMessage(groupChatMessage.getMessage());
         existGroupMessage.setModifiedDate(LocalDateTime.now());
         GroupChatMessage savedMessage=groupChatMessageRepository.save(existGroupMessage);

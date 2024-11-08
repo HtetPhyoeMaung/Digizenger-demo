@@ -1,9 +1,6 @@
 package com.edusn.Digizenger.Demo.auth.entity;
 
-import com.edusn.Digizenger.Demo.chat.entity.GroupChatMessage;
-import com.edusn.Digizenger.Demo.chat.entity.GroupRoom;
-import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
-import com.edusn.Digizenger.Demo.chat.entity.SingleChatRoom;
+import com.edusn.Digizenger.Demo.chat.entity.*;
 import com.edusn.Digizenger.Demo.notification.entity.Notification;
 import com.edusn.Digizenger.Demo.post.entity.*;
 import com.edusn.Digizenger.Demo.profile.entity.Profile;
@@ -17,6 +14,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -103,6 +101,11 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,mappedBy = "user")
     private List<Notification> notificationList;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    private List<Reaction> reactions = new LinkedList<>();
+
+
 
     @ManyToMany(cascade =CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name="users_have_groups",joinColumns = @JoinColumn(name="user_id"),

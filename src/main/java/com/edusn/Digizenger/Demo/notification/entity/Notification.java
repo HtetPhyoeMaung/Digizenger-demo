@@ -40,6 +40,6 @@ public class Notification {
     private Profile profile;
 
     public enum Type{
-        FOLLOW,NEIGHBORS,LIKE,FLICK,BIRTHDAY
+        FOLLOW,NEIGHBORS,LIKE,FLICK,BIRTHDAY,REACTION
     }
 }

@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -31,7 +34,12 @@ public class GroupChatMessage {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_room_id")
     private GroupRoom groupRoom;
+
+    @OneToMany(mappedBy = "groupChatMessage", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reaction> reactions = new LinkedList<>();
+
 }

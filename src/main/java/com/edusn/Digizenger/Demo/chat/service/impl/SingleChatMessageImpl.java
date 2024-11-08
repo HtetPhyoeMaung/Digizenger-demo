@@ -2,6 +2,7 @@ package com.edusn.Digizenger.Demo.chat.service.impl;
 import com.edusn.Digizenger.Demo.auth.dto.response.Response;
 import com.edusn.Digizenger.Demo.auth.entity.User;
 import com.edusn.Digizenger.Demo.auth.repo.UserRepository;
+import com.edusn.Digizenger.Demo.chat.dto.ReactionDto;
 import com.edusn.Digizenger.Demo.chat.dto.SingleChatMessageDto;
 import com.edusn.Digizenger.Demo.chat.entity.SingleChatMessage;
 import com.edusn.Digizenger.Demo.chat.repo.SingleChatMessageRepository;
@@ -63,32 +64,42 @@ public class SingleChatMessageImpl implements SingleChatMessageService {
         Page<SingleChatMessage> singleChatMessages = chatId.map(id->singleChatMessageRepository.findByChatId(id,pageable)).orElse(Page.empty());
         singleChatMessages.forEach(singleChatMessage -> singleChatMessage.setRead(true));
         singleChatMessageRepository.saveAll(singleChatMessages);
-       Response response= Response.builder()
-               .singleChatMessageDtoList(singleChatMessages.stream()
-                       .map(message -> {
-                           // Build the reply message DTO if there is a reply message ID
-                           SingleChatMessage replyMessageContent = null;
-                           if (message.getReplyMessageId() != null) {
-                               replyMessageContent = singleChatMessageRepository.findById(message.getReplyMessageId())
-                                       .orElseThrow(() -> new CustomNotFoundException("ReplyMessage not found"));
-                           }
-                           return SingleChatMessageDto.builder()
-                                   .id(message.getId())
-                                   .message(message.getMessage())
-                                   .createDate(message.getCreateDate())
-                                   .modifiedDate(message.getModifiedDate())
-                                   .recipientId(message.getRecipientId())
-                                   .isRead(message.isRead())
-                                   .replyMessage(replyMessageContent==null?null:replyMessageContent.getMessage())
-                                   .replayMessageType(replyMessageContent==null?null:replyMessageContent.getType())
-                                   .userDto(mapperUtil.convertToUserDto(message.getUser(),true))
-                                   .chatId(message.getChatId())
-                                   .type(SingleChatMessage.Type.valueOf(message.getType().name()))
-                                   .build();
-                       })
-                       .collect(Collectors.toList()))
-               .statusCode(HttpStatus.OK.value())
-               .build();
+        Response response= Response.builder()
+                .singleChatMessageDtoList(singleChatMessages.stream()
+                        .map(message -> {
+                            // Build the reply message DTO if there is a reply message ID
+                            SingleChatMessage replyMessageContent = null;
+                            if (message.getReplyMessageId() != null) {
+                                replyMessageContent = singleChatMessageRepository.findById(message.getReplyMessageId())
+                                        .orElseThrow(() -> new CustomNotFoundException("ReplyMessage not found"));
+                            }
+                            return SingleChatMessageDto.builder()
+                                    .id(message.getId())
+                                    .message(message.getMessage())
+                                    .createDate(message.getCreateDate())
+                                    .modifiedDate(message.getModifiedDate())
+                                    .recipientId(message.getRecipientId())
+                                    .isRead(message.isRead())
+                                    .replyMessage(replyMessageContent==null?null:replyMessageContent.getMessage())
+                                    .replayMessageType(replyMessageContent==null?null:replyMessageContent.getType())
+                                    .userDto(mapperUtil.convertToUserDto(message.getUser(),true))
+                                    .chatId(message.getChatId())
+                                    .type(SingleChatMessage.Type.valueOf(message.getType().name()))
+                                    .reactionDtoList(message.getReactions().stream().map(
+                                            reaction -> ReactionDto.builder()
+                                                    .id(reaction.getId())
+                                                    .createdDate(dateUtil.formattedDate(reaction.getCreatedDate()))
+                                                    .createdDate(dateUtil.formattedDate(reaction.getEditedDate()))
+                                                    .emoji(reaction.getEmoji())
+                                                    .userDto(mapperUtil.convertToUserDto(reaction.getUser(),true))
+                                                    .build()
+                                    ).collect(Collectors.toList()))
+                                    .build();
+                        })
+                        .collect(Collectors.toList()))
+                .statusCode(HttpStatus.OK.value())
+                .build();
+
 
 
         return new ResponseEntity<>(response, HttpStatus.OK);

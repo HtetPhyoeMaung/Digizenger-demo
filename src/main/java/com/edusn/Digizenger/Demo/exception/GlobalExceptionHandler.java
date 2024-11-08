@@ -84,7 +84,6 @@ public class GlobalExceptionHandler {
                 .timeStamp(LocalDateTime.now())
                 .build();
 
-
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 

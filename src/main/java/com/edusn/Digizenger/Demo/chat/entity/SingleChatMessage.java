@@ -1,8 +1,6 @@
 package com.edusn.Digizenger.Demo.chat.entity;
 
 import com.edusn.Digizenger.Demo.auth.entity.User;
-import com.edusn.Digizenger.Demo.utilis.UUIDUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Data
@@ -34,6 +34,11 @@ public class SingleChatMessage {
         public enum Type{
             IMAGE,VIDEO,VOICE,TEXT
         }
+
+        @OneToMany(mappedBy = "singleChatMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+        private List<Reaction> reactions = new LinkedList<>();
+
+
 
 
 }

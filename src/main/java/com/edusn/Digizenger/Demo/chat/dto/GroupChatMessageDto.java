@@ -8,8 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.LifecycleState;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Data
@@ -23,4 +25,5 @@ public class GroupChatMessageDto {
     private GroupChatMessage.Type type;
     private UserDto userDto;
     private GroupRoomDto groupRoomDto;
+    private List<ReactionDto> reactionDtoList;
 }
