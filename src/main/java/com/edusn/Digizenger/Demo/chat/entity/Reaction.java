@@ -22,7 +22,6 @@ public class Reaction {
     private String id;
 
     private String emoji;
-    private boolean isReacted = false;
     private LocalDateTime createdDate;
     private LocalDateTime editedDate;
 
